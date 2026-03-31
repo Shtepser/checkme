@@ -4,7 +4,9 @@ import checkme.config.CheckDatabaseConfig
 import checkme.config.LoggingConfig
 import checkme.domain.checks.CheckDataConsole
 import checkme.domain.checks.CheckDataSQL
+import checkme.domain.checks.ConsoleCheckTest
 import checkme.domain.checks.Criterion
+import checkme.domain.checks.SqlCheckTest
 import checkme.domain.forms.CheckResult
 import checkme.logging.LoggerType
 import checkme.logging.ServerLogger
@@ -24,7 +26,7 @@ data class Check(
     val totalScore: Int? = null,
 ) {
     companion object {
-        private val specialCriteria = listOf("beforeAll.json", "beforeEach.json", "afterEach.json", "afterAll.json")
+        private val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
 
         internal fun checkStudentAnswer(
             task: Task,
@@ -44,7 +46,7 @@ data class Check(
                 checkDatabaseConfig = checkDatabaseConfig,
                 loggingConfig = loggingConfig
             )
-            for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.test) }) {
+            for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.specialMarker.code) }) {
                 beforeEachCriterionCheck(
                     task = task,
                     checkId = checkId,
@@ -54,7 +56,7 @@ data class Check(
                     checkDatabaseConfig = checkDatabaseConfig,
                     loggingConfig = loggingConfig
                 )
-                if (!specialCriteria.contains(criterion.value.test)) {
+                if (!specialCriteria.contains(criterion.value.specialMarker.code)) {
                     val checkResult = criterionCheck(
                         criterion = criterion,
                         task = task,
@@ -98,7 +100,7 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultBeforeAll = tryCheckSpecialCriterionAll(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeAll.json" },
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker.code == "beforeAll" },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -121,7 +123,7 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultBeforeEach = results.tryCheckSpecialCriterionEach(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "beforeEach.json" },
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker.code == "beforeEach" },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -145,7 +147,7 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultAfterAll = tryCheckSpecialCriterionAll(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterAll.json" },
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker.code == "afterAll" },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -168,7 +170,7 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultAfterEach = results.tryCheckSpecialCriterionEach(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.test == "afterEach.json" },
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker.code == "afterEach" },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -193,9 +195,9 @@ data class Check(
         ): Pair<String, CheckResult>? {
             return if (
                 (
-                    (this.criterionAlreadyChecked(specialCriterion)) ||
-                        (this[specialCriterion?.key] == null)
-                ) &&
+                        (this.criterionAlreadyChecked(specialCriterion)) ||
+                                (this[specialCriterion?.key] == null)
+                        ) &&
                 specialCriterion != null
             ) {
                 when (
@@ -254,83 +256,38 @@ data class Check(
             loggingConfig: LoggingConfig,
         ): CheckResult? {
             // todo answers могут понадобиться для следующих проверок
-            val objectMapper = jacksonObjectMapper()
-            val checkFile = findCheckFile("../tasks/${task.name}", criterion.value.test)
-            val jsonString = checkFile?.readText()
-            if (jsonString == null) {
-                ServerLogger.log(
-                    user = user,
-                    action = "Check task warnings",
-                    message =
-                        """
-                        Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} not found
-                        """.trimIndent(),
-                    type = LoggerType.WARN
-                )
-                return CheckResult(
-                    score = 0,
-                    message =
-                        """
-                        Check failed, file for task ${task.id}-${task.name} criterion ${criterion.value.test} not found
-                        """.trimIndent(),
-                )
-            } else {
-                val jsonWithCheck = objectMapper.readTree(jsonString)
-                val type = jsonWithCheck.get("type")?.asText()
-                return when (type.toString()) {
-                    CheckType.CONSOLE_CHECK.code -> {
-                        val check = CheckDataConsole(
-                            type = CheckType.CONSOLE_CHECK,
-                            command = jsonWithCheck.get("command").asText().toString(),
-                            expected = jsonWithCheck.get("expected").asText().toString()
-                        )
-                        CheckDataConsole.consoleCheck(task, check, user, checkId, criterion.value)
-                    }
+            val testConfig = criterion.value.test
+            return when (testConfig) {
+                is ConsoleCheckTest -> {
+                    val check = CheckDataConsole(
+                        type = CheckType.CONSOLE_CHECK,
+                        command = testConfig.command,
+                        expected = testConfig.expected
+                    )
+                    CheckDataConsole.consoleCheck(task, check, user, checkId, criterion.value)
+                }
 
-                    CheckType.SQL_CHECK.code -> {
-                        val dbScript = jsonWithCheck.get("dbScript").asText().toString()
-                        val scripts = dbScript.split(",")
-                            .map { it.trim() }
-                            .filter { it.isNotBlank() }
-                        val check = CheckDataSQL(
-                            type = CheckType.SQL_CHECK,
-                            dbScript = scripts,
-                            referenceQuery = jsonWithCheck.get("referenceQuery").asText().toString()
-                        )
-                        CheckDataSQL.sqlCheck(
-                            task = task,
-                            checkDataSQL = check,
-                            user = user,
-                            checkId = checkId,
-                            criterion = criterion.value,
-                            overall = loggingConfig.overall,
-                            config = checkDatabaseConfig
-                        )
-                    }
-
-                    else -> {
-                        ServerLogger.log(
-                            user = user,
-                            action = "Add task warnings",
-                            message = "Unknown check type ${task.id}-${task.name} criterion ${criterion.value.test}",
-                            type = LoggerType.WARN
-                        )
-                        CheckResult(
-                            score = 0,
-                            message = "Unknown check type ${task.id}-${task.name} criterion ${criterion.value.test}"
-                        )
-                    }
+                is SqlCheckTest -> {
+                    val dbScript = testConfig.dbScript
+                    val scripts = dbScript.split(",")
+                        .map { it.trim() }
+                        .filter { it.isNotBlank() }
+                    val check = CheckDataSQL(
+                        type = CheckType.SQL_CHECK,
+                        dbScript = scripts,
+                        referenceQuery = testConfig.referenceQuery
+                    )
+                    CheckDataSQL.sqlCheck(
+                        task = task,
+                        checkDataSQL = check,
+                        user = user,
+                        checkId = checkId,
+                        criterion = criterion.value,
+                        overall = loggingConfig.overall,
+                        config = checkDatabaseConfig
+                    )
                 }
             }
-        }
-
-        private fun findCheckFile(
-            directoryPath: String,
-            fileName: String,
-        ): File? {
-            val dir = File(directoryPath)
-            if (!dir.isDirectory) return null
-            return dir.listFiles()?.firstOrNull { it.name == fileName }
         }
     }
 }

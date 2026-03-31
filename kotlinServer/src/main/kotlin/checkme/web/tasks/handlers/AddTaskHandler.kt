@@ -22,7 +22,6 @@ const val TASKS_DIR = "/tasks"
 class AddTaskHandler(
     private val tasksOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
-    private val loggingConfig: LoggingConfig,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
@@ -52,7 +51,6 @@ class AddTaskHandler(
                             validatedNewTask = validatedNewTask.value,
                             taskOperations = tasksOperations,
                             objectMapper = objectMapper,
-                            overall = loggingConfig.overall,
                             form = form
                         )
                     }
@@ -68,20 +66,20 @@ private fun tryAddTaskAndFiles(
     validatedNewTask: Task,
     taskOperations: TaskOperationsHolder,
     objectMapper: ObjectMapper,
-    overall: Boolean,
+//    overall: Boolean,
     form: MultipartForm,
 ): Response {
-    val updatedCriterions = validatedNewTask.addTaskFilesToDirectory(
-        user = user,
+    val criterions = validatedNewTask.addTaskFilesToDirectory(
+//        user = user,
         files = form.files,
-        fields = form.fields,
+//        fields = form.fields,
         criterions = validatedNewTask.criterions,
-        overall = overall
+//        overall = overall
     )
     return when (
         val newTask =
             addTask(
-                task = validatedNewTask.copy(criterions = updatedCriterions),
+                task = validatedNewTask.copy(criterions = criterions),
                 taskOperations = taskOperations
             )
     ) {

@@ -1,6 +1,8 @@
 package checkme.web.tasks.handlers
 
+import checkme.domain.checks.ConsoleCheckTest
 import checkme.domain.checks.Criterion
+import checkme.domain.checks.SqlCheckTest
 import checkme.domain.models.AnswerType
 import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
@@ -129,8 +131,11 @@ fun MultipartForm.validateForm(): Result<Task, ValidateTaskError> {
     val jacksonMapper = jacksonObjectMapper()
     val taskName = TaskLenses.nameField(this).value
     val description = TaskLenses.descriptionField(this).value
-    val criterions: Map<String, Criterion> =
+    val criterions: Map<String, Criterion> = try {
         jacksonMapper.readValue<Map<String, Criterion>>(TaskLenses.criterionsField(this).value)
+    } catch (_: Exception) {
+        return Failure(ValidateTaskError.INVALID_CHECK_TYPE)
+    }
     val answerFormatFromForm: List<FormatOfAnswer> =
         jacksonMapper.readValue<List<FormatOfAnswer>>(TaskLenses.answerFormatField(this).value)
 
@@ -142,12 +147,14 @@ fun MultipartForm.validateForm(): Result<Task, ValidateTaskError> {
         }
     }
     val answerFormatBd = answerFormatFromForm.associate { it.name to AnswerType.valueOf(it.type.uppercase()) }
-    val files = TaskLenses.filesField(this)
-    for (criterion in criterions) {
-        if (!files.map { it.filename }.contains(criterion.value.test)) {
-            return Failure(ValidateTaskError.NO_SUCH_FILE_FOR_CRITERION)
-        }
-    }
+//    val files = TaskLenses.filesField(this)
+    //todo
+//    for (criterion in criterions) {
+//        if (!files.map { it.filename }.contains(criterion.value.test)) {
+//            return Failure(ValidateTaskError.NO_SUCH_FILE_FOR_CRITERION)
+//        }
+//    }
+
     return Success(
         Task(
             id = UUID.fromString("00000000-0000-7000-8000-000000000000"),
@@ -163,15 +170,15 @@ fun MultipartForm.validateForm(): Result<Task, ValidateTaskError> {
 // первоначально функция добавляет все файлы с проверками, относящиеся к заданию, в соответствующую директорию,
 // затем вызывается функция tryRenameFileAndUpdateCriterions для обновления имен файлов-проверок с особыми критериями
 fun Task.addTaskFilesToDirectory(
-    user: User,
+//    user: User,
     files: Map<String, List<MultipartFormFile>>,
-    fields: Map<String, List<MultipartFormField>>,
+//    fields: Map<String, List<MultipartFormField>>,
     criterions: Map<String, Criterion>,
-    overall: Boolean,
+//    overall: Boolean,
 ): Map<String, Criterion> {
     val tasksDir = File(
         "..$TASKS_DIR" +
-            "/${this.name.trim()}"
+                "/${this.name.trim()}"
     )
     if (!tasksDir.exists()) {
         tasksDir.mkdirs()
@@ -181,69 +188,64 @@ fun Task.addTaskFilesToDirectory(
         val fileBytes = file.content.use { it.readAllBytes() }
         filePath.writeBytes(fileBytes)
     }
-    return tryRenameFileAndUpdateCriterions(
-        user = user,
-        criterions = criterions,
-        fields = fields,
-        tasksDir = tasksDir,
-        overall = overall
-    )
+    return criterions
 }
 
+//todo
 // Функция возвращает обновленный список критериев.
 // Если у задания есть особые проверки из списка specialCriteria, то файл такой проверки получает новое
 // название - "beforeAll", "beforeEach", "afterEach", "afterAll" в соответствие со своим типом.
 // Если имя было изменено, фиксируем это в критериях задания для последующего исполнения.
-@Suppress("NestedBlockDepth")
-fun tryRenameFileAndUpdateCriterions(
-    user: User,
-    criterions: Map<String, Criterion>,
-    fields: Map<String, List<MultipartFormField>>,
-    tasksDir: File,
-    overall: Boolean,
-): Map<String, Criterion> {
-    val updatedCriterions = criterions.toMutableMap()
-    val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
-    for (criteria in specialCriteria) {
-        fields[criteria]?.firstOrNull()?.value?.takeIf { it.isNotBlank() }?.let { originalFileName ->
-            val originalFile = File(tasksDir, originalFileName)
-
-            if (originalFile.exists()) {
-                val newFile = File(tasksDir, "$criteria.json")
-                originalFile.renameTo(newFile)
-                if (overall) {
-                    ServerLogger.log(
-                        user = user,
-                        action = "Working with task files",
-                        message = "Renamed $originalFileName to ${newFile.name} for criteria $criteria",
-                        type = LoggerType.INFO
-                    )
-                }
-
-                updatedCriterions.forEach { (key, value) ->
-                    if (value.test == originalFileName) {
-                        updatedCriterions[key] = value.copy(test = "$criteria.json")
-                    }
-                }
-            } else {
-                ServerLogger.log(
-                    user = user,
-                    action = "Add task warnings",
-                    message = "Warning: file $originalFileName not found for criteria $criteria",
-                    type = LoggerType.WARN
-                )
-            }
-        }
-    }
-    return updatedCriterions
-}
+//@Suppress("NestedBlockDepth")
+//fun tryRenameFileAndUpdateCriterions(
+//    user: User,
+//    criterions: Map<String, Criterion>,
+//    fields: Map<String, List<MultipartFormField>>,
+//    tasksDir: File,
+//    overall: Boolean,
+//): Map<String, Criterion> {
+//    val updatedCriterions = criterions.toMutableMap()
+//    val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
+//    for (criteria in specialCriteria) {
+//        fields[criteria]?.firstOrNull()?.value?.takeIf { it.isNotBlank() }?.let { originalFileName ->
+//            val originalFile = File(tasksDir, originalFileName)
+//
+//            if (originalFile.exists()) {
+//                val newFile = File(tasksDir, "$criteria.json")
+//                originalFile.renameTo(newFile)
+//                if (overall) {
+//                    ServerLogger.log(
+//                        user = user,
+//                        action = "Working with task files",
+//                        message = "Renamed $originalFileName to ${newFile.name} for criteria $criteria",
+//                        type = LoggerType.INFO
+//                    )
+//                }
+//
+//                updatedCriterions.forEach { (key, value) ->
+//                    if (value.test == originalFileName) {
+//                        updatedCriterions[key] = value.copy(test = "$criteria.json")
+//                    }
+//                }
+//            } else {
+//                ServerLogger.log(
+//                    user = user,
+//                    action = "Add task warnings",
+//                    message = "Warning: file $originalFileName not found for criteria $criteria",
+//                    type = LoggerType.WARN
+//                )
+//            }
+//        }
+//    }
+//    return updatedCriterions
+//}
 
 enum class CreationTaskError(val errorText: String) {
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
 }
 
 enum class ValidateTaskError(val errorText: String) {
-    NO_SUCH_FILE_FOR_CRITERION("All specified files must be added"),
+    INVALID_CHECK_TYPE("All specified files must be added"),
     ANSWER_TYPE_ERROR("This type of task answer does not exist"),
     USER_HAS_NOT_RIGHTS("Not allowed to add task"),
 }

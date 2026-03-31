@@ -20,8 +20,7 @@ fun taskRouter(
     routes(
         NEW_TASK bind Method.POST to AddTaskHandler(
             tasksOperations = operations.taskOperations,
-            userLens = contextTools.userLens,
-            loggingConfig = config.loggingConfig
+            userLens = contextTools.userLens
         ),
         "$DELETE_TASK/{id}" bind Method.DELETE to DeleteTaskHandler(
             tasksOperations = operations.taskOperations,

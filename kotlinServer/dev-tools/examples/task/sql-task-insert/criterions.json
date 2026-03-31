@@ -2,7 +2,12 @@
   "Вставить в таблицу новую книгу Стивена Кинга - Талисман,  id автора - 2, год создания 1984" : {
     "description": "Книга добавлена в таблицу",
     "score": 10,
-    "test": "insert.json",
-    "message": "Книга не была добавлена в таблтицу"
+    "test": {
+      "type": "sql-check",
+      "dbScript" : "script.sql",
+      "referenceQuery": "INSERT INTO books (title, author_id, publication_year)\nVALUES ('Талисман', 2, 1984);"
+    },
+    "message": "Книга не была добавлена в таблицу",
+    "special_marker": null
   }
 }
