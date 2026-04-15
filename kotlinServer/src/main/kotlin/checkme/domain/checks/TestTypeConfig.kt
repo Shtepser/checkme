@@ -6,22 +6,25 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "type"
+    property = "type",
+    visible = true
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = SqlCheckTest::class, name = "sql-check"),
     JsonSubTypes.Type(value = ConsoleCheckTest::class, name = "console-check")
 )
-sealed class TestConfig
+sealed class TestConfig {
+    abstract val type: String
+}
 
 data class SqlCheckTest(
-    val type: String,
+    override val type: String,
     val dbScript: String,
     val referenceQuery: String
 ) : TestConfig()
 
 data class ConsoleCheckTest(
-    val type: String,
+    override val type: String,
     val command: String,
     val expected: String
 ) : TestConfig()

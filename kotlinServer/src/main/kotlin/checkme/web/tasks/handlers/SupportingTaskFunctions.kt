@@ -147,14 +147,6 @@ fun MultipartForm.validateForm(): Result<Task, ValidateTaskError> {
         }
     }
     val answerFormatBd = answerFormatFromForm.associate { it.name to AnswerType.valueOf(it.type.uppercase()) }
-//    val files = TaskLenses.filesField(this)
-    //todo
-//    for (criterion in criterions) {
-//        if (!files.map { it.filename }.contains(criterion.value.test)) {
-//            return Failure(ValidateTaskError.NO_SUCH_FILE_FOR_CRITERION)
-//        }
-//    }
-
     return Success(
         Task(
             id = UUID.fromString("00000000-0000-7000-8000-000000000000"),

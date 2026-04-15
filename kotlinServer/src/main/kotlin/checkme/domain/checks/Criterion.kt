@@ -1,12 +1,15 @@
 package checkme.domain.checks
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 
 data class Criterion(
     val description: String,
     val score: Int,
     val test: TestConfig,
     val message: String,
-    val specialMarker: SpecialCriteriaMarker
+    @JsonProperty("special_marker")
+    val specialMarker: SpecialCriteriaMarker?
 )
 
 enum class SpecialCriteriaMarker(val code: String) {

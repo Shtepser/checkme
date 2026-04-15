@@ -46,7 +46,7 @@ data class Check(
                 checkDatabaseConfig = checkDatabaseConfig,
                 loggingConfig = loggingConfig
             )
-            for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.specialMarker.code) }) {
+            for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.specialMarker?.code) }) {
                 beforeEachCriterionCheck(
                     task = task,
                     checkId = checkId,
@@ -56,7 +56,7 @@ data class Check(
                     checkDatabaseConfig = checkDatabaseConfig,
                     loggingConfig = loggingConfig
                 )
-                if (!specialCriteria.contains(criterion.value.specialMarker.code)) {
+                if (!specialCriteria.contains(criterion.value.specialMarker?.code)) {
                     val checkResult = criterionCheck(
                         criterion = criterion,
                         task = task,
@@ -100,7 +100,7 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultBeforeAll = tryCheckSpecialCriterionAll(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker.code == "beforeAll" },
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker?.code == "beforeAll" },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -123,7 +123,7 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultBeforeEach = results.tryCheckSpecialCriterionEach(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker.code == "beforeEach" },
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker?.code == "beforeEach" },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -147,7 +147,7 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultAfterAll = tryCheckSpecialCriterionAll(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker.code == "afterAll" },
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker?.code == "afterAll" },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -170,7 +170,7 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultAfterEach = results.tryCheckSpecialCriterionEach(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker.code == "afterEach" },
+                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker?.code == "afterEach" },
                 task = task,
                 checkId = checkId,
                 user = user,
