@@ -246,16 +246,16 @@ class AddTask(
         }
     }
 
-    private fun updateButtonState() {
-        val isFormValid = formPanelAddTask.isValid()
-        val selectedFormat = formPanelAddTask.getData().format
-        val isFileRequirementMet = when (selectedFormat) {
-            "file" -> scriptFile.isNotEmpty()
-            "text" -> true
-            else -> true
-        }
-        buttonSend.disabled = !(isFormValid && isFileRequirementMet)
-    }
+//    private fun updateButtonState() {
+//        val isFormValid = formPanelAddTask.isValid()
+//        val selectedFormat = formPanelAddTask.getData().format
+//        val isFileRequirementMet = when (selectedFormat) {
+//            "file" -> scriptFile.isNotEmpty()
+//            "text" -> true
+//            else -> true
+//        }
+//        buttonSend.disabled = !(isFormValid && isFileRequirementMet)
+//    }
 
     private fun addTask(
         formData: FormData
