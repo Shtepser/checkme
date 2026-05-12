@@ -55,9 +55,7 @@ class AddTask(
     private val serverUrl: String,
     private val routing: Routing
 ) : VPanel(className = "TaskAdd") {
-    private lateinit var formPanelAddTask: FormPanel<FormAddTask>
     private val scriptFile = mutableListOf<KFile>()
-    private lateinit var buttonSend: Button
     init {
         h2("Создание задачи")
         val formPanelAddTask = formPanel<FormAddTask>(className = "base-form") {
@@ -170,10 +168,11 @@ class AddTask(
                 validatorMessage = { "" }
             )
             this.validate()
+            add(addedScriptsFileViewer)
         }
         val buttonSend = button("Отправить", disabled = true, className = "usually-button")
         formPanelAddTask.onInput {
-            buttonSend.disabled = false
+            buttonSend.disabled = !formPanelAddTask.validate()
         }
         buttonSend.onClickLaunch {
             buttonSend.disabled = true
@@ -229,7 +228,6 @@ class AddTask(
             filesViewer.content = "Файлы не выбраны"
         } else {
             files.forEach { kFile ->
-                filesViewer.content = ""
                 val fileViewer = Div().apply {
                     add(Div(kFile.name))
                     add(Button("Удалить файл", className = "delete-file-button") {
@@ -245,17 +243,6 @@ class AddTask(
             }
         }
     }
-
-//    private fun updateButtonState() {
-//        val isFormValid = formPanelAddTask.isValid()
-//        val selectedFormat = formPanelAddTask.getData().format
-//        val isFileRequirementMet = when (selectedFormat) {
-//            "file" -> scriptFile.isNotEmpty()
-//            "text" -> true
-//            else -> true
-//        }
-//        buttonSend.disabled = !(isFormValid && isFileRequirementMet)
-//    }
 
     private fun addTask(
         formData: FormData
