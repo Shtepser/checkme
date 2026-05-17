@@ -13,7 +13,6 @@ import ru.yarsu.serializableClasses.solution.TaskOrUserSolutionsFormat
 import kotlin.uuid.Uuid
 
 class MySolutionList(
-    private val page: Int?,
     taskId: Uuid?,
     serverUrl: String,
     private val routing: Routing
