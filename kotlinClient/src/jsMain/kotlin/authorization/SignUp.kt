@@ -7,13 +7,16 @@ import io.kvision.html.button
 import io.kvision.html.h2
 import io.kvision.panel.HPanel
 import io.kvision.panel.VPanel
+import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import io.kvision.toast.Toast
 import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
+import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
+import org.w3c.dom.events.KeyboardEvent
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.signUp.FormSignUp
@@ -65,7 +68,9 @@ class SignUp(
             }
         }
         formPanelSignUp.add(HPanel(className = "authorization-buttons-panel") {
-            button("Зарегистрироваться", className = "usually-button").onClick {
+            val buttonSignUp = button("Зарегистрироваться", className = "usually-button")
+            val buttonSignIn = button("Вход", className = "navigation-button")
+            buttonSignUp.onClick {
                 val validateForm = formPanelSignUp.validate()
                 if (validateForm) {
                     val requestInit = RequestInit()
@@ -110,7 +115,12 @@ class SignUp(
                     }
                 }
             }
-            button("Вход", className = "navigation-button").onClick{
+            document.addEventListener("keydown", { event ->
+                if (event is KeyboardEvent && event.keyCode == 13) {
+                    buttonSignUp.getElement()?.click()
+                }
+            })
+            buttonSignIn.onClick{
                 routing.navigate("/authorization/sign_in")
             }
         })
