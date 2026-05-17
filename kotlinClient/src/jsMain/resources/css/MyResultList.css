@@ -1,0 +1,47 @@
+.bundle-block {
+
+}
+
+.task-block-no {
+    margin-top: 22px;
+    background: #EBEBEB;
+    padding: 15px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    border-left: 25px solid;
+    border-left-color: #212121;
+}
+
+.task-block-incorrect {
+    margin-top: 22px;
+    background: #EBEBEB;
+    padding: 15px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    border-left: 25px solid;
+    border-left-color: #FF4444;
+}
+
+.task-block-partial {
+    margin-top: 22px;
+    background: #EBEBEB;
+    padding: 15px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    border-left: 25px solid;
+    border-left-color: #FFBB33;
+}
+
+.task-block-correct {
+    margin-top: 22px;
+    background: #EBEBEB;
+    padding: 15px;
+    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 10px;
+    border-left: 25px solid;
+    border-left-color: #00C851;
+}
+
+h3.bundle-name {
+    margin-bottom: 0;
+}

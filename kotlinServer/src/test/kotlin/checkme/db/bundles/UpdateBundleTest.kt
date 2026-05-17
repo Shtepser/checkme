@@ -37,7 +37,7 @@ class UpdateBundleTest : TestcontainerSpec({ context ->
         val tasksIdInDB = tasksOperations.selectAllTask()
         val validBundleTasks: List<TaskAndOrder> = listOf(
             TaskAndOrder(tasksIdInDB[0], 1),
-            TaskAndOrder(tasksIdInDB[1], 3),
+            TaskAndOrder(tasksIdInDB[1], 2),
         )
         insertedBundleTasks =
             bundleOperations.insertBundleTasks(insertedBundles.first().id, validBundleTasks).shouldNotBeNull()

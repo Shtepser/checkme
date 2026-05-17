@@ -66,6 +66,9 @@ external val jsTasks: dynamic
 @JsModule("./css/AutomaticRegistrationForm.css")
 external val cssAutomaticRegistration: dynamic
 
+@JsModule("./css/MyResultList.css")
+external val cssMyResultList: dynamic
+
 class CheckMe : Application() {
     init {
         useModule(cssAuthorization)
@@ -86,6 +89,7 @@ class CheckMe : Application() {
         useModule(cssTable)
         useModule(cssAutomaticRegistration)
         useModule(jsTasks)
+        useModule(cssMyResultList)
     }
     override fun start() {
         val serverUrl = js("SERVER_URL").toString()

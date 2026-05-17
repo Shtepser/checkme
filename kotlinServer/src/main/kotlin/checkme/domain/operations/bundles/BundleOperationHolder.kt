@@ -1,6 +1,7 @@
 package checkme.domain.operations.bundles
 
 import checkme.domain.models.Bundle
+import checkme.domain.models.BundleTasksWithBestResult
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.dependencies.bundles.BundlesDatabase
 import dev.forkhandles.result4k.Result
@@ -38,6 +39,15 @@ class BundleOperationHolder(
                 taskId,
             ->
             bundleDatabase.selectAllBundlesByTaskId(taskId)
+        }
+
+    val fetchBundleTasksWithUserBestResult: (page: Int, userId: UUID)
+    -> Result<List<BundleTasksWithBestResult>, BundleFetchingError> =
+        FetchBundleTasksWithUserBestResult {
+                page,
+                userId,
+            ->
+            bundleDatabase.selectAllBundleTasksWithUserBestResult(page, userId)
         }
 
     val createBundle: (

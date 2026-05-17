@@ -17,3 +17,11 @@ data class BundleAndTasks(
     val bundle: Bundle,
     val tasks: List<TaskAndOrder>,
 )
+
+data class BundleTasksWithBestResult(
+    val bundleName: String,
+    val taskId: UUID,
+    val taskName: String,
+    val highestScore: Int,
+    val bestSolution: Int,
+)

@@ -7,28 +7,29 @@ import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
-import ru.yarsu.serializableClasses.solution.SolutionInListFormat
+import ru.yarsu.serializableClasses.solution.TaskOrUserSolutionsFormat
+import kotlin.uuid.Uuid
 
 class MySolutionList(
+    private val page: Int?,
+    taskId: Uuid?,
     serverUrl: String,
     private val routing: Routing
 ) : SimplePanel() {
     init {
-        h2("Решения")
         val requestInit = createRequestHeaders(HttpMethod.GET)
-        window.fetch(serverUrl + "solution/me", requestInit).then { response ->
+        window.fetch(serverUrl + "solution/user-and-task/${taskId.toString()}", requestInit).then { response ->
             when (response.status.toInt()) {
                 200 -> response.json().then {
                     val jsonString = JSON.stringify(it)
-                    val solutionList = Json.decodeFromString<List<SolutionInListFormat>>(jsonString)
-                    if (solutionList.isEmpty()) {
+                    val taskSolutions = Json.decodeFromString<TaskOrUserSolutionsFormat>(jsonString)
+                    h2("Ваши решения задачи: ${taskSolutions.name}")
+                    if (taskSolutions.solutions.isEmpty()) {
                         this.add(Div("Решения не найдены"))
                     } else {
-                        this.add(MySolutionListViewer(solutionList, routing))
+                        this.add(MySolutionListViewer(taskSolutions.solutions, routing))
                     }
                 }
 

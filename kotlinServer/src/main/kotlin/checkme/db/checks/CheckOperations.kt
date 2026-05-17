@@ -52,6 +52,18 @@ class CheckOperations(
                 record.toCheckWithScore()
             }
 
+    override fun selectChecksByUserIdAndTaskId(
+        userId: UUID,
+        taskId: UUID,
+    ): List<Check> =
+        selectFromChecks()
+            .where(CHECKS.USER_ID.eq(userId).and(CHECKS.TASK_ID.eq(taskId)))
+            .orderBy(CHECKS.ID.desc())
+            .fetch()
+            .mapNotNull { record: Record ->
+                record.toCheckWithScore()
+            }
+
     override fun selectAllChecksPagination(page: Int): List<Check> =
         selectFromChecks()
             .orderBy(CHECKS.ID)

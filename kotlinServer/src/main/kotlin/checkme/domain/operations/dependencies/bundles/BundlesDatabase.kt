@@ -1,6 +1,7 @@
 package checkme.domain.operations.dependencies.bundles
 
 import checkme.domain.models.Bundle
+import checkme.domain.models.BundleTasksWithBestResult
 import checkme.domain.models.TaskAndOrder
 import dev.forkhandles.result4k.Result4k
 import java.util.UUID
@@ -14,6 +15,11 @@ interface BundlesDatabase {
     fun selectBundleTasksById(id: UUID): List<TaskAndOrder>
 
     fun selectAllBundlesByTaskId(taskId: UUID): List<Bundle>
+
+    fun selectAllBundleTasksWithUserBestResult(
+        page: Int,
+        userId: UUID,
+    ): List<BundleTasksWithBestResult>?
 
     fun insertBundle(name: String): Bundle?
 
