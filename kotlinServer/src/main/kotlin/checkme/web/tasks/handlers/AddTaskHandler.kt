@@ -1,6 +1,5 @@
 package checkme.web.tasks.handlers
 
-import checkme.config.LoggingConfig
 import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder

@@ -8,6 +8,6 @@
       "referenceQuery": "UPDATE books\nSET title = \"Талисман\", publication_year = 1984\nWHERE id= 9;"
     },
     "message": "Изменения не выполнены",
-    "special_marker": null
+    "special_marker": "NULL"
   }
 }

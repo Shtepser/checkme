@@ -6,12 +6,9 @@ import checkme.domain.checks.CheckDataConsole
 import checkme.domain.checks.CheckDataSQL
 import checkme.domain.checks.ConsoleCheckTest
 import checkme.domain.checks.Criterion
+import checkme.domain.checks.SpecialCriteriaMarker
 import checkme.domain.checks.SqlCheckTest
 import checkme.domain.forms.CheckResult
-import checkme.logging.LoggerType
-import checkme.logging.ServerLogger
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import java.io.File
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -26,7 +23,7 @@ data class Check(
     val totalScore: Int? = null,
 ) {
     companion object {
-        private val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
+        private val specialCriteria = listOf("BEFORE_EACH", "BEFORE_ALL", "AFTER_EACH", "AFTER_ALL")
 
         internal fun checkStudentAnswer(
             task: Task,
@@ -46,7 +43,7 @@ data class Check(
                 checkDatabaseConfig = checkDatabaseConfig,
                 loggingConfig = loggingConfig
             )
-            for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.specialMarker?.code) }) {
+            for (criterion in task.criterions.filter { !specialCriteria.contains(it.value.specialMarker.toString()) }) {
                 beforeEachCriterionCheck(
                     task = task,
                     checkId = checkId,
@@ -56,7 +53,7 @@ data class Check(
                     checkDatabaseConfig = checkDatabaseConfig,
                     loggingConfig = loggingConfig
                 )
-                if (!specialCriteria.contains(criterion.value.specialMarker?.code)) {
+                if (!specialCriteria.contains(criterion.value.specialMarker?.toString())) {
                     val checkResult = criterionCheck(
                         criterion = criterion,
                         task = task,
@@ -100,7 +97,8 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultBeforeAll = tryCheckSpecialCriterionAll(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker?.code == "beforeAll" },
+                specialCriterion = task.criterions.entries
+                    .firstOrNull { it.value.specialMarker == SpecialCriteriaMarker.BEFORE_ALL },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -123,7 +121,8 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultBeforeEach = results.tryCheckSpecialCriterionEach(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker?.code == "beforeEach" },
+                specialCriterion = task.criterions.entries
+                    .firstOrNull { it.value.specialMarker == SpecialCriteriaMarker.BEFORE_EACH },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -147,7 +146,8 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultAfterAll = tryCheckSpecialCriterionAll(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker?.code == "afterAll" },
+                specialCriterion = task.criterions.entries
+                    .firstOrNull { it.value.specialMarker == SpecialCriteriaMarker.AFTER_ALL },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -170,7 +170,8 @@ data class Check(
             loggingConfig: LoggingConfig,
         ) {
             val specialResultAfterEach = results.tryCheckSpecialCriterionEach(
-                specialCriterion = task.criterions.entries.firstOrNull { it.value.specialMarker?.code == "afterEach" },
+                specialCriterion = task.criterions.entries
+                    .firstOrNull { it.value.specialMarker == SpecialCriteriaMarker.AFTER_EACH },
                 task = task,
                 checkId = checkId,
                 user = user,
@@ -195,9 +196,9 @@ data class Check(
         ): Pair<String, CheckResult>? {
             return if (
                 (
-                        (this.criterionAlreadyChecked(specialCriterion)) ||
-                                (this[specialCriterion?.key] == null)
-                        ) &&
+                    (this.criterionAlreadyChecked(specialCriterion)) ||
+                        (this[specialCriterion?.key] == null)
+                ) &&
                 specialCriterion != null
             ) {
                 when (

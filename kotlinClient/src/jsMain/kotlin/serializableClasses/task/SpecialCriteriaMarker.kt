@@ -5,14 +5,9 @@ import kotlinx.serialization.SerialName
 
 @Serializable
 enum class SpecialCriteriaMarker {
-    @SerialName("null")
-    NULL_MARKER,
-    @SerialName("beforeEach")
+    NULL,
     BEFORE_EACH,
-    @SerialName("beforeAll")
     BEFORE_ALL,
-    @SerialName("afterEach")
     AFTER_EACH,
-    @SerialName("afterAll")
     AFTER_ALL
 }

@@ -20,11 +20,11 @@ sealed class TestConfig {
 data class SqlCheckTest(
     override val type: String,
     val dbScript: String,
-    val referenceQuery: String
+    val referenceQuery: String,
 ) : TestConfig()
 
 data class ConsoleCheckTest(
     override val type: String,
     val command: String,
-    val expected: String
+    val expected: String,
 ) : TestConfig()

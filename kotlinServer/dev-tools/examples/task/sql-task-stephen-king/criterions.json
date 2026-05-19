@@ -8,6 +8,6 @@
       "referenceQuery": "SELECT title\nFROM books\nWHERE author_id = (SELECT id FROM authors WHERE name = 'Стивен Кинг');"
     },
     "message": "Некорректный запрос на поиск книг Стивена Кинга",
-    "special_marker": null
+    "special_marker": "NULL"
   }
 }

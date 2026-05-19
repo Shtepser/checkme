@@ -8,7 +8,7 @@
       "referenceQuery": "SELECT title\nFROM books\nWHERE author_id = (SELECT id FROM authors WHERE name = 'Стивен Кинг');"
     },
     "message": "Некорректный запрос на поиск книг Стивена Кинга",
-    "special_marker": null
+    "special_marker": "NULL"
   },
    "Получить все книги Стивена Кинга из 2-го набора данных": {
     "description": "Выбраны все книги Стивена Кинга, содержащиеся в таблице",
@@ -19,6 +19,6 @@
       "referenceQuery": "SELECT title\nFROM books\nWHERE author_id = (SELECT id FROM authors WHERE name = 'Стивен Кинг');"
     },
     "message": "Некорректный запрос на поиск книг Стивена Кинга",
-    "special_marker": null
+    "special_marker": "BEFORE_EACH"
   }
 }

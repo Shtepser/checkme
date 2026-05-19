@@ -1,18 +1,13 @@
 package checkme.web.tasks.handlers
 
-import checkme.domain.checks.ConsoleCheckTest
 import checkme.domain.checks.Criterion
-import checkme.domain.checks.SqlCheckTest
 import checkme.domain.models.AnswerType
 import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
-import checkme.domain.models.User
 import checkme.domain.operations.tasks.CreateTaskError
 import checkme.domain.operations.tasks.TaskFetchingError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.tasks.TaskRemovingError
-import checkme.logging.LoggerType
-import checkme.logging.ServerLogger
 import checkme.web.lenses.TaskLenses
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -20,7 +15,6 @@ import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
 import dev.forkhandles.result4k.Success
 import org.http4k.lens.MultipartForm
-import org.http4k.lens.MultipartFormField
 import org.http4k.lens.MultipartFormFile
 import java.io.File
 import java.util.UUID
@@ -162,15 +156,12 @@ fun MultipartForm.validateForm(): Result<Task, ValidateTaskError> {
 // первоначально функция добавляет все файлы с проверками, относящиеся к заданию, в соответствующую директорию,
 // затем вызывается функция tryRenameFileAndUpdateCriterions для обновления имен файлов-проверок с особыми критериями
 fun Task.addTaskFilesToDirectory(
-//    user: User,
     files: Map<String, List<MultipartFormFile>>,
-//    fields: Map<String, List<MultipartFormField>>,
     criterions: Map<String, Criterion>,
-//    overall: Boolean,
 ): Map<String, Criterion> {
     val tasksDir = File(
         "..$TASKS_DIR" +
-                "/${this.name.trim()}"
+            "/${this.name.trim()}"
     )
     if (!tasksDir.exists()) {
         tasksDir.mkdirs()
@@ -182,55 +173,6 @@ fun Task.addTaskFilesToDirectory(
     }
     return criterions
 }
-
-//todo
-// Функция возвращает обновленный список критериев.
-// Если у задания есть особые проверки из списка specialCriteria, то файл такой проверки получает новое
-// название - "beforeAll", "beforeEach", "afterEach", "afterAll" в соответствие со своим типом.
-// Если имя было изменено, фиксируем это в критериях задания для последующего исполнения.
-//@Suppress("NestedBlockDepth")
-//fun tryRenameFileAndUpdateCriterions(
-//    user: User,
-//    criterions: Map<String, Criterion>,
-//    fields: Map<String, List<MultipartFormField>>,
-//    tasksDir: File,
-//    overall: Boolean,
-//): Map<String, Criterion> {
-//    val updatedCriterions = criterions.toMutableMap()
-//    val specialCriteria = listOf("beforeAll", "beforeEach", "afterEach", "afterAll")
-//    for (criteria in specialCriteria) {
-//        fields[criteria]?.firstOrNull()?.value?.takeIf { it.isNotBlank() }?.let { originalFileName ->
-//            val originalFile = File(tasksDir, originalFileName)
-//
-//            if (originalFile.exists()) {
-//                val newFile = File(tasksDir, "$criteria.json")
-//                originalFile.renameTo(newFile)
-//                if (overall) {
-//                    ServerLogger.log(
-//                        user = user,
-//                        action = "Working with task files",
-//                        message = "Renamed $originalFileName to ${newFile.name} for criteria $criteria",
-//                        type = LoggerType.INFO
-//                    )
-//                }
-//
-//                updatedCriterions.forEach { (key, value) ->
-//                    if (value.test == originalFileName) {
-//                        updatedCriterions[key] = value.copy(test = "$criteria.json")
-//                    }
-//                }
-//            } else {
-//                ServerLogger.log(
-//                    user = user,
-//                    action = "Add task warnings",
-//                    message = "Warning: file $originalFileName not found for criteria $criteria",
-//                    type = LoggerType.WARN
-//                )
-//            }
-//        }
-//    }
-//    return updatedCriterions
-//}
 
 enum class CreationTaskError(val errorText: String) {
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),

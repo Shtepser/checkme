@@ -4,10 +4,10 @@
     "score": 10,
     "test": {
       "type": "sql-check",
-      "dbScript" : "world.sql",
+      "dbScript": "world.sql",
       "referenceQuery": "SELECT c.District, COUNT(c.ID) \nFROM City AS c \nGROUP BY c.District \nORDER BY c.District;"
     },
     "message": "Список регионов выведен некорректно",
-    "special_marker": null
+    "special_marker": "NULL"
   }
 }

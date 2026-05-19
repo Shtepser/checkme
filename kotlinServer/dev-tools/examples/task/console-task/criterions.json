@@ -8,7 +8,7 @@
       "expected": "8.0"
     },
     "message": "Числа складываются неправильно",
-    "special_marker": null
+    "special_marker": "NULL"
   },
   "Некорректный ввод": {
     "description": "Случай некорректного ввода обрабатывается",
@@ -19,6 +19,6 @@
       "expected": "Incorrect input"
     },
     "message": "Не обработан случай некорректного ввода чисел",
-    "special_marker": null
+    "special_marker": "NULL"
   }
 }

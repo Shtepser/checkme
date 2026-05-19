@@ -8,6 +8,6 @@
       "referenceQuery": "INSERT INTO books (title, author_id, publication_year)\nVALUES ('Талисман', 2, 1984);"
     },
     "message": "Книга не была добавлена в таблицу",
-    "special_marker": null
+    "special_marker": "NULL"
   }
 }

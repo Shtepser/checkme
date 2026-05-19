@@ -224,6 +224,7 @@ class AddTask(
 
     fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPanel<FormAddTask>) {
         filesViewer.removeAll()
+        filesViewer.content = ""
         if (files.isEmpty()) {
             filesViewer.content = "Файлы не выбраны"
         } else {
