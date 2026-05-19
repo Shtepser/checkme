@@ -65,15 +65,11 @@ private fun tryAddTaskAndFiles(
     validatedNewTask: Task,
     taskOperations: TaskOperationsHolder,
     objectMapper: ObjectMapper,
-//    overall: Boolean,
     form: MultipartForm,
 ): Response {
     val criterions = validatedNewTask.addTaskFilesToDirectory(
-//        user = user,
         files = form.files,
-//        fields = form.fields,
         criterions = validatedNewTask.criterions,
-//        overall = overall
     )
     return when (
         val newTask =

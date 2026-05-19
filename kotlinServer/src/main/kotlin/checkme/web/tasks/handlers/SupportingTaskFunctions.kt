@@ -179,7 +179,7 @@ enum class CreationTaskError(val errorText: String) {
 }
 
 enum class ValidateTaskError(val errorText: String) {
-    INVALID_CHECK_TYPE("All specified files must be added"),
+    INVALID_CHECK_TYPE("Invalid check type in criterions"),
     ANSWER_TYPE_ERROR("This type of task answer does not exist"),
     USER_HAS_NOT_RIGHTS("Not allowed to add task"),
 }
