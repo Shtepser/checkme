@@ -1,5 +1,6 @@
 package ru.yarsu.contentPages.content.mySolutionListPage
 
+import io.kvision.core.onClick
 import io.kvision.html.Div
 import io.kvision.html.h2
 import io.kvision.panel.SimplePanel
@@ -24,7 +25,9 @@ class MySolutionList(
                 200 -> response.json().then {
                     val jsonString = JSON.stringify(it)
                     val taskSolutions = Json.decodeFromString<TaskOrUserSolutionsFormat>(jsonString)
-                    h2("Ваши решения задачи: ${taskSolutions.name}")
+                    h2("Ваши решения задачи: ${taskSolutions.name}", className = "h2-task-link").onClick {
+                        routing.navigate("task/${taskId}")
+                    }
                     if (taskSolutions.solutions.isEmpty()) {
                         this.add(Div("Решения не найдены"))
                     } else {

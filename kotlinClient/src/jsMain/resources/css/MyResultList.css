@@ -10,6 +10,7 @@
     border-radius: 10px;
     border-left: 25px solid;
     border-left-color: #212121;
+    cursor: pointer;
 }
 
 .task-block-incorrect {
@@ -20,6 +21,7 @@
     border-radius: 10px;
     border-left: 25px solid;
     border-left-color: #FF4444;
+    cursor: pointer;
 }
 
 .task-block-partial {
@@ -30,6 +32,7 @@
     border-radius: 10px;
     border-left: 25px solid;
     border-left-color: #FFBB33;
+    cursor: pointer;
 }
 
 .task-block-correct {
@@ -40,8 +43,14 @@
     border-radius: 10px;
     border-left: 25px solid;
     border-left-color: #00C851;
+    cursor: pointer;
 }
 
 h3.bundle-name {
     margin-bottom: 0;
+}
+
+.h2-task-link {
+    text-decoration: underline;
+    cursor: pointer;
 }
