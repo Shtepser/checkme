@@ -1,0 +1,16 @@
+# Подключение к PostgreSQL
+db:
+  dbname: "checkme"
+  user: "postgres"
+  password: "mysecretpassword"
+  host: "localhost"
+  port: 5432
+
+table:
+  name: "tasks"
+  id_column: "id"
+  name_column: "name"
+  criterions_column: "criterions"
+
+# Путь к каталогу tasks (абсолютный или относительно рабочей директории)
+tasks_dir: "/absolute/path/to/tasks"
