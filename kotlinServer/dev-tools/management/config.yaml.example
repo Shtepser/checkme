@@ -1,8 +1,8 @@
 # Подключение к PostgreSQL
 db:
-  dbname: "checkme"
+  dbname: "checkmedb"
   user: "postgres"
-  password: "mysecretpassword"
+  password: "ppassword"
   host: "localhost"
   port: 5432
 
@@ -13,4 +13,4 @@ table:
   criterions_column: "criterions"
 
 # Путь к каталогу tasks (абсолютный или относительно рабочей директории)
-tasks_dir: "/absolute/path/to/tasks"
+tasks_dir: "/home/user/Code/checkme-ng/tasks"
