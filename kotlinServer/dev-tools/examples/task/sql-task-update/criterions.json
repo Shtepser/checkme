@@ -2,7 +2,12 @@
   "Изменить у книги с id 9 имя на Талисман, год на 1984": {
     "description": "Название и год книги изменены",
     "score": 10,
-    "test": "update-books.json",
-    "message": "Изменения не выполнены"
+    "test": {
+      "type": "sql-check",
+      "dbScript" : "script.sql",
+      "referenceQuery": "UPDATE books\nSET title = \"Талисман\", publication_year = 1984\nWHERE id= 9;"
+    },
+    "message": "Изменения не выполнены",
+    "special_marker": "NULL"
   }
 }

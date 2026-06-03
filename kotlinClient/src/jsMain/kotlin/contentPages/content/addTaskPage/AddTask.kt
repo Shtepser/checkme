@@ -55,10 +55,9 @@ class AddTask(
     private val serverUrl: String,
     private val routing: Routing
 ) : VPanel(className = "TaskAdd") {
+    private val scriptFile = mutableListOf<KFile>()
     init {
         h2("Создание задачи")
-        val fileList = mutableListOf<KFile>()
-        val scriptFile = mutableListOf<KFile>()
         val formPanelAddTask = formPanel<FormAddTask>(className = "base-form") {
             add(Label("Название", className = "separate-form-label"))
             add(
@@ -104,15 +103,15 @@ class AddTask(
                 requiredMessage = "",
                 validatorMessage = { "Некорректный Json" }
             ) {
-                val criterion =
-                    try {
-                        Json.Default.decodeFromString<Map<String, Criterion>>(it.getValue().toString())
-                    } catch (_: SerializationException) {
-                        null
-                    } catch (_: IllegalArgumentException) {
-                        null
-                    }
-                criterion != null
+                try {
+                    val jsonString = it.getValue().toString()
+                    val criterions = Json.Default.decodeFromString<Map<String, Criterion>>(jsonString)
+                    criterions != null
+                } catch (e: Exception) {
+                    console.error("Ошибка парсинга JSON: ${e.message}")
+                    console.error(e.stackTraceToString())
+                    false
+                }
             }
             val answerLabel = Label("Вопрос", className = "separate-form-label") {
                 display = Display.NONE
@@ -169,131 +168,27 @@ class AddTask(
                 validatorMessage = { "" }
             )
             this.validate()
-            add(
-                addedScriptsFileViewer
-            )
-            add(Label("Файлы тестов", className = "separate-form-label"))
-            val addedFilesViewer = Div("Файлы не выбраны", className = "files-viewer")
-            add(
-                Label("Выберите файлы тестов", forId = "input-file-2", className = "file-upload")
-            )
-            add(
-                FormAddTask::files,
-                Upload(multiple = true) {
-                    this.input.id = "input-file-2"
-                    onChangeLaunch {
-                        val files =
-                            this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
-                        fileList.addAll(files)
-                        updateFilesViewer(addedFilesViewer, fileList, this@formPanel)
-                        this@Upload.clearInput()
-                        this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
-                        this@formPanel.validate()
-                    }
-                },
-                validatorMessage = { "" }
-            ) {
-                fileList.isNotEmpty()
-            }
-            this.validate()
-            add(
-                addedFilesViewer
-            )
+            add(addedScriptsFileViewer)
         }
-        val formPanelFileSelection = formPanel<FormAddTaskFileSelection>(className = "criterion-select")
-        val formFileSelection: FormPanel<Map<String, Any?>> = form(className = "criterion-select")
         val buttonSend = button("Отправить", disabled = true, className = "usually-button")
-        val fileSelectionData = mutableMapOf<String, Select>()
         formPanelAddTask.onInput {
-            formPanelFileSelection.removeAll()
-            formFileSelection.removeAll()
-            fileSelectionData.clear()
-            buttonSend.disabled = true
-            if (formPanelAddTask.validate()) {
-                val nameFiles = fileList.map { it.name to it.name }
-                val criterionString = formPanelAddTask.getData().criterion
-                val criterion = Json.Default.decodeFromString<Map<String, Criterion>>(criterionString)
-                fileSelectionData["beforeEach"] = Select(
-                    options = nameFiles,
-                    label = "Выполнять перед каждым тестом:"
-                ).apply { formPanelFileSelection.add(FormAddTaskFileSelection::beforeEach, this) }
-                fileSelectionData["afterEach"] = Select(
-                    options = nameFiles,
-                    label = "Выполнять после каждого теста:"
-                ).apply { formPanelFileSelection.add(FormAddTaskFileSelection::afterEach, this) }
-                fileSelectionData["beforeAll"] = Select(
-                    options = nameFiles,
-                    label = "Выполнить перед тестами:"
-                ).apply { formPanelFileSelection.add(FormAddTaskFileSelection::beforeAll, this) }
-                fileSelectionData["afterAll"] = Select(
-                    options = nameFiles,
-                    label = "Выполнять после тестов:"
-                ).apply { formPanelFileSelection.add(FormAddTaskFileSelection::afterAll, this) }
-                formFileSelection.form {
-                    val fields = mutableMapOf<String, Select>()
-                    label("Соотнесите тест с запускаемым файлом", className = "special-label")
-                    for (nameTest in criterion.keys) {
-                        select(
-                            nameFiles,
-                            label = nameTest
-                        ).apply {
-                            bind(nameTest, required = true)
-                            fields.put(nameTest, this)
-                            onChange {
-                                buttonSend.disabled = !fields.values.all { !it.value.isNullOrEmpty() }
-                            }
-                        }
-                    }
-                    fileSelectionData.putAll(fields)
-                }
-            }
+            buttonSend.disabled = !formPanelAddTask.validate()
         }
         buttonSend.onClickLaunch {
             buttonSend.disabled = true
-            val criterionString = formPanelAddTask.getData().criterion
-            val criterion = Json.Default.decodeFromString<Map<String, Criterion>>(criterionString)
-            val newCriterion: Map<String, Criterion> = criterion.mapValues { (key, value) ->
-                val testFile = fileSelectionData[key]?.value
-                if (testFile != null) {
-                    Criterion(
-                        value.description,
-                        value.score,
-                        testFile,
-                        value.message
-                    )
-                } else {
-                    value
-                }
-            }
             val answerFormat = listOf(
                 AnswerFormat(
                     formPanelAddTask.getData().answer ?: "",
                     formPanelAddTask.getData().format
                 )
             )
-            val beforeEach = fileSelectionData["beforeEach"]?.value
-            val afterEach = fileSelectionData["afterEach"]?.value
-            val beforeAll = fileSelectionData["beforeAll"]?.value
-            val afterAll = fileSelectionData["afterAll"]?.value
-            val filesWithContent = fileList
             val scriptFilesWithContent = if (scriptFile.isEmpty()) null else scriptFile
             val formData = FormData().apply {
                 append("name", formPanelAddTask.getData().name)
                 append("description", formPanelAddTask.getData().description)
-                append("criterions", Json.Default.encodeToString(newCriterion))
+                append("criterions", formPanelAddTask.getData().criterion)
                 append("answerFormat", Json.Default.encodeToString(answerFormat))
-                if (beforeEach != null) {
-                    append("beforeEach", beforeEach)
-                }
-                if (afterEach != null) {
-                    append("afterEach", afterEach)
-                }
-                if (beforeAll != null) {
-                    append("beforeAll", beforeAll)
-                }
-                if (afterAll != null) {
-                    append("afterAll", afterAll)
-                }
+
                 if (scriptFilesWithContent != null) {
                     scriptFilesWithContent.forEach { script ->
                         val scriptEncodedContent = script.base64Encoded
@@ -315,23 +210,6 @@ class AddTask(
                         )
                     }
                 }
-                filesWithContent.forEach { kFile ->
-                    val encodedContent = kFile.base64Encoded
-                    val decodedContent = if (encodedContent != null) {
-                        Base64.Default.decode(encodedContent).decodeToString()
-                    } else {
-                        ""
-                    }
-                    val contentType = kFile.contentType
-                    append(
-                        name = "file",
-                        value = File(
-                            arrayOf(decodedContent),
-                            kFile.name,
-                            FilePropertyBag(type = contentType)
-                        ),
-                    )
-                }
             }
             addTask(formData)
         }
@@ -346,11 +224,11 @@ class AddTask(
 
     fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPanel<FormAddTask>) {
         filesViewer.removeAll()
+        filesViewer.content = ""
         if (files.isEmpty()) {
             filesViewer.content = "Файлы не выбраны"
         } else {
             files.forEach { kFile ->
-                filesViewer.content = ""
                 val fileViewer = Div().apply {
                     add(Div(kFile.name))
                     add(Button("Удалить файл", className = "delete-file-button") {

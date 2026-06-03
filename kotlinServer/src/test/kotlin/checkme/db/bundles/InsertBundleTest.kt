@@ -43,10 +43,8 @@ class InsertBundleTest : TestcontainerSpec({ context ->
                 bundleForInsert.name,
             ).shouldNotBeNull()
         val tasksIdInDB = tasksOperations.selectAllTask()
-        val hiddenTasksIdInDB = tasksOperations.selectHiddenTasks()
         val validBundleTasks: List<TaskAndOrder> = listOf(
             TaskAndOrder(tasksIdInDB[0], 1),
-            TaskAndOrder(hiddenTasksIdInDB[0], 2),
             TaskAndOrder(tasksIdInDB[1], 3),
         )
         val insertedTasks = bundleOperations

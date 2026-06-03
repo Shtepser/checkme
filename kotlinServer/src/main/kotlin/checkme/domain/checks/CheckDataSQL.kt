@@ -87,6 +87,10 @@ data class CheckDataSQL(
                 scriptNames = checkDataSQL.dbScript,
                 taskName = task.name
             )
+            if (sqlScripts != null) {
+                for (script in sqlScripts)
+                    println(script.name)
+            }
             return when {
                 sqlScripts == null || !sqlScripts.all { it.exists() } -> {
                     ServerLogger.log(

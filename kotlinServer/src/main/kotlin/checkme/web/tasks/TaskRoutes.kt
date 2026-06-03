@@ -1,6 +1,5 @@
 package checkme.web.tasks
 
-import checkme.config.AppConfig
 import checkme.domain.operations.OperationHolder
 import checkme.web.context.ContextTools
 import checkme.web.tasks.handlers.AddTaskHandler
@@ -15,13 +14,11 @@ import org.http4k.routing.*
 fun taskRouter(
     operations: OperationHolder,
     contextTools: ContextTools,
-    config: AppConfig,
 ): RoutingHttpHandler =
     routes(
         NEW_TASK bind Method.POST to AddTaskHandler(
             tasksOperations = operations.taskOperations,
-            userLens = contextTools.userLens,
-            loggingConfig = config.loggingConfig
+            userLens = contextTools.userLens
         ),
         "$DELETE_TASK/{id}" bind Method.DELETE to DeleteTaskHandler(
             tasksOperations = operations.taskOperations,

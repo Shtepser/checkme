@@ -2,13 +2,23 @@
   "Сложение положительных чисел": {
     "description": "Сложение чисел происходит корректно",
     "score": 10,
-    "test": "plus_numbers.json",
-    "message": "Числа складываются неправильно"
+    "test": {
+      "type": "console-check",
+      "command": "printf \"5\\n3\\n\" | python3 ./*.py",
+      "expected": "8.0"
+    },
+    "message": "Числа складываются неправильно",
+    "special_marker": "NULL"
   },
   "Некорректный ввод": {
     "description": "Случай некорректного ввода обрабатывается",
     "score": 10,
-    "test": "incorrect_input.json",
-    "message": "Не обработан случай некорректного ввода чисел"
+    "test": {
+      "type": "console-check",
+      "command": "printf \"a\\n\" | python3 ./*.py",
+      "expected": "Incorrect input"
+    },
+    "message": "Не обработан случай некорректного ввода чисел",
+    "special_marker": "NULL"
   }
 }

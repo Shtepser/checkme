@@ -39,8 +39,7 @@ private fun createMainRouter(
     ),
     TASK_SEGMENT bind taskRouter(
         operations = operations,
-        contextTools = contextTools,
-        config = config
+        contextTools = contextTools
     ),
     BUNDLE_SEGMENT bind bundleRouter(
         operations = operations,

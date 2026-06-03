@@ -5,7 +5,9 @@ package checkme.db
 import checkme.config.AppConfig
 import checkme.domain.accounts.PasswordHasher
 import checkme.domain.accounts.Role
+import checkme.domain.checks.ConsoleCheckTest
 import checkme.domain.checks.Criterion
+import checkme.domain.checks.SpecialCriteriaMarker
 import checkme.domain.forms.CheckResult
 import checkme.domain.models.AnswerType
 import checkme.domain.models.Bundle
@@ -119,17 +121,27 @@ val validChecksMany: List<Check> = listOf(
 val validCriterions = mapOf(
     "Сложение положительных чисел" to
         Criterion(
-            "Сложение чисел происходит корреткно",
-            COMPLETE_TASK,
-            "plus_numbers.json",
-            "Числа складываются неправильно"
+            description = "Сложение чисел происходит корреткно",
+            score = COMPLETE_TASK,
+            test = ConsoleCheckTest(
+                type = "console-check",
+                command = "printf \"5\\n3\\n\" | python3 ./*.py",
+                expected = "8.0"
+            ),
+            message = "Сложение происходит некорректно",
+            specialMarker = SpecialCriteriaMarker.NULL
         ),
     "Некорректный ввод" to
         Criterion(
-            "Случай некоректного ввода обрабатывается",
-            COMPLETE_TASK,
-            "incorrect_input.json",
-            "Не обработан случай некорректного ввода чисел"
+            description = "Случай некоректного ввода обрабатывается",
+            score = COMPLETE_TASK,
+            test = ConsoleCheckTest(
+                type = "console-check",
+                command = "printf \"a\\n\" | python3 ./*.py",
+                expected = "Incorrect input"
+            ),
+            message = "Не обработан случай некорректного ввода чисел",
+            specialMarker = SpecialCriteriaMarker.NULL
         )
 )
 
@@ -169,7 +181,7 @@ val validTasks: List<Task> = listOf(
     ),
 )
 
-val validPort = 3206
+val validPort = 3306
 val validHost = "localhost"
 val validUserName = "root"
 val validPassword = "password"

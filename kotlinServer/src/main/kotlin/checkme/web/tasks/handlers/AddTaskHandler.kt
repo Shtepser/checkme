@@ -1,6 +1,5 @@
 package checkme.web.tasks.handlers
 
-import checkme.config.LoggingConfig
 import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.domain.operations.tasks.TaskOperationsHolder
@@ -22,7 +21,6 @@ const val TASKS_DIR = "/tasks"
 class AddTaskHandler(
     private val tasksOperations: TaskOperationsHolder,
     private val userLens: RequestContextLens<User?>,
-    private val loggingConfig: LoggingConfig,
 ) : HttpHandler {
     override fun invoke(request: Request): Response {
         val objectMapper = jacksonObjectMapper()
@@ -52,7 +50,6 @@ class AddTaskHandler(
                             validatedNewTask = validatedNewTask.value,
                             taskOperations = tasksOperations,
                             objectMapper = objectMapper,
-                            overall = loggingConfig.overall,
                             form = form
                         )
                     }
@@ -68,20 +65,16 @@ private fun tryAddTaskAndFiles(
     validatedNewTask: Task,
     taskOperations: TaskOperationsHolder,
     objectMapper: ObjectMapper,
-    overall: Boolean,
     form: MultipartForm,
 ): Response {
-    val updatedCriterions = validatedNewTask.addTaskFilesToDirectory(
-        user = user,
+    val criterions = validatedNewTask.addTaskFilesToDirectory(
         files = form.files,
-        fields = form.fields,
         criterions = validatedNewTask.criterions,
-        overall = overall
     )
     return when (
         val newTask =
             addTask(
-                task = validatedNewTask.copy(criterions = updatedCriterions),
+                task = validatedNewTask.copy(criterions = criterions),
                 taskOperations = taskOperations
             )
     ) {

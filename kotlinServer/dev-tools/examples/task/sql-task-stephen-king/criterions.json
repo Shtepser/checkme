@@ -2,7 +2,12 @@
   "1. Книги Стивена Кинга": {
     "description": "Выбраны все книги Стивена Кинга, содержащиеся в таблице",
     "score": 10,
-    "test": "stephen_king.json",
-    "message": "Некорректный запрос на поиск книг Стивена Кинга"
+    "test": {
+      "type": "sql-check",
+      "dbScript" : "script.sql",
+      "referenceQuery": "SELECT title\nFROM books\nWHERE author_id = (SELECT id FROM authors WHERE name = 'Стивен Кинг');"
+    },
+    "message": "Некорректный запрос на поиск книг Стивена Кинга",
+    "special_marker": "NULL"
   }
 }

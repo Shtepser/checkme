@@ -2,13 +2,23 @@
   "Получить все книги Стивена Кинга из 1-го набора данных": {
     "description": "Выбраны все книги Стивена Кинга, содержащиеся в таблице",
     "score": 10,
-    "test": "select-and-sort.json",
-    "message": "Некорректный запрос на поиск книг Стивена Кинга"
+    "test": {
+      "type": "sql-check",
+      "dbScript" : "script1.sql",
+      "referenceQuery": "SELECT title\nFROM books\nWHERE author_id = (SELECT id FROM authors WHERE name = 'Стивен Кинг');"
+    },
+    "message": "Некорректный запрос на поиск книг Стивена Кинга",
+    "special_marker": "NULL"
   },
    "Получить все книги Стивена Кинга из 2-го набора данных": {
     "description": "Выбраны все книги Стивена Кинга, содержащиеся в таблице",
     "score": 10,
-    "test": "select-and-sort-2.json",
-    "message": "Некорректный запрос на поиск книг Стивена Кинга"
+    "test": {
+      "type": "sql-check",
+      "dbScript" : "script2.sql",
+      "referenceQuery": "SELECT title\nFROM books\nWHERE author_id = (SELECT id FROM authors WHERE name = 'Стивен Кинг');"
+    },
+    "message": "Некорректный запрос на поиск книг Стивена Кинга",
+    "special_marker": "BEFORE_EACH"
   }
 }
