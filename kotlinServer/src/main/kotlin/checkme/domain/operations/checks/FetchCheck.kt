@@ -52,6 +52,24 @@ class FetchChecksByTaskId(
         }
 }
 
+class FetchChecksByUserIdAndTaskId(
+    private val fetchChecksByUserIdAndTaskId: (UUID, UUID) -> List<Check>?,
+) : (UUID, UUID) -> Result4k<List<Check>, CheckFetchingError> {
+
+    override fun invoke(
+        userId: UUID,
+        taskId: UUID,
+    ): Result4k<List<Check>, CheckFetchingError> =
+        try {
+            when (val checks = fetchChecksByUserIdAndTaskId(userId, taskId)) {
+                is List<Check> -> Success(checks)
+                else -> Failure(CheckFetchingError.NO_SUCH_CHECK)
+            }
+        } catch (_: DataAccessException) {
+            Failure(CheckFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+}
+
 class FetchAllChecksPagination(
     private val fetchAllChecksWithData: (Int) -> List<Check>?,
 ) : (Int) -> Result4k<List<Check>, CheckFetchingError> {

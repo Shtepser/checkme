@@ -1,10 +1,14 @@
 package checkme.db.bundles
 
+import checkme.db.generated.routines.references.bestSolution
+import checkme.db.generated.routines.references.highestScore
 import checkme.db.generated.tables.references.BUNDLES
 import checkme.db.generated.tables.references.BUNDLE_TASKS
+import checkme.db.generated.tables.references.TASKS
 import checkme.db.tasks.TasksOperations
 import checkme.db.utils.safeLet
 import checkme.domain.models.Bundle
+import checkme.domain.models.BundleTasksWithBestResult
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.dependencies.bundles.BundleDatabaseError
 import checkme.domain.operations.dependencies.bundles.BundlesDatabase
@@ -15,9 +19,12 @@ import org.jooq.DSLContext
 import org.jooq.Record
 import org.jooq.exception.DataAccessException
 import org.jooq.exception.IntegrityConstraintViolationException
+import org.jooq.impl.DSL
 import org.jooq.impl.DSL.commit
 import org.jooq.impl.DSL.rollback
 import java.util.UUID
+
+const val TASKS_LIMIT = 10
 
 @Suppress("TooManyFunctions")
 class BundleOperations(
@@ -49,6 +56,50 @@ class BundleOperations(
             .mapNotNull { record: Record ->
                 record.toBundle()
             }
+
+    override fun selectAllBundleTasksWithUserBestResult(
+        page: Int,
+        userId: UUID,
+    ): List<BundleTasksWithBestResult>? {
+        val taskPage = jooqContext.select(
+            BUNDLES.NAME.`as`("bundle_name"),
+            BUNDLE_TASKS.TASK_ID,
+            TASKS.NAME.`as`("task_name")
+        )
+            .from(BUNDLES)
+            .innerJoin(BUNDLE_TASKS)
+            .on(BUNDLES.ID.eq(BUNDLE_TASKS.BUNDLE_ID))
+            .innerJoin(TASKS)
+            .on(BUNDLE_TASKS.TASK_ID.eq(TASKS.ID))
+            .where(
+                BUNDLES.ISACTUAL.eq(true)
+                    .and(TASKS.IS_ACTUAL.eq(true))
+            )
+            .orderBy(BUNDLES.ID.desc(), BUNDLE_TASKS.TASK_ORDER.asc())
+            .limit(TASKS_LIMIT)
+            .offset((page - 1) * TASKS_LIMIT).asTable()
+
+        val taskId = taskPage.field(BUNDLE_TASKS.TASK_ID)
+
+        if (taskId != null) {
+            return jooqContext
+                .select(
+                    taskPage.field("bundle_name", String::class.java),
+                    taskId,
+                    taskPage.field("task_name", String::class.java),
+                    highestScore(taskId),
+                    bestSolution(
+                        taskId,
+                        DSL.`val`(userId)
+                    )
+                ).from(taskPage)
+                .fetch().mapNotNull {
+                        record: Record ->
+                    record.toTaskAndResult()
+                }
+        }
+        return null
+    }
 
     override fun selectHiddenBundles(): List<Bundle> =
         selectFromBundles()
@@ -206,4 +257,27 @@ internal fun Record.toTaskAndOrder(taskOperations: TasksOperations): TaskAndOrde
                 else -> null
             }
         }
+    }
+
+internal fun Record.toTaskAndResult(): BundleTasksWithBestResult? =
+    safeLet(
+        this["bundle_name"] as String,
+        this["task_id"] as UUID,
+        this["task_name"] as String,
+        this["highest_score"] as Int,
+        this["best_solution"] as? Int ?: -1
+    ) {
+            bundleName,
+            taskId,
+            taskName,
+            highestScore,
+            bestSolution,
+        ->
+        BundleTasksWithBestResult(
+            bundleName = bundleName,
+            taskId = taskId,
+            taskName = taskName,
+            highestScore = highestScore,
+            bestSolution = bestSolution
+        )
     }

@@ -2,6 +2,10 @@ config:
   validation: true
   warningsAsErrors: true
 
+complexity:
+  TooManyFunctions:
+    thresholdInFiles: 12
+
 style:
   WildcardImport:
     excludeImports:

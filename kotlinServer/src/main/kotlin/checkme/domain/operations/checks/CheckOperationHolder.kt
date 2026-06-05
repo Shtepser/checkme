@@ -41,6 +41,14 @@ class CheckOperationHolder (
             checksDatabase.selectChecksByTaskId(taskId)
         }
 
+    val fetchChecksByUserIdAndTaskId: (UUID, UUID) -> Result<List<Check>, CheckFetchingError> =
+        FetchChecksByUserIdAndTaskId {
+                userId: UUID,
+                taskId: UUID,
+            ->
+            checksDatabase.selectChecksByUserIdAndTaskId(userId, taskId)
+        }
+
     val createCheck: (
         taskId: UUID,
         userId: UUID,

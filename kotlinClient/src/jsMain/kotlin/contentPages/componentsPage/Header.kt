@@ -40,7 +40,7 @@ class Header(
                 button(
                     "Мои решения",
                     className = "navigation-button"
-                ).onClick { routingMainPage.navigate("/my-solution-list") }
+                ).onClick { routingMainPage.navigate("/my-result-list/1") }
                 if (UserInformationStorage.isAdmin()) {
                     button(
                         "Все решения",

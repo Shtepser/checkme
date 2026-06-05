@@ -1,6 +1,7 @@
 package checkme.domain.operations.bundles
 
 import checkme.domain.models.Bundle
+import checkme.domain.models.BundleTasksWithBestResult
 import checkme.domain.models.TaskAndOrder
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result4k
@@ -73,6 +74,20 @@ class FetchBundleTasks(
     override fun invoke(bundleId: UUID): Result4k<List<TaskAndOrder>, BundleFetchingError> {
         return when (val tasks = selectBundleTasks(bundleId)) {
             is List<TaskAndOrder> -> Success(tasks)
+            else -> Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
+class FetchBundleTasksWithUserBestResult(
+    private val fetchBundleTasksWithUserBestResult: (Int, UUID) -> List<BundleTasksWithBestResult>?,
+) : (Int, UUID) -> Result4k<List<BundleTasksWithBestResult>, BundleFetchingError> {
+    override fun invoke(
+        page: Int,
+        userId: UUID,
+    ): Result4k<List<BundleTasksWithBestResult>, BundleFetchingError> {
+        return when (val tasks = fetchBundleTasksWithUserBestResult(page, userId)) {
+            is List<BundleTasksWithBestResult> -> Success(tasks)
             else -> Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
         }
     }

@@ -3,6 +3,7 @@
 package checkme.web.bundles.handlers
 
 import checkme.domain.models.Bundle
+import checkme.domain.models.BundleTasksWithBestResult
 import checkme.domain.models.TaskAndOrder
 import checkme.domain.operations.bundles.BundleFetchingError
 import checkme.domain.operations.bundles.BundleOperationHolder
@@ -79,6 +80,22 @@ internal fun selectTaskBundles(
     ) {
         is Success -> Success(fetchedBundles.value)
         is Failure -> when (fetchedBundles.reason) {
+            BundleFetchingError.NO_SUCH_BUNDLE -> Failure(FetchingBundleError.NO_SUCH_BUNDLE)
+            BundleFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingBundleError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
+internal fun selectBundleTasksWithUserBestResult(
+    page: Int,
+    userId: UUID,
+    bundleOperations: BundleOperationHolder,
+): Result<List<BundleTasksWithBestResult>, FetchingBundleError> {
+    return when (
+        val bundleTasks = bundleOperations.fetchBundleTasksWithUserBestResult(page, userId)
+    ) {
+        is Success -> Success(bundleTasks.value)
+        is Failure -> when (bundleTasks.reason) {
             BundleFetchingError.NO_SUCH_BUNDLE -> Failure(FetchingBundleError.NO_SUCH_BUNDLE)
             BundleFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingBundleError.UNKNOWN_DATABASE_ERROR)
         }

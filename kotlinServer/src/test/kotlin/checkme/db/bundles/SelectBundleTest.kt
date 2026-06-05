@@ -4,7 +4,9 @@ import checkme.db.TestcontainerSpec
 import checkme.db.tasks.TasksOperations
 import checkme.db.validBundles
 import checkme.db.validTasks
+import checkme.db.validUserId
 import checkme.domain.models.Bundle
+import checkme.domain.models.BundleTasksWithBestResult
 import checkme.domain.models.TaskAndOrder
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
 import io.kotest.matchers.nulls.shouldBeNull
@@ -17,7 +19,8 @@ class SelectBundleTest : TestcontainerSpec({ context ->
     val bundleOperations = BundleOperations(context, tasksOperations)
 
     lateinit var insertedBundles: List<Bundle>
-    lateinit var insertedBundleTasks: List<TaskAndOrder>
+    lateinit var insertedBundleTasksFirst: List<TaskAndOrder>
+    lateinit var insertedBundleTasksSecond: List<TaskAndOrder>
 
     beforeEach {
         for (task in validTasks) {
@@ -38,10 +41,12 @@ class SelectBundleTest : TestcontainerSpec({ context ->
         val tasksIdInDB = tasksOperations.selectAllTask()
         val validBundleTasks: List<TaskAndOrder> = listOf(
             TaskAndOrder(tasksIdInDB[0], 1),
-            TaskAndOrder(tasksIdInDB[1], 3),
+            TaskAndOrder(tasksIdInDB[1], 2),
         )
-        insertedBundleTasks =
+        insertedBundleTasksFirst =
             bundleOperations.insertBundleTasks(insertedBundles.first().id, validBundleTasks).shouldNotBeNull()
+        insertedBundleTasksSecond =
+            bundleOperations.insertBundleTasks(insertedBundles[1].id, validBundleTasks).shouldNotBeNull()
     }
 
     test("Select bundle by id should return this bundle") {
@@ -69,6 +74,31 @@ class SelectBundleTest : TestcontainerSpec({ context ->
 
     test("Select bundle tasks should return all of this inserted bundle tasks") {
         val selectedTasks = bundleOperations.selectBundleTasksById(insertedBundles.first().id).shouldNotBeNull()
-        selectedTasks shouldContainExactlyInAnyOrder insertedBundleTasks
+        selectedTasks shouldContainExactlyInAnyOrder insertedBundleTasksFirst
+    }
+
+    test("Select all bundle tasks with user best result should return all not empty bundle with tasks") {
+        val selectedTasks = bundleOperations.selectAllBundleTasksWithUserBestResult(1, validUserId[0]).shouldNotBeNull()
+        val selectedBundles = bundleOperations.selectAllBundles().shouldNotBeNull().reversed()
+        val selectedBundlesWithTasks = mutableListOf<BundleTasksWithBestResult>()
+        selectedBundles.forEach {
+            val selectedTasks = bundleOperations.selectBundleTasksById(it.id).shouldNotBeNull()
+            for (task in selectedTasks) {
+                selectedBundlesWithTasks.add(
+                    BundleTasksWithBestResult(
+                        it.name,
+                        task.task.id,
+                        task.task.name,
+                        0,
+                        0,
+                    )
+                )
+            }
+        }
+        selectedTasks.forEachIndexed { index, task ->
+            task.bundleName.shouldBe(selectedBundlesWithTasks[index].bundleName)
+            task.taskId.shouldBe(selectedBundlesWithTasks[index].taskId)
+            task.taskName.shouldBe(selectedBundlesWithTasks[index].taskName)
+        }
     }
 })

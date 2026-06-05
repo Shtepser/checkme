@@ -19,6 +19,7 @@ import ru.yarsu.contentPages.content.journalPage.LogFile
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
 import ru.yarsu.contentPages.content.solutionPage.Solution
 import ru.yarsu.contentPages.content.taskPage.Task
+import ru.yarsu.contentPages.content.mySolutionListPage.MyResultList
 import ru.yarsu.contentPages.content.mySolutionListPage.MySolutionList
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutionsGroupByTask
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutionsTable
@@ -112,9 +113,18 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
-        }).on("/my-solution-list", {
+        }).on("/my-result-list/:page", { match ->
             content.removeAll()
-            content.add(MySolutionList(serverUrl, routingMainPage))
+            val page = match.data.page.toString().toIntOrNull()
+            content.add(MyResultList(page, serverUrl, routingMainPage))
+        }).on("/my-solution-list/:taskId", { match ->
+            content.removeAll()
+            val taskId = try {
+                Uuid.parse(match.data.taskId.toString())
+            } catch (_: IllegalArgumentException) {
+                null
+            }
+            content.add(MySolutionList(taskId, serverUrl, routingMainPage))
         }).on("/solution/:id", { match ->
             content.removeAll()
             val id = try {

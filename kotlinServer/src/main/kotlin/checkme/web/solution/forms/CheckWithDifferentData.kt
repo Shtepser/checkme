@@ -39,3 +39,15 @@ data class UserDataForUsersList(
     val name: String,
     val surname: String,
 )
+
+data class TaskWithBestResult(
+    val taskId: String,
+    val taskName: String,
+    val highestScore: Int,
+    val bestSolution: Int,
+)
+
+data class BundleWithTaskAndBestResult(
+    val bundleName: String,
+    val taskWithBestResult: MutableList<TaskWithBestResult>,
+)

@@ -26,7 +26,7 @@ class AllSolutionsViewer(
                     val score = solution.totalScore
                     div("Результат: $score")
                 }
-                val dateTime = LocalDateTime.parse(solution.date)
+                val dateTime = LocalDateTime.parse(solution.date).let { LocalDateTime(it.year, it.month, it.day, it.hour, it.minute, it.second) }
                 div("${solution.status} - ${dateTime.date} ${dateTime.time}")
             }.onClick {
                 routing.navigate("solution/${solution.id}")

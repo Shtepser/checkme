@@ -99,4 +99,40 @@ class SelectCheckTest : TestcontainerSpec({ context ->
         val selectedChecksBefore = checkOperations.selectAllChecksPagination(1).shouldNotBeNull()
         selectedChecksBefore.size.shouldBe(10)
     }
+
+    test("Select checks by valid userId and taskId should return this checks") {
+        val selectedChecks = checkOperations
+            .selectChecksByUserIdAndTaskId(
+                insertedChecks.first().userId,
+                insertedChecks.first().taskId
+            ).shouldNotBeNull()
+        selectedChecks.map {
+            Check(it.id, it.taskId, it.userId, it.date, it.result, it.status, null)
+        } shouldContainExactlyInAnyOrder insertedChecks
+            .filter { (it.userId == insertedChecks.first().userId) && (it.taskId == insertedChecks.first().taskId) }
+    }
+
+    test("Select checks by invalid userId and valid taskId should return empty list") {
+        checkOperations
+            .selectChecksByUserIdAndTaskId(
+                notExistingId,
+                insertedChecks.first().taskId
+            ).shouldBeEmpty()
+    }
+
+    test("Select checks by valid userId and invalid taskId should return empty list") {
+        checkOperations
+            .selectChecksByUserIdAndTaskId(
+                insertedChecks.first().userId,
+                notExistingId
+            ).shouldBeEmpty()
+    }
+
+    test("Select checks by invalid userId and invalid taskId should return empty list") {
+        checkOperations
+            .selectChecksByUserIdAndTaskId(
+                notExistingId,
+                notExistingId
+            ).shouldBeEmpty()
+    }
 })
