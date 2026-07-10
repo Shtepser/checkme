@@ -12,6 +12,7 @@ import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 import java.sql.ResultSet
+import java.sql.SQLException
 import java.sql.Statement
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -25,13 +26,13 @@ class SqlCheckService(
     private val user: User,
     private val overall: Boolean,
 ) {
-    @Suppress("TooGenericExceptionCaught")
+    @Suppress("TooGenericExceptionCaught", "ReturnCount")
     fun getSqlResults(
         firstScript: File,
         referenceQuery: String,
         studentQuery: String,
         checkId: UUID,
-    ): Result4k<Pair<String, String>, String> {
+    ): Result4k<Pair<String, String>, Pair<SqlCheckError, String>> {
         val studentUser = "student_${checkId}${user.id}"
         val studentPass = "student_pass_${checkId}${user.id}"
         val uniqueDatabaseName = "check${checkId}_${firstScript.name}"
@@ -61,14 +62,16 @@ class SqlCheckService(
                 pass = studentPass
             )
             return Success(Pair(studentResult, referenceResult))
+        } catch (e: SQLException) {
+            return Failure(Pair(SqlCheckError.SQL_ERROR, e.message ?: "Unknown SQL error"))
         } catch (e: Exception) {
             ServerLogger.log(
                 user = user,
                 action = "Check database warnings",
-                message = "Error: ${e.message} when try to check student answer",
+                message = "Error: ${e.message} when try to check student answer. Ask for help",
                 type = LoggerType.WARN
             )
-            return Failure("Error: ${e.message}")
+            return Failure(Pair(SqlCheckError.SERVER_ERROR, e.message ?: "Unknown server error"))
         } finally {
             dropDatabaseAndUserForCheck(
                 name = uniqueDatabaseName,
@@ -223,9 +226,9 @@ class SqlCheckService(
         for (table in allTablesList) {
             val autoIncrementColumns = statement.executeQuery(
                 "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE TABLE_SCHEMA = DATABASE() " +
-                        "AND TABLE_NAME = '$table'" +
-                        "AND EXTRA LIKE '%auto_increment%';"
+                    "WHERE TABLE_SCHEMA = DATABASE() " +
+                    "AND TABLE_NAME = '$table'" +
+                    "AND EXTRA LIKE '%auto_increment%';"
             )
             while (autoIncrementColumns.next()) {
                 val autoIncrementColumn = autoIncrementColumns.getString("COLUMN_NAME")
@@ -289,4 +292,9 @@ class SqlCheckService(
             line.trim().startsWith("USE", ignoreCase = true)
         }.joinToString("\n")
     }
+}
+
+enum class SqlCheckError(val errorText: String) {
+    SQL_ERROR("Solution contains sql error."),
+    SERVER_ERROR("Something was wrong while the SQL task was checked. Please ask for help."),
 }

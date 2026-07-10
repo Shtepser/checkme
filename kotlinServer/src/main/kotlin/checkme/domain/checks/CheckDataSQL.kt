@@ -7,6 +7,7 @@ import checkme.domain.models.Task
 import checkme.domain.models.User
 import checkme.logging.LoggerType
 import checkme.logging.ServerLogger
+import checkme.service.SqlCheckError
 import checkme.service.SqlCheckService
 import checkme.web.solution.handlers.SOLUTIONS_DIR
 import dev.forkhandles.result4k.Failure
@@ -87,10 +88,6 @@ data class CheckDataSQL(
                 scriptNames = checkDataSQL.dbScript,
                 taskName = task.name
             )
-            if (sqlScripts != null) {
-                for (script in sqlScripts)
-                    println(script.name)
-            }
             return when {
                 sqlScripts == null || !sqlScripts.all { it.exists() } -> {
                     ServerLogger.log(
@@ -151,25 +148,36 @@ data class CheckDataSQL(
                     )
                 ) {
                     is Failure -> {
-                        ServerLogger.log(
-                            user = user,
-                            action = "Check task warnings",
-                            message =
-                                """
-                                An error occurred while running check ${criterion.test} for task
-                                ${task.name}-${task.id}: ${queriesResults.reason.trim()}
-                                script: ${script.name}"
-                                """.trimIndent(),
-                            type = LoggerType.WARN
-                        )
-                        return CheckResult(
-                            0,
-                            """
-                            An error occurred while running check ${criterion.test} for task
-                            ${task.name}-${task.id}: ${queriesResults.reason.trim()}
-                            script: ${script.name}
-                            """.trimIndent()
-                        )
+                        return when (queriesResults.reason.first) {
+                            SqlCheckError.SQL_ERROR ->
+                                CheckResult(
+                                    0,
+                                    """
+                                    ${SqlCheckError.SQL_ERROR.errorText} ${queriesResults.reason.second.trim()}
+                                    """.trimIndent()
+                                )
+
+                            SqlCheckError.SERVER_ERROR -> {
+                                ServerLogger.log(
+                                    user = user,
+                                    action = "Check task warnings",
+                                    message =
+                                        """
+                                        An error occurred while running check for task
+                                        ${task.name}-${task.id}: ${queriesResults.reason.second.trim()}
+                                        script: ${script.name}"
+                                        """.trimIndent(),
+                                    type = LoggerType.WARN
+                                )
+                                CheckResult(
+                                    0,
+                                    """
+                                    ${SqlCheckError.SERVER_ERROR.errorText}
+                                    Error: ${queriesResults.reason.second.trim()}
+                                    """.trimIndent()
+                                )
+                            }
+                        }
                     }
 
                     is Success -> {
