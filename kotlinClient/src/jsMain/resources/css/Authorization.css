@@ -3,22 +3,25 @@
 }
 
 .authorization-card {
-    width: 375px;
+    width: 100%;
+    max-width: 23.4375rem;
     height: max-content;
 }
 
 .authorization-card div {
-    margin-bottom: 10px;
+    margin-bottom: 0.625rem;
 }
 
 .authorization-card label {
-    font-size: 20px;
+    font-size: 1.25rem;
 }
 
 .authorization-card input {
     background-color: #D9D9D9;
-    width: 367px;
-    height: 25px;
+    width: 100%;
+    max-width: 22.9375rem;
+    height: 1.5625rem;
+    box-sizing: border-box;
 }
 
 .invalid-feedback {
@@ -26,7 +29,7 @@
 }
 
 .authorization-buttons-panel {
-    margin-top: 24px;
+    margin-top: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
