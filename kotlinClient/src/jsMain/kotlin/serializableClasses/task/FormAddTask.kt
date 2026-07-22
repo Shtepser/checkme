@@ -8,18 +8,7 @@ data class FormAddTask(
     val name: String,
     val description: String,
     val criterion: String,
-    val answer: String? = null,
     val format: String,
     val script: List<KFile>? = null,
     val files: List<KFile>? = null
 )
-
-@Serializable
-data class FormAddTaskFileSelection(
-    val beforeEach: String? = null,
-    val afterEach: String? = null,
-    val beforeAll: String? = null,
-    val afterAll: String? = null,
-    val fileSelect: String
-)
-

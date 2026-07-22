@@ -1,16 +1,12 @@
 package ru.yarsu.contentPages.content.addTaskPage
 
 import io.kvision.core.Display
-import io.kvision.core.onChange
 import io.kvision.core.onChangeLaunch
 import io.kvision.core.onClickLaunch
 import io.kvision.core.onInput
 import io.kvision.form.FormPanel
 import io.kvision.form.check.RadioGroup
-import io.kvision.form.form
 import io.kvision.form.formPanel
-import io.kvision.form.select.Select
-import io.kvision.form.select.select
 import io.kvision.form.text.RichText
 import io.kvision.form.text.Text
 import io.kvision.form.text.TextArea
@@ -21,7 +17,6 @@ import io.kvision.html.Div
 import io.kvision.html.Label
 import io.kvision.html.button
 import io.kvision.html.h2
-import io.kvision.html.label
 import io.kvision.panel.VPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
@@ -33,20 +28,16 @@ import io.kvision.types.base64Encoded
 import io.kvision.types.contentType
 import kotlinx.browser.document
 import kotlinx.browser.window
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import org.w3c.dom.events.InputEvent
 import org.w3c.dom.events.KeyboardEvent
-import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 import org.w3c.xhr.FormData
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.AnswerFormat
 import ru.yarsu.serializableClasses.task.Criterion
 import ru.yarsu.serializableClasses.task.FormAddTask
-import ru.yarsu.serializableClasses.task.FormAddTaskFileSelection
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskId
 import kotlin.io.encoding.Base64
@@ -113,58 +104,57 @@ class AddTask(
                     false
                 }
             }
-            val answerLabel = Label("Вопрос", className = "separate-form-label") {
+            val scriptLabel = Label("Скрипт", className = "separate-form-label") {
                 display = Display.NONE
             }
-            val answerTextArea = TextArea { display = Display.NONE }
-            add(Label("Формат ответа", className = "separate-form-label"))
+            val inputFileLabel = Label("Выберите файлы", forId = "input-file-1", className = "file-upload") {
+                display = Display.NONE
+            }
+            val addedScriptsFileViewer = Div("Файлы не выбраны", className = "files-viewer") {
+                display = Display.NONE
+            }
+            val uploadScriptFiles = Upload(accept = listOf(".sql"), multiple = true) {
+                this.input.id = "input-file-1"
+                onChangeLaunch {
+                    val scriptListFile =
+                        this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
+                    scriptFile.addAll(scriptListFile)
+                    updateFilesViewer(addedScriptsFileViewer, scriptFile, this@formPanel)
+                    this@Upload.clearInput()
+                    this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
+                    this@formPanel.validate()
+                }
+            }
+            add(Label("Тип задания", className = "separate-form-label"))
             add(
                 FormAddTask::format,
                 RadioGroup(
                     listOf(
-//                        "text" to "Текст", //если будет нужен функционал с текстовым ответом,
-//                        далее в клиенте пока не реализовано
-                        "file" to "Файл"
-                    )
+                        "text" to "Консольное",
+                        "file" to "SQL"
+                    ),
+                    "text"
                 ) {
                     onChangeLaunch {
-                        if (this.value == "text") {
-                            answerLabel.display = Display.BLOCK
-                            answerTextArea.display = Display.BLOCK
+                        if (this.value == "file") {
+                            scriptLabel.display = Display.FLEX
+                            inputFileLabel.display = Display.INLINEBLOCK
+                            addedScriptsFileViewer.display = Display.INLINEBLOCK
                         } else {
-                            answerLabel.display = Display.NONE
-                            answerTextArea.display = Display.NONE
+                            scriptLabel.display = Display.NONE
+                            inputFileLabel.display = Display.NONE
+                            addedScriptsFileViewer.display = Display.NONE
                         }
                     }
                 },
                 required = true,
                 requiredMessage = ""
             )
-            add(answerLabel)
-            add(
-                FormAddTask::answer,
-                answerTextArea,
-                requiredMessage = "",
-            )
-            add(Label("Скрипт", className = "separate-form-label"))
-            val addedScriptsFileViewer = Div("Файлы не выбраны", className = "files-viewer")
-            add(
-                Label("Выберите файлы", forId = "input-file-1", className = "file-upload")
-            )
+            add(scriptLabel)
+            add(inputFileLabel)
             add(
                 FormAddTask::script,
-                Upload(accept = listOf(".sql"), multiple = true) {
-                    this.input.id = "input-file-1"
-                    onChangeLaunch {
-                        val scriptListFile =
-                            this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
-                        scriptFile.addAll(scriptListFile)
-                        updateFilesViewer(addedScriptsFileViewer, scriptFile, this@formPanel)
-                        this@Upload.clearInput()
-                        this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
-                        this@formPanel.validate()
-                    }
-                },
+                uploadScriptFiles,
                 validatorMessage = { "" }
             )
             this.validate()
@@ -178,7 +168,7 @@ class AddTask(
             buttonSend.disabled = true
             val answerFormat = listOf(
                 AnswerFormat(
-                    formPanelAddTask.getData().answer ?: "",
+                    "",
                     formPanelAddTask.getData().format
                 )
             )
