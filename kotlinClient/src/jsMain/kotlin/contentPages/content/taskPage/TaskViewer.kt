@@ -29,7 +29,6 @@ import io.kvision.types.contentType
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.dom.events.InputEvent
-import org.w3c.fetch.RequestInit
 import org.w3c.files.File
 import org.w3c.files.FilePropertyBag
 import org.w3c.xhr.FormData
@@ -69,7 +68,12 @@ class TaskViewer(
         }
         h3("Описание")
         div(task.description, className = "task-description", rich = true)
-        div("Предоставьте ответ в виде файла с расширением .sql", className = "solution-label")
+        val taskType = task.answerFormat.first().type
+        if (taskType == "file") {
+            div("Предоставьте ответ в виде файла с расширением .sql", className = "solution-label")
+        } else {
+            div("Предоставьте ответ в виде текстового файла", className = "solution-label")
+        }
         val solutionTextArea = TextArea {
             readonly = true
         }
@@ -80,7 +84,7 @@ class TaskViewer(
             )
             add(
                 SolutionFileList::file,
-                Upload(accept = listOf(".sql"), multiple = false) {
+                Upload(accept =  if (taskType == "file") listOf(".sql") else null, multiple = false) {
                     this.input.id = "input-solution-file"
                     onChangeLaunch {
                         solutionFile = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) }[0]
@@ -93,7 +97,7 @@ class TaskViewer(
                                 ""
                             }
                         }
-                        updateFileViewer(addedFileViewer, solutionFile, this@formPanel, solutionTextArea)
+                        updateFileViewer(addedFileViewer, solutionFile, this@formPanel, solutionTextArea, taskType)
                         this@Upload.clearInput()
                         this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
                         this@formPanel.validate()
@@ -153,11 +157,11 @@ class TaskViewer(
         }
     }
 
-    fun updateFileViewer(fileViewer: Div, file: KFile?, form: FormPanel<SolutionFileList>, text: TextArea) {
+    fun updateFileViewer(fileViewer: Div, file: KFile?, form: FormPanel<SolutionFileList>, text: TextArea, taskType: String) {
         fileViewer.removeAll()
         if (file == null) {
             fileViewer.content = "Файл не выбран"
-        } else if (file.name.split(".").last() != "sql") {
+        } else if ((taskType == "file") && (file.name.split(".").last() != "sql")) {
             Toast.danger("Файл недопустимого формата!")
             fileViewer.content = "Файл не выбран"
             solutionFile = null
@@ -170,7 +174,7 @@ class TaskViewer(
                     onClick {
                         text.value = ""
                         remove(text)
-                        updateFileViewer(fileViewer, null, form, text)
+                        updateFileViewer(fileViewer, null, form, text, taskType)
                         solutionFile = null
                         form.getElement()?.dispatchEvent(InputEvent("input"))
                         form.validate()

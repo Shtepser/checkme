@@ -6,9 +6,7 @@ import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskFormat
 import kotlin.uuid.Uuid
