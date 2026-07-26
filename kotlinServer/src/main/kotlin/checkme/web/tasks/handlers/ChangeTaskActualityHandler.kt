@@ -2,7 +2,7 @@ package checkme.web.tasks.handlers
 
 import checkme.domain.models.Task
 import checkme.domain.models.User
-import checkme.domain.operations.tasks.ModifyTaskError
+import checkme.domain.operations.tasks.TaskModifyActualityError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.web.commonExtensions.sendBadRequestError
 import checkme.web.commonExtensions.sendOKResponse
@@ -82,7 +82,7 @@ private fun changeTaskActuality(
     ) {
         is Success -> Success(changedTask.value)
         is Failure -> when (changedTask.reason) {
-            ModifyTaskError.UNKNOWN_DATABASE_ERROR -> Failure(ChangeTaskActualityError.UNKNOWN_DATABASE_ERROR)
+            TaskModifyActualityError.UNKNOWN_DATABASE_ERROR -> Failure(ChangeTaskActualityError.UNKNOWN_DATABASE_ERROR)
         }
     }
 }

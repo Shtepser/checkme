@@ -36,4 +36,12 @@ interface TasksDatabase {
     ): Task?
 
     fun deleteTask(taskId: UUID): Int
+
+    fun updateTask(
+        taskId: UUID,
+        name: String,
+        criterions: Map<String, Criterion>,
+        answerFormat: Map<String, AnswerType>,
+        description: String,
+    ): Task?
 }

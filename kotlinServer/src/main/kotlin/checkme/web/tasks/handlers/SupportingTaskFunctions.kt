@@ -6,6 +6,7 @@ import checkme.domain.models.FormatOfAnswer
 import checkme.domain.models.Task
 import checkme.domain.operations.tasks.CreateTaskError
 import checkme.domain.operations.tasks.TaskFetchingError
+import checkme.domain.operations.tasks.TaskModifyError
 import checkme.domain.operations.tasks.TaskOperationsHolder
 import checkme.domain.operations.tasks.TaskRemovingError
 import checkme.web.lenses.TaskLenses
@@ -35,6 +36,28 @@ internal fun addTask(
         is Success -> Success(newTask.value)
         is Failure -> when (newTask.reason) {
             CreateTaskError.UNKNOWN_DATABASE_ERROR -> Failure(CreationTaskError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
+internal fun changeTask(
+    task: Task,
+    taskOperations: TaskOperationsHolder,
+): Result<Task, ChangingTaskError> {
+    return when (
+        val editedTask = taskOperations.updateTask(
+            task.id,
+            task.name,
+            task.criterions,
+            task.answerFormat,
+            task.description
+        )
+    ) {
+        is Success -> Success(editedTask.value)
+        is Failure -> when (editedTask.reason) {
+            TaskModifyError.UNKNOWN_UPDATE_ERROR -> Failure(ChangingTaskError.UNKNOWN_UPDATE_ERROR)
+            TaskModifyError.UNKNOWN_DATABASE_ERROR -> Failure(ChangingTaskError.UNKNOWN_DATABASE_ERROR)
+            TaskModifyError.TASK_NOT_EXISTS -> Failure(ChangingTaskError.NO_SUCH_TASK)
         }
     }
 }
@@ -193,4 +216,10 @@ enum class RemovingTaskError(val errorText: String) {
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
     NO_SUCH_TASK("The task does not exist"),
     UNKNOWN_DELETE_ERROR("Something was wrong until task deleting. Please try again later."),
+}
+
+enum class ChangingTaskError(val errorText: String) {
+    UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
+    NO_SUCH_TASK("The task does not exist"),
+    UNKNOWN_UPDATE_ERROR("Something was wrong until task changing. Please try again later."),
 }
