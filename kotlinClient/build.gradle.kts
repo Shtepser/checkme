@@ -17,7 +17,9 @@ repositories {
 
 val kvisionVersion: String = "9.1.0"
 val kotlinxVersion: String = "0.7.1"
-
+val seleniumVersion: String = "4.45.0"
+val junitJupiterVersion: String = "6.1.0"
+val awaitilityVersion: String = "4.3.0"
 
 kotlin {
     compilerOptions {
@@ -38,6 +40,9 @@ kotlin {
             target.set("es2015")
         }
     }
+
+    jvm()
+
     sourceSets["jsMain"].dependencies {
         implementation("io.kvision:kvision:$kvisionVersion")
         implementation("io.kvision:kvision-rest:${kvisionVersion}")
@@ -49,4 +54,14 @@ kotlin {
         implementation("io.kvision:kvision-common-types:${kvisionVersion}")
         implementation("io.kvision:kvision-tabulator:${kvisionVersion}")
     }
+    sourceSets["jvmTest"].dependencies {
+        implementation("org.seleniumhq.selenium:selenium-java:${seleniumVersion}")
+        implementation("org.junit.jupiter:junit-jupiter:${junitJupiterVersion}")
+        runtimeOnly("org.junit.platform:junit-platform-launcher")
+        implementation("org.awaitility:awaitility-kotlin:${awaitilityVersion}")
+    }
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

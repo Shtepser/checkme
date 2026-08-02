@@ -30,22 +30,23 @@ class SignIn(
     init {
         h2("Вход в систему")
         val formPanelSignIn = formPanel<FormSignIn>(className = "authorization-card") {
+            id = "sign-in-form"
             add(
                 FormSignIn::login,
-                Text(label="Логин") { placeholder = "Введите логин" },
+                Text(label="Логин") { id = "sign-in-username"; placeholder = "Введите логин" },
                 required = true,
                 requiredMessage = "Вы не ввели логин"
             )
             add(
                 FormSignIn::password,
-                Password(label="Пароль") { placeholder = "Введите пароль"},
+                Password(label="Пароль") { id = "sign-in-password"; placeholder = "Введите пароль"},
                 required = true,
                 requiredMessage = "Вы не ввели пароль"
             )
         }
         formPanelSignIn.add(HPanel(className = "authorization-buttons-panel") {
-            val buttonSignIn = button("Войти", style = ButtonStyle.PRIMARY)
-            val buttonSignUp = button("Регистрация", style = ButtonStyle.LINK)
+            val buttonSignIn = button("Войти", style = ButtonStyle.PRIMARY) { id = "sign-in-button" }
+            val buttonSignUp = button("Регистрация", style = ButtonStyle.LINK) { id = "sign-in-switch-button" }
             buttonSignIn.onClick {
                 val validateForm = formPanelSignIn.validate()
                 if (validateForm) {
