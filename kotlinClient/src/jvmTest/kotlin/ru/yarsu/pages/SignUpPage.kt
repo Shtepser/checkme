@@ -6,11 +6,11 @@ import org.openqa.selenium.WebElement
 import ru.yarsu.TestConfig.baseUrl
 
 class SignUpPage(private val driver: WebDriver) {
-    private val usernameInput: WebElement get() = driver.findElement(By.cssSelector("#sign-up-username input"))
-    private val nameInput: WebElement get() = driver.findElement(By.cssSelector("#sign-up-name input"))
-    private val surnameInput: WebElement get() = driver.findElement(By.cssSelector("#sign-up-surname input"))
-    private val passwordInput: WebElement get() = driver.findElement(By.cssSelector("#sign-up-password input"))
-    private val passwordRepeatInput: WebElement get() = driver.findElement(By.cssSelector("#sign-up-password-repeat input"))
+    private val usernameInput: WebElement get() = driver.findElement(By.id("sign-up-username"))
+    private val nameInput: WebElement get() = driver.findElement(By.id("sign-up-name"))
+    private val surnameInput: WebElement get() = driver.findElement(By.id("sign-up-surname"))
+    private val passwordInput: WebElement get() = driver.findElement(By.id("sign-up-password"))
+    private val passwordRepeatInput: WebElement get() = driver.findElement(By.id("sign-up-password-repeat"))
     private val submitButton: WebElement get() = driver.findElement(By.id("sign-up-button"))
 
     fun open() {
@@ -29,7 +29,7 @@ class SignUpPage(private val driver: WebDriver) {
     fun isRegistrationSuccessful(): Boolean {
         return try {
             driver.findElement(By.id("header")).isDisplayed
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             false
         }
     }

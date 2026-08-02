@@ -32,31 +32,31 @@ class SignUp(
         val formPanelSignUp = formPanel<FormSignUp>(className = "authorization-card") {
             add(
                 FormSignUp::login,
-                Text(label = "Логин") { id = "sign-up-username"; placeholder = "Введите логин" },
+                Text(label = "Логин") { this.input.id = "sign-up-username"; placeholder = "Введите логин" },
                 required = true,
                 requiredMessage = "Вы не ввели логин"
             )
             add(
                 FormSignUp::name,
-                Text(label = "Имя") { id = "sign-up-name"; placeholder = "Введите ваше имя" },
+                Text(label = "Имя") { this.input.id = "sign-up-name"; placeholder = "Введите ваше имя" },
                 required = true,
                 requiredMessage = "Вы не ввели имя"
             )
             add(
                 FormSignUp::surname,
-                Text(label = "Фамилия") { id = "sign-up-surname"; placeholder = "Введите вашу фамилию" },
+                Text(label = "Фамилия") { this.input.id = "sign-up-surname"; placeholder = "Введите вашу фамилию" },
                 required = true,
                 requiredMessage = "Вы не ввели фамилию"
             )
             add(
                 FormSignUp::password,
-                Password(label = "Пароль") { id = "sign-up-password"; placeholder = "Введите пароль" },
+                Password(label = "Пароль") { this.input.id = "sign-up-password"; placeholder = "Введите пароль" },
                 required = true,
                 requiredMessage = "Вы не ввели Пароль"
             )
             add(
                 FormSignUp::passwordRepeat,
-                Password(label = "Повторный пароль") { id = "sign-up-password-repeat"; placeholder = "Повторите пароль" },
+                Password(label = "Повторный пароль") { this.input.id = "sign-up-password-repeat"; placeholder = "Повторите пароль" },
                 required = true,
                 requiredMessage = "Вы повторно не ввели пароль"
             )

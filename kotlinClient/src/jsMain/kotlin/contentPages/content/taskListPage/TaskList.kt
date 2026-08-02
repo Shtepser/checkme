@@ -22,9 +22,9 @@ class TaskList(
 ) : SimplePanel(className = "page-head") {
     init {
         if (listType.ordinal == 0) {
-            h2("Список задач") { id = "task-list-div"}
+            h2("Список задач") { id = "task-list-h2"}
         } else {
-            h2("Список скрытых задач") { id = "hidden-task-list-div"}
+            h2("Список скрытых задач") { id = "hidden-task-list-h2"}
         }
         if (UserInformationStorage.isAdmin()) {
             button(

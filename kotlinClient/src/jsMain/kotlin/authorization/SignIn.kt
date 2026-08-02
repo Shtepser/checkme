@@ -33,13 +33,13 @@ class SignIn(
             id = "sign-in-form"
             add(
                 FormSignIn::login,
-                Text(label="Логин") { id = "sign-in-username"; placeholder = "Введите логин" },
+                Text(label="Логин") { this.input.id = "sign-in-username"; placeholder = "Введите логин" },
                 required = true,
                 requiredMessage = "Вы не ввели логин"
             )
             add(
                 FormSignIn::password,
-                Password(label="Пароль") { id = "sign-in-password"; placeholder = "Введите пароль"},
+                Password(label="Пароль") { this.input.id = "sign-in-password"; placeholder = "Введите пароль"},
                 required = true,
                 requiredMessage = "Вы не ввели пароль"
             )

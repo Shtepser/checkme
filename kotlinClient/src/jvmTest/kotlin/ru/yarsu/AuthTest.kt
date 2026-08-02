@@ -10,7 +10,7 @@ import org.junit.jupiter.api.TestInstance
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
-import ru.yarsu.pages.Header
+import ru.yarsu.pages.HeaderComponent
 import ru.yarsu.pages.SignInPage
 import ru.yarsu.pages.SignUpPage
 import java.time.Duration
@@ -21,7 +21,7 @@ class AuthTest {
     private lateinit var driver: WebDriver
     private lateinit var signUpPage: SignUpPage
     private lateinit var signInPage: SignInPage
-    private lateinit var header: Header
+    private lateinit var header: HeaderComponent
 
     private val testUsername = "testuser_${System.currentTimeMillis()}"
     private val testName = "Иван"
@@ -38,7 +38,7 @@ class AuthTest {
 
         signUpPage = SignUpPage(driver)
         signInPage = SignInPage(driver)
-        header = Header(driver)
+        header = HeaderComponent(driver)
     }
 
     @Test
@@ -56,10 +56,10 @@ class AuthTest {
         header.signOut()
 
         await().atMost(5, TimeUnit.SECONDS).until {
-            header.isUserSignOut()
+            header.isUserSignedOut()
         }
 
-        assertFalse(header.isUserSignIn(), "После выхода пользователь не должен быть авторизован")
+        assertFalse(header.isHeaderDisplayed(), "После выхода пользователь не должен быть авторизован")
 
         signInPage.login(testUsername, testPassword)
 
@@ -67,15 +67,15 @@ class AuthTest {
             signInPage.isLoginSuccessful()
         }
 
-        assertTrue(header.isUserSignIn(), "После входа пользователь должен быть авторизован")
+        assertTrue(header.isHeaderDisplayed(), "После входа пользователь должен быть авторизован")
 
         header.signOut()
 
         await().atMost(5, TimeUnit.SECONDS).until {
-            header.isUserSignOut()
+            header.isUserSignedOut()
         }
 
-        assertFalse(header.isUserSignIn(), "После выхода пользователь не должен быть авторизован")
+        assertFalse(header.isHeaderDisplayed(), "После выхода пользователь не должен быть авторизован")
     }
 
     @AfterAll

@@ -6,8 +6,8 @@ import org.openqa.selenium.WebElement
 import ru.yarsu.TestConfig.baseUrl
 
 class SignInPage(private val driver: WebDriver) {
-    private val usernameInput: WebElement get() = driver.findElement(By.cssSelector("#sign-in-username input"))
-    private val passwordInput: WebElement get() = driver.findElement(By.cssSelector("#sign-in-password input"))
+    private val usernameInput: WebElement get() = driver.findElement(By.id("sign-in-username"))
+    private val passwordInput: WebElement get() = driver.findElement(By.id("sign-in-password"))
     private val submitButton: WebElement get() = driver.findElement(By.id("sign-in-button"))
 
     fun open() {
