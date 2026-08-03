@@ -2,28 +2,21 @@ package ru.yarsu.pages
 
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebElement
-import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
+import ru.yarsu.TestConfig.waitForElement
 import java.io.File
 import java.time.Duration
 
 class AddTaskPage(private val driver: WebDriver) {
-
-    private fun waitForElement(selector: By): WebElement {
-        val wait = WebDriverWait(driver, Duration.ofSeconds(10))
-        return wait.until(ExpectedConditions.elementToBeClickable(selector))
-    }
-
     fun open() {
         driver.get("http://localhost:8080/#/add-task")
         Thread.sleep(1000)
     }
 
     fun createConsoleTask(name: String, description: String, jsonCriteriaFilePath: String) {
-        waitForElement(By.id("add-task-name")).sendKeys(name)
+        waitForElement(driver, By.id("add-task-name")).sendKeys(name)
 
-        waitForElement(By.id("add-task-description")).sendKeys(description)
+        waitForElement(driver, By.id("add-task-description")).sendKeys(description)
 
         val jsonFileInput = driver.findElement(By.id("input-file-0"))
         jsonFileInput.sendKeys(File(jsonCriteriaFilePath).absolutePath)
@@ -39,9 +32,9 @@ class AddTaskPage(private val driver: WebDriver) {
     }
 
     fun createSqlTask(name: String, description: String, jsonCriteriaFilePath: String, sqlScriptFilePath: String) {
-        waitForElement(By.id("add-task-name")).sendKeys(name)
+        waitForElement(driver, By.id("add-task-name")).sendKeys(name)
 
-        waitForElement(By.id("add-task-description")).sendKeys(description)
+        waitForElement(driver, By.id("add-task-description")).sendKeys(description)
 
         val jsonFileInput = driver.findElement(By.id("input-file-0"))
         jsonFileInput.sendKeys(File(jsonCriteriaFilePath).absolutePath)

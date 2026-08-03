@@ -1,7 +1,13 @@
 package ru.yarsu
 
+import org.openqa.selenium.By
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
 import java.io.File
 import java.nio.file.Paths
+import java.time.Duration
 
 object TestConfig {
 
@@ -20,4 +26,9 @@ object TestConfig {
     }
 
     val baseUrl: String = "http://localhost:$clientPort"
+
+    fun waitForElement(driver: WebDriver, selector: By): WebElement {
+        val wait = WebDriverWait(driver, Duration.ofSeconds(10))
+        return wait.until(ExpectedConditions.elementToBeClickable(selector))
+    }
 }

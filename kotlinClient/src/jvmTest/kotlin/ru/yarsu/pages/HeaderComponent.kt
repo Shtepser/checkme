@@ -2,15 +2,27 @@ package ru.yarsu.pages
 
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.WebElement
-import org.openqa.selenium.support.ui.ExpectedConditions
-import org.openqa.selenium.support.ui.WebDriverWait
-import java.time.Duration
+import ru.yarsu.TestConfig.waitForElement
 
 class HeaderComponent(private val driver: WebDriver) {
-    private fun waitForElement(selector: By): WebElement {
-        val wait = WebDriverWait(driver, Duration.ofSeconds(10))
-        return wait.until(ExpectedConditions.elementToBeClickable(selector))
+    fun signOut() {
+        waitForElement(driver, By.id("sign-out-button")).click()
+        Thread.sleep(1000)
+    }
+
+    fun navigateToTaskList() {
+        waitForElement(driver, By.id("tasks-navigation")).click()
+        Thread.sleep(1000)
+    }
+
+    fun navigateToBundleList() {
+        waitForElement(driver, By.id("bundle-list-navigation")).click()
+        Thread.sleep(1000)
+    }
+
+    fun navigateToMyResults() {
+        waitForElement(driver, By.id("my-result-list-navigation")).click()
+        Thread.sleep(1000)
     }
 
     fun isHeaderDisplayed() : Boolean {
@@ -27,25 +39,5 @@ class HeaderComponent(private val driver: WebDriver) {
         } catch (_: Exception) {
             false
         }
-    }
-
-    fun signOut() {
-        waitForElement(By.id("sign-out-button")).click()
-        Thread.sleep(1000)
-    }
-
-    fun navigateToTaskList() {
-        waitForElement(By.id("tasks-navigation")).click()
-        Thread.sleep(1000)
-    }
-
-    fun navigateToBundleList() {
-        waitForElement(By.id("bundle-list-navigation")).click()
-        Thread.sleep(1000)
-    }
-
-    fun navigateToMyResults() {
-        waitForElement(By.id("my-result-list-navigation")).click()
-        Thread.sleep(1000)
     }
 }
