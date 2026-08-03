@@ -43,7 +43,9 @@ class AuthTest {
 
     @Test
     fun `test registration and login`() {
-        signUpPage.open()
+        signInPage.open()
+
+        signInPage.switchToSignUpPage()
 
         signUpPage.register(testUsername, testName, testSurname, testPassword)
 

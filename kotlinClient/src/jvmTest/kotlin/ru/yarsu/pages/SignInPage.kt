@@ -20,6 +20,10 @@ class SignInPage(private val driver: WebDriver) {
         submitButton.click()
     }
 
+    fun switchToSignUpPage() {
+        driver.findElement(By.id("sign-in-switch-button")).click()
+    }
+
     fun isLoginSuccessful(): Boolean {
         return try {
             driver.findElement(By.id("header")).isDisplayed
