@@ -14,6 +14,11 @@ class AddBundlePage(private val driver: WebDriver) {
         return wait.until(ExpectedConditions.elementToBeClickable(selector))
     }
 
+    fun open() {
+        driver.get("http://localhost:8080/#/add-bundle")
+        Thread.sleep(1000)
+    }
+
     fun createBundle(name: String) {
         waitForElement(By.id("add-bundle-name")).sendKeys(name)
         waitForElement(By.id("add-bundle-submit-button")).click()

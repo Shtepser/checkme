@@ -7,6 +7,7 @@ class Loading(
     description: String
 ) : SimplePanel(className="Loading") {
     init {
+        id = "loading-circle"
         div(className="loading-circle")
         div(description)
     }

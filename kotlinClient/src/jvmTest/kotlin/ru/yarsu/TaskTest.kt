@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class AddTaskTest {
+class TaskTest {
 
     private lateinit var driver: WebDriver
     private lateinit var signInPage: SignInPage

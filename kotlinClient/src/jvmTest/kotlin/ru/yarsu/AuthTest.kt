@@ -56,7 +56,7 @@ class AuthTest {
         header.signOut()
 
         await().atMost(5, TimeUnit.SECONDS).until {
-            header.isUserSignedOut()
+            header.isUserSignOut()
         }
 
         assertFalse(header.isHeaderDisplayed(), "После выхода пользователь не должен быть авторизован")
@@ -72,7 +72,7 @@ class AuthTest {
         header.signOut()
 
         await().atMost(5, TimeUnit.SECONDS).until {
-            header.isUserSignedOut()
+            header.isUserSignOut()
         }
 
         assertFalse(header.isHeaderDisplayed(), "После выхода пользователь не должен быть авторизован")

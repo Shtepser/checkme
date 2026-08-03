@@ -27,11 +27,11 @@ class MySolutionList(
                     val jsonString = JSON.stringify(it)
                     val taskSolutions = Json.decodeFromString<TaskOrUserSolutionsFormat>(jsonString)
                     h2("Ваши решения задачи: ${taskSolutions.name}")
-                    button("Перейти к заданию", style = ButtonStyle.LINK).onClick {
+                    button("Перейти к заданию", style = ButtonStyle.LINK) { id = "link-to-task" } .onClick {
                         routing.navigate("task/${taskId}")
                     }
                     if (taskSolutions.solutions.isEmpty()) {
-                        this.add(Div("Решения не найдены", className = "not-found"))
+                        this.add(Div("Решения не найдены", className = "not-found")  { id = "no-solution" })
                     } else {
                         this.add(MySolutionListViewer(taskSolutions.solutions, routing))
                     }

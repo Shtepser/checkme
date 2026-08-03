@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
+import java.io.File
 import java.time.Duration
 
 class TaskPage(private val driver: WebDriver) {
@@ -27,5 +28,15 @@ class TaskPage(private val driver: WebDriver) {
         } catch (_: Exception) {
             true
         }
+    }
+
+    fun uploadSolution(filePath: String) {
+        val fileInput = driver.findElement(By.id("input-solution-file"))
+        fileInput.sendKeys(File(filePath).absolutePath)
+        Thread.sleep(1000)
+
+        val sendButton = waitForElement(By.id("task-send-button"))
+        sendButton.click()
+        Thread.sleep(2000)
     }
 }

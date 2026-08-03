@@ -21,7 +21,7 @@ class HeaderComponent(private val driver: WebDriver) {
         }
     }
 
-    fun isUserSignedOut() : Boolean {
+    fun isUserSignOut() : Boolean {
         return try {
             driver.findElement(By.id("sign-in-form")).isDisplayed
         } catch (_: Exception) {
@@ -41,6 +41,11 @@ class HeaderComponent(private val driver: WebDriver) {
 
     fun navigateToBundleList() {
         waitForElement(By.id("bundle-list-navigation")).click()
+        Thread.sleep(1000)
+    }
+
+    fun navigateToMyResults() {
+        waitForElement(By.id("my-result-list-navigation")).click()
         Thread.sleep(1000)
     }
 }

@@ -14,12 +14,13 @@ class MyResultListViewer(
     private val routing: Routing
 ) : VPanel() {
     init {
-        for (bundle in resultList) {
+        resultList.forEachIndexed { index, bundle ->
             vPanel(className = "bundle-block") {
-                h3(bundle.bundleName, className = "bundle-name")
-                for (task in bundle.taskWithBestResult){
+                h3(bundle.bundleName, className = "bundle-name") { id = "bundle-name-h3-${index + 1}" }
+                bundle.taskWithBestResult.forEachIndexed { index, task ->
                     val taskBlockName = getTaskBlockColorName(task.highestScore, task.bestSolution)
                     vPanel(className = "task-block ${taskBlockName.cssName}") {
+                        id = "task-block-${index + 1}"
                         div(task.taskName)
                         val bestSolution = task.bestSolution
                         if (bestSolution != -1) {
