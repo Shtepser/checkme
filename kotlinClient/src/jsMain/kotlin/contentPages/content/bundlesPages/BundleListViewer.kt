@@ -17,7 +17,7 @@ class BundleListViewer(
     bundleList: List<BundleFormat>
 ) : VPanel(className = "bundle-grid") {
     init {
-        for (bundle in bundleList) {
+        bundleList.forEach { bundle ->
             if (bundle.isActual || UserInformationStorage.isAdmin()) {
                 hPanel(className = "bundle-in-list") {
                     val bundleItem = VPanel(className = "bundle-item") {

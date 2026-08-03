@@ -20,6 +20,7 @@ class BundleHiddenButton(
     private val hPanel: HPanel? = null,
 ) : Button("", style = ButtonStyle.PRIMARY) {
     init {
+        id = "hidden-bundle-button"
         text = if (isActual) "Скрыть" else "Показать"
         this.onClick {
             val requestInit = createRequestHeaders(HttpMethod.POST)

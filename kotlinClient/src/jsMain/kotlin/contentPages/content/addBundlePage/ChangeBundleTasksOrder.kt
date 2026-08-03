@@ -39,7 +39,7 @@ class ChangeBundleTasksOrder(
                         val saveButton = button(
                             "Сохранить",
                             style = ButtonStyle.PRIMARY
-                        )
+                        ) { id = "save-task-order-button" }
                             .apply {
                                 onClick {
                                     val indices: List<String> =

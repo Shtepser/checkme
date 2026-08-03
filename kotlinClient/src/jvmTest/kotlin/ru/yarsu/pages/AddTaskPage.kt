@@ -16,7 +16,7 @@ class AddTaskPage(private val driver: WebDriver) {
     }
 
     fun open() {
-        driver.get("http://localhost:8080/#/task/add")
+        driver.get("http://localhost:8080/#/add-task")
         Thread.sleep(1000)
     }
 

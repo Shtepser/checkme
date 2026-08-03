@@ -33,13 +33,13 @@ class AddBundle(
             add(Label("Название набора", className = "separate-form-label"))
             add(
                 FormAddBundle::name,
-                Text(),
+                Text { this.input.id = "add-bundle-name" },
                 required = true,
                 requiredMessage = "Пожалуйста, введите название набора"
             )
         }
         formPanelAddBundle.add(HPanel(className = "add-bundle-buttons-panel") {
-            button("Отправить", style = ButtonStyle.PRIMARY).onClick {
+            button("Отправить", style = ButtonStyle.PRIMARY) { id = "add-bundle-submit-button" } .onClick {
                 val validateForm = formPanelAddBundle.validate()
                 if (validateForm) {
                     this@AddBundle.hide()

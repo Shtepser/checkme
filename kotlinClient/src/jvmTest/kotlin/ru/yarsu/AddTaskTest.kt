@@ -72,7 +72,7 @@ class AddTaskTest {
     @Test
     @Order(2)
     fun `create console task`() {
-        headerComponent.navigateToTasksList()
+        headerComponent.navigateToTaskList()
 
         taskListPage.navigateToCreateTask()
 
@@ -92,7 +92,7 @@ class AddTaskTest {
     @Test
     @Order(3)
     fun `verify console task in list and delete it`() {
-        headerComponent.navigateToTasksList()
+        headerComponent.navigateToTaskList()
 
         await().atMost(5, TimeUnit.SECONDS).until {
             taskListPage.isTaskInList(consoleTaskName)
@@ -112,7 +112,7 @@ class AddTaskTest {
         }
         assertTrue(taskPage.isTaskPageClosed(), "После удаления задачи должен произойти редирект")
 
-        headerComponent.navigateToTasksList()
+        headerComponent.navigateToTaskList()
         await().atMost(5, TimeUnit.SECONDS).until {
             !taskListPage.isTaskInList(consoleTaskName)
         }
@@ -122,7 +122,7 @@ class AddTaskTest {
     @Test
     @Order(4)
     fun `create sql task`() {
-        headerComponent.navigateToTasksList()
+        headerComponent.navigateToTaskList()
 
         taskListPage.navigateToCreateTask()
 
@@ -143,7 +143,7 @@ class AddTaskTest {
     @Test
     @Order(5)
     fun `verify sql task in list and delete it`() {
-        headerComponent.navigateToTasksList()
+        headerComponent.navigateToTaskList()
 
         await().atMost(5, TimeUnit.SECONDS).until {
             taskListPage.isTaskInList(sqlTaskName)
@@ -163,7 +163,7 @@ class AddTaskTest {
         }
         assertTrue(taskPage.isTaskPageClosed(), "После удаления SQL задачи должен произойти редирект")
 
-        headerComponent.navigateToTasksList()
+        headerComponent.navigateToTaskList()
         await().atMost(5, TimeUnit.SECONDS).until {
             !taskListPage.isTaskInList(sqlTaskName)
         }

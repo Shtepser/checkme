@@ -13,8 +13,6 @@ class HeaderComponent(private val driver: WebDriver) {
         return wait.until(ExpectedConditions.elementToBeClickable(selector))
     }
 
-    fun getUsername() : String = driver.findElement(By.id("username")).text
-
     fun isHeaderDisplayed() : Boolean {
         return try {
             driver.findElement(By.id("header")).isDisplayed
@@ -36,8 +34,13 @@ class HeaderComponent(private val driver: WebDriver) {
         Thread.sleep(1000)
     }
 
-    fun navigateToTasksList() {
+    fun navigateToTaskList() {
         waitForElement(By.id("tasks-navigation")).click()
+        Thread.sleep(1000)
+    }
+
+    fun navigateToBundleList() {
+        waitForElement(By.id("bundle-list-navigation")).click()
         Thread.sleep(1000)
     }
 }

@@ -23,16 +23,16 @@ class BundlesList(
 ) : SimplePanel(className = "page-head") {
     init {
         if (listType.ordinal == 0) {
-            h2("Наборы заданий")
+            h2("Наборы заданий") { id = "bundles-h2" }
         } else {
-            h2("Скрытые наборы заданий")
+            h2("Скрытые наборы заданий") { id = "hidden-bundles-h2" }
         }
         val addBundle = AddBundle(serverUrl, routing)
         if (UserInformationStorage.isAdmin()) {
             button(
                 "Cоздать набор",
                 style = ButtonStyle.PRIMARY
-            ).onClick { addBundle.show() }
+            ) { id = "create-bundle-button" } .onClick { addBundle.show() }
         }
         val requestInit = createRequestHeaders(HttpMethod.GET)
         window.fetch(serverUrl + "bundle/${listType.keyWord}", requestInit).then { response ->

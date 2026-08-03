@@ -1,0 +1,29 @@
+package ru.yarsu.pages
+
+import org.openqa.selenium.By
+import org.openqa.selenium.WebDriver
+import org.openqa.selenium.WebElement
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.WebDriverWait
+import java.time.Duration
+
+class ChangeBundleTasksOrderPage(private val driver: WebDriver) {
+
+    private fun waitForElement(selector: By): WebElement {
+        val wait = WebDriverWait(driver, Duration.ofSeconds(10))
+        return wait.until(ExpectedConditions.elementToBeClickable(selector))
+    }
+
+    fun saveOrder() {
+        waitForElement(By.id("save-task-order-button")).click()
+        Thread.sleep(2000)
+    }
+
+    fun isOrderSaved(): Boolean {
+        return try {
+            driver.findElement(By.id("edit-tasks-bundle-button")).isDisplayed
+        } catch (_: Exception) {
+            false
+        }
+    }
+}
