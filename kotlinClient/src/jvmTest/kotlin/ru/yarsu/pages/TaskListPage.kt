@@ -2,11 +2,12 @@ package ru.yarsu.pages
 
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
+import ru.yarsu.TestConfig.baseUrl
 import ru.yarsu.TestConfig.waitForElement
 
 class TaskListPage(private val driver: WebDriver) {
     fun open() {
-        driver.get("http://localhost:8080/#/tasks/all")
+        driver.get("$baseUrl/#/tasks/all")
         Thread.sleep(1000)
     }
 

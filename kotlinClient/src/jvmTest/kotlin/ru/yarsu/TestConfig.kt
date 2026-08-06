@@ -27,6 +27,8 @@ object TestConfig {
 
     val baseUrl: String = "http://localhost:$clientPort"
 
+    val isHeadless: Boolean = System.getProperty("test.headless", "true").toBoolean()
+
     fun waitForElement(driver: WebDriver, selector: By): WebElement {
         val wait = WebDriverWait(driver, Duration.ofSeconds(10))
         return wait.until(ExpectedConditions.elementToBeClickable(selector))

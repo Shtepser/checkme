@@ -3,13 +3,14 @@ package ru.yarsu.pages
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.support.ui.WebDriverWait
+import ru.yarsu.TestConfig.baseUrl
 import ru.yarsu.TestConfig.waitForElement
 import java.io.File
 import java.time.Duration
 
 class AddTaskPage(private val driver: WebDriver) {
     fun open() {
-        driver.get("http://localhost:8080/#/add-task")
+        driver.get("$baseUrl/#/add-task")
         Thread.sleep(1000)
     }
 

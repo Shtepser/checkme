@@ -6,7 +6,7 @@ import ru.yarsu.TestConfig.baseUrl
 
 class SignUpPage(private val driver: WebDriver) {
     fun open() {
-        driver.get("${baseUrl}/#/authorization/sign_up")
+        driver.get("$baseUrl/#/authorization/sign_up")
     }
 
     fun register(username: String, name: String, surname: String, password: String) {

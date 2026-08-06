@@ -12,6 +12,7 @@ import org.junit.jupiter.api.TestMethodOrder
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
+import ru.yarsu.TestConfig.isHeadless
 import ru.yarsu.pages.AddTaskPage
 import ru.yarsu.pages.HeaderComponent
 import ru.yarsu.pages.SignInPage
@@ -44,7 +45,10 @@ class TaskTest {
     @BeforeAll
     fun setUp() {
         val options = ChromeOptions().apply {
-            addArguments("--headless", "--window-size=1920,1080", "--disable-gpu", "--no-sandbox")
+            if (isHeadless)
+                addArguments("--headless", "--window-size=1920,1080", "--disable-gpu", "--no-sandbox")
+            else
+                addArguments("--window-size=1920,1080")
         }
         driver = ChromeDriver(options)
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3))

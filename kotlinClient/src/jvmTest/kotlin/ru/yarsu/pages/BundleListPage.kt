@@ -2,11 +2,12 @@ package ru.yarsu.pages
 
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
+import ru.yarsu.TestConfig.baseUrl
 import ru.yarsu.TestConfig.waitForElement
 
 class BundleListPage(private val driver: WebDriver) {
     fun open() {
-        driver.get("http://localhost:8080/#/")
+        driver.get("$baseUrl/#/")
         Thread.sleep(1000)
     }
 

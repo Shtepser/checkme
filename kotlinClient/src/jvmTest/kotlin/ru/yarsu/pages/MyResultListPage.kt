@@ -2,10 +2,11 @@ package ru.yarsu.pages
 
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
+import ru.yarsu.TestConfig.baseUrl
 
 class MyResultListPage(private val driver: WebDriver) {
     fun open() {
-        driver.get("http://localhost:8080/#/my-result-list/1")
+        driver.get("$baseUrl/#/my-result-list/1")
         Thread.sleep(1000)
     }
 
