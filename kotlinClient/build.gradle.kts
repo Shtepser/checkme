@@ -1,9 +1,24 @@
+import java.io.BufferedReader
+import java.io.FileInputStream
+import java.io.InputStreamReader
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.sql.DriverManager
 import java.time.Duration
+import java.util.Properties
 import java.util.concurrent.TimeUnit
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        // Добавляем драйвер PostgreSQL в classpath скрипта сборки
+        classpath("org.postgresql:postgresql:42.7.3")
+    }
+}
 
 plugins {
     val kotlinVersion = "2.1.21"
@@ -81,6 +96,72 @@ tasks.withType<Test> {
     outputs.upToDateWhen { false }
 }
 
+// ========== Configuration ==========
+val testDbBase = "checkme_test_${System.currentTimeMillis()}"
+
+// ========== Helper Functions ==========
+
+fun readServerDbConfig(projectDir: File): Properties {
+    val projectRoot = projectDir.parentFile
+    val serverDir = File(projectRoot, "kotlinServer")
+    val propertiesFile = File(serverDir, "app.properties")
+
+    if (!propertiesFile.exists()) {
+        throw GradleException("app.properties file not found in $serverDir")
+    }
+
+    val props = Properties()
+    FileInputStream(propertiesFile).use { props.load(it) }
+    return props
+}
+
+fun createTestDatabase(host: String, port: String, user: String, password: String, testBase: String) {
+    println("[DB] Creating test database: $testBase")
+    val adminUrl = "jdbc:postgresql://$host:$port/postgres"
+
+    DriverManager.getConnection(adminUrl, user, password).use { conn ->
+        conn.autoCommit = true
+        conn.createStatement().use { stmt ->
+            try {
+                stmt.execute("""
+                    SELECT pg_terminate_backend(pid) 
+                    FROM pg_stat_activity 
+                    WHERE datname = '$testBase' AND pid <> pg_backend_pid()
+                """.trimIndent())
+            } catch (_: Exception) { }
+
+            try {
+                stmt.execute("DROP DATABASE IF EXISTS $testBase")
+            } catch (_: Exception) { }
+
+            stmt.execute("CREATE DATABASE $testBase")
+        }
+    }
+    println("[DB] Test database created: $testBase")
+}
+
+fun dropTestDatabase(host: String, port: String, user: String, password: String, testBase: String) {
+    println("[DB] Dropping test database: $testBase")
+    val adminUrl = "jdbc:postgresql://$host:$port/postgres"
+
+    try {
+        DriverManager.getConnection(adminUrl, user, password).use { conn ->
+            conn.autoCommit = true
+            conn.createStatement().use { stmt ->
+                stmt.execute("""
+                    SELECT pg_terminate_backend(pid) 
+                    FROM pg_stat_activity 
+                    WHERE datname = '$testBase' AND pid <> pg_backend_pid()
+                """.trimIndent())
+                stmt.execute("DROP DATABASE IF EXISTS $testBase")
+            }
+        }
+        println("[DB] Test database dropped: $testBase")
+    } catch (e: Exception) {
+        println("[DB] Warning: Failed to drop test database: ${e.message}")
+    }
+}
+
 fun readClientPort(projectDir: File): String {
     val file = File(projectDir, "webpack.config.d/app.properties.js")
     if (!file.exists()) return "8080"
@@ -137,6 +218,7 @@ fun startProcessWithLogs(command: List<String>, dir: File, prefix: String): Proc
     return process
 }
 
+// Recursively kills a process and all its children (releases ports properly)
 fun killProcessTree(process: Process, isWindows: Boolean) {
     try {
         val handle = process.toHandle()
@@ -149,72 +231,123 @@ fun killProcessTree(process: Process, isWindows: Boolean) {
             Runtime.getRuntime().exec("taskkill /F /T /PID ${handle.pid()}").waitFor()
         }
     } catch (e: Exception) {
-        println("⚠️ Warning during process kill: ${e.message}")
+        println("⚠ Warning during process kill: ${e.message}")
     }
 }
 
+// Streams process output line by line with a prefix
+fun streamProcessOutput(process: Process, prefix: String) {
+    Thread {
+        try {
+            val reader = BufferedReader(InputStreamReader(process.inputStream))
+            var line: String?
+            while (reader.readLine().also { line = it } != null) {
+                println("[$prefix] $line")
+            }
+        } catch (e: Exception) {
+            // Process ended
+        }
+    }.apply {
+        isDaemon = true
+        start()
+    }
+}
+
+// ========== e2eTest Task ==========
+
 tasks.register("e2eTest") {
     group = "verification"
-    description = "Запускает сервер, клиент и E2E тесты"
+    description = "Runs the server with a test DB, the client, and E2E tests"
 
     doLast {
         val headless = project.findProperty("headless")?.toString()?.toBoolean() ?: true
         val isWindows = System.getProperty("os.name").lowercase().contains("win")
+        val gradleWrapper = if (isWindows) "gradlew.bat" else "./gradlew"
 
         val projectRoot = projectDir.parentFile
         val serverDir = File(projectRoot, "kotlinServer")
         val clientDir = projectDir
 
-        val serverCommand = if (isWindows) listOf("cmd", "/c", "gradlew.bat", "run") else listOf("./gradlew", "run")
-        val clientCommand = if (isWindows) listOf("cmd", "/c", "gradlew.bat", "run") else listOf("./gradlew", "run")
-        val testCommand = if (isWindows) listOf("cmd", "/c", "gradlew.bat", "jvmTest", "-Dtest.headless=$headless") else listOf("./gradlew", "jvmTest", "-Dtest.headless=$headless")
+        println("[CONFIG] Reading DB configuration from kotlinServer/app.properties...")
+        val props = readServerDbConfig(projectDir)
 
-        val clientPort = readClientPort(projectDir)
-        val serverPort = readServerPort(projectDir)
-        val clientUrl = "http://localhost:$clientPort"
-        val serverUrl = "http://localhost:$serverPort"
+        val dbHost = props.getProperty("db.host") ?: "localhost"
+        val dbPort = props.getProperty("db.port") ?: "5433"
+        val dbUser = props.getProperty("db.user") ?: "postgres"
+        val dbPassword = props.getProperty("db.password") ?: ""
+        val originalDbBase = props.getProperty("db.base") ?: "checkMeActual"
 
-        println("Run E2E tests (headless=$headless)...")
-        println("Server URL: $serverUrl")
-        println("Client URL: $clientUrl")
-
-        println("Run server...")
-        val serverProcess = startProcessWithLogs(serverCommand, serverDir, "[SERVER]")
-
-        println("Run client...")
-        val clientProcess = startProcessWithLogs(clientCommand, clientDir, "[CLIENT]")
+        println("[CONFIG] Original DB: $originalDbBase")
+        println("[CONFIG] Test DB: $testDbBase")
+        println("[CONFIG] Host: $dbHost:$dbPort")
 
         try {
-            println("Wait server ($serverUrl)...")
-            if (!waitForServer(serverUrl)) {
-                throw GradleException("Server did not start within 60 seconds. Look at [SERVER] logs above!")
+            createTestDatabase(dbHost, dbPort, dbUser, dbPassword, testDbBase)
+
+            println("[SERVER] Starting server with test DB...")
+            val serverProcessBuilder = ProcessBuilder(gradleWrapper, "run")
+                .directory(serverDir)
+                .redirectErrorStream(true)
+
+            val env = serverProcessBuilder.environment()
+            env["db.host"] = dbHost
+            env["db.port"] = dbPort
+            env["db.user"] = dbUser
+            env["db.password"] = dbPassword
+            env["db.base"] = testDbBase
+
+            val serverProcess = serverProcessBuilder.start()
+            streamProcessOutput(serverProcess, "SERVER")
+
+            println("[CLIENT] Starting client...")
+            // Changed from jsRun to run
+            val clientProcess = ProcessBuilder(gradleWrapper, "run")
+                .directory(clientDir)
+                .redirectErrorStream(true)
+                .start()
+            streamProcessOutput(clientProcess, "CLIENT")
+
+            try {
+                val serverPort = readServerPort(projectDir)
+                val serverUrl = "http://localhost:$serverPort"
+
+                println("[SERVER] Waiting for server readiness ($serverUrl)...")
+                if (!waitForServer(serverUrl)) {
+                    throw GradleException("Server did not start within 60 seconds")
+                }
+                println("[SERVER] Server is ready")
+
+                println("[CLIENT] Waiting for Webpack compilation (60 sec)...")
+                Thread.sleep(60000)
+                println("[CLIENT] Client is fully ready")
+
+                println("[TEST] Running tests...")
+                val testProcess = ProcessBuilder(
+                    gradleWrapper, "jvmTest", "-Dtest.headless=$headless"
+                )
+                    .directory(clientDir)
+                    .inheritIO()
+                    .start()
+
+                val testExitCode = testProcess.waitFor()
+
+                if (testExitCode != 0) {
+                    println("\n[TEST] Tests finished with error (code $testExitCode)")
+                    throw GradleException("Tests finished with error")
+                }
+
+                println("\n[TEST] Tests passed successfully!")
+            } finally {
+                println("\n[STOP] Stopping server and client processes...")
+                killProcessTree(clientProcess, isWindows)
+                killProcessTree(serverProcess, isWindows)
+
+                clientProcess.waitFor(5, TimeUnit.SECONDS)
+                serverProcess.waitFor(5, TimeUnit.SECONDS)
+                println("[STOP] Processes stopped")
             }
-            println("Server ready")
-
-            println("Client port open. Waiting for Webpack compilation (15 sec)...")
-            Thread.sleep(15000)
-            println("Client fully ready")
-
-            println("Run tests...")
-            // Используем функцию, которая читает логи в реальном времени с префиксом [TEST]
-            val testProcess = startProcessWithLogs(testCommand, clientDir, "[TEST]")
-            val testExitCode = testProcess.waitFor()
-
-            if (testExitCode != 0) {
-                throw GradleException("Tests finish with error (code $testExitCode)")
-            }
-
-            println("\nTests successful!")
         } finally {
-            println("\nStop server and client process...")
-
-            killProcessTree(clientProcess, isWindows)
-            killProcessTree(serverProcess, isWindows)
-
-            clientProcess.waitFor(5, TimeUnit.SECONDS)
-            serverProcess.waitFor(5, TimeUnit.SECONDS)
-
-            println("Processes stopped")
+            dropTestDatabase(dbHost, dbPort, dbUser, dbPassword, testDbBase)
         }
     }
 }
