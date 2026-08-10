@@ -109,18 +109,21 @@ fun readServerDBConfig(projectDir: File): Properties {
     return properties
 }
 
-fun readClientPort(projectDir: File): String {
-    val file = File(projectDir, "webpack.config.d/app.properties.js")
-    if (!file.exists()) return "8080"
-    val regex = Regex("const\\s+client_port\\s*=\\s*(\\d+)")
-    return regex.find(file.readText())?.groupValues?.get(1) ?: "8080"
-}
-
 fun readServerPort(projectDir: File): String {
     val file = File(projectDir, "webpack.config.d/app.properties.js")
-    if (!file.exists()) return "9999"
-    val regex = Regex("const\\s+server_url\\s*=\\s*['\"]http://localhost:(\\d+)['\"]")
-    return regex.find(file.readText())?.groupValues?.get(1) ?: "9999"
+    if (!file.exists()) {
+        println("Warning: app.properties.js not found. Defaulting to port 9999")
+        return "9999"
+    }
+    val content = file.readText()
+    val regex = Regex("const\\s+server_url\\s*=\\s*['\"]http://localhost:(\\d+)")
+    val match = regex.find(content)
+    return if (match != null) {
+        match.groupValues[1]
+    } else {
+        println("Warning: Could not parse server_url from ${file.name}. Defaulting to 9999")
+        "9999"
+    }
 }
 
 fun createTestDB(host: String, port: String, user: String, password: String, testBase: String) {
@@ -260,7 +263,7 @@ tasks.register("clientTest") {
                 val serverPort = readServerPort(projectDir)
                 val serverUrl = "http://localhost:$serverPort"
 
-                println("Waiting for server readiness")
+                println("Waiting for server ($serverUrl) readiness")
                 if (!waitForServer(serverUrl)) {
                     throw GradleException("Server did not start within 60 seconds")
                 }
