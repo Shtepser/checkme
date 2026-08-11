@@ -90,6 +90,9 @@ tasks.withType<Test> {
     val headless = project.findProperty("headless")?.toString()?.toBoolean() ?: true
     systemProperty("test.headless", headless)
 
+    val browser = project.findProperty("browser")?.toString() ?: "firefox"
+    systemProperty("test.browser", browser)
+
     outputs.upToDateWhen { false }
 }
 
@@ -214,6 +217,7 @@ tasks.register("clientTest") {
 
     doLast {
         val headless = project.findProperty("headless")?.toString()?.toBoolean() ?: true
+        val browser = project.findProperty("browser")?.toString() ?: "firefox"
         val isWindows = System.getProperty("os.name").lowercase().contains("win")
         val gradleWrapper = if (isWindows) "gradlew.bat" else "./gradlew"
 
@@ -278,11 +282,17 @@ tasks.register("clientTest") {
 
                 println("Running tests")
                 val testProcess = ProcessBuilder(
-                    gradleWrapper, "jvmTest", "-Pheadless=$headless"
+                    gradleWrapper,
+                    "jvmTest",
+                    "-Pheadless=$headless",
+                    "-Pbrowser=$browser",
+                    "--stacktrace"
                 )
                     .directory(clientDir)
-                    .inheritIO()
+                    .redirectErrorStream(true)
                     .start()
+                streamProcessOutput(testProcess, "TEST")
+
                 val testExitCode = testProcess.waitFor()
                 if (testExitCode != 0) {
                     throw GradleException("Tests finished with error (code $testExitCode)")

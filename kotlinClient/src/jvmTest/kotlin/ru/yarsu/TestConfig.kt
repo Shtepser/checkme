@@ -3,7 +3,12 @@ package ru.yarsu
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
+import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.chrome.ChromeOptions
+import org.openqa.selenium.edge.EdgeDriver
+import org.openqa.selenium.edge.EdgeOptions
+import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.firefox.FirefoxOptions
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import java.io.File
@@ -30,15 +35,50 @@ object TestConfig {
 
     val isHeadless: Boolean = System.getProperty("test.headless", "true").toBoolean()
 
+    val browserName: String = System.getProperty("test.browser", "firefox").lowercase()
+
     fun waitForElement(driver: WebDriver, selector: By): WebElement {
         val wait = WebDriverWait(driver, Duration.ofSeconds(10))
         return wait.until(ExpectedConditions.elementToBeClickable(selector))
     }
 
-    val options = ChromeOptions().apply {
-        if (isHeadless)
-            addArguments("--headless", "--window-size=1920,1080", "--disable-gpu", "--no-sandbox")
-        else
-            addArguments("--window-size=1920,1080")
+    lateinit var driver: WebDriver
+
+    fun setUp() {
+        if (::driver.isInitialized) {
+            driver.quit()
+        }
+
+        driver = when (browserName) {
+            "edge" -> {
+                val options = EdgeOptions().apply {
+                    if (isHeadless) addArguments("--headless", "--window-size=1920,1080", "--no-sandbox", "--disable-gpu")
+                    addArguments("--window-size=1920,1080")
+                }
+                EdgeDriver(options)
+            }
+            "chrome" -> {
+                val options = ChromeOptions().apply {
+                    if (isHeadless) addArguments("--headless", "--window-size=1920,1080", "--no-sandbox", "--disable-gpu")
+                    addArguments("--window-size=1920,1080")
+                }
+                ChromeDriver(options)
+            }
+            else -> {
+                val options = FirefoxOptions().apply {
+                    if (isHeadless) addArguments("--headless", "--window-size=1920,1080")
+                    addArguments("--window-size=1920,1080")
+                }
+                FirefoxDriver(options)
+            }
+        }
+
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3))
+    }
+
+    fun tearDown() {
+        if (::driver.isInitialized) {
+            driver.quit()
+        }
     }
 }

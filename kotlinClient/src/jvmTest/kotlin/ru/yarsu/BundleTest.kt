@@ -1,17 +1,12 @@
 package ru.yarsu
 
 import org.awaitility.Awaitility.await
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestMethodOrder
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import ru.yarsu.TestConfig.options
+import ru.yarsu.TestConfig.driver
 import ru.yarsu.pages.AddBundlePage
 import ru.yarsu.pages.AddTaskPage
 import ru.yarsu.pages.BundleListPage
@@ -22,24 +17,20 @@ import ru.yarsu.pages.SelectBundleTasksPage
 import ru.yarsu.pages.SignInPage
 import ru.yarsu.pages.TaskListPage
 import ru.yarsu.pages.TaskPage
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class BundleTest {
-
-    private lateinit var driver: WebDriver
-    private lateinit var signInPage: SignInPage
-    private lateinit var headerComponent: HeaderComponent
-    private lateinit var bundleListPage: BundleListPage
-    private lateinit var addBundlePage: AddBundlePage
-    private lateinit var bundlePage: BundlePage
-    private lateinit var selectBundleTasksPage: SelectBundleTasksPage
-    private lateinit var changeBundleTasksOrderPage: ChangeBundleTasksOrderPage
-    private lateinit var addTaskPage: AddTaskPage
-    private lateinit var taskListPage: TaskListPage
-    private lateinit var taskPage: TaskPage
+class BundleTest : BaseTest() {
+    private val signInPage by lazy { SignInPage(driver) }
+    private val headerComponent by lazy { HeaderComponent(driver) }
+    private val bundleListPage by lazy { BundleListPage(driver) }
+    private val addBundlePage by lazy { AddBundlePage(driver) }
+    private val bundlePage by lazy { BundlePage(driver) }
+    private val selectBundleTasksPage by lazy { SelectBundleTasksPage(driver) }
+    private val changeBundleTasksOrderPage by lazy { ChangeBundleTasksOrderPage(driver) }
+    private val addTaskPage by lazy { AddTaskPage(driver) }
+    private val taskListPage by lazy { TaskListPage(driver) }
+    private val taskPage by lazy { TaskPage(driver) }
 
     private val adminUsername = "admin"
     private val adminPassword = "pass"
@@ -51,23 +42,6 @@ class BundleTest {
     private val jsonConsoleCriterionFilePath = "src/jvmTest/resources/test-console-criterion.json"
     private val jsonSqlCriterionFilePath = "src/jvmTest/resources/test-sql-criterion.json"
     private val sqlScriptFilePath = "src/jvmTest/resources/test-script.sql"
-
-    @BeforeAll
-    fun setUp() {
-        driver = ChromeDriver(options)
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3))
-
-        signInPage = SignInPage(driver)
-        headerComponent = HeaderComponent(driver)
-        bundleListPage = BundleListPage(driver)
-        addBundlePage = AddBundlePage(driver)
-        bundlePage = BundlePage(driver)
-        selectBundleTasksPage = SelectBundleTasksPage(driver)
-        changeBundleTasksOrderPage = ChangeBundleTasksOrderPage(driver)
-        addTaskPage = AddTaskPage(driver)
-        taskListPage = TaskListPage(driver)
-        taskPage = TaskPage(driver)
-    }
 
     @Test
     @Order(1)
@@ -234,10 +208,5 @@ class BundleTest {
 
         assertTrue(!taskListPage.isTaskInList(consoleTaskName), "Консольная задача должна быть удалена")
         assertTrue(!taskListPage.isTaskInList(sqlTaskName), "SQL задача должна быть удалена")
-    }
-
-    @AfterAll
-    fun tearDown() {
-        driver.quit()
     }
 }

@@ -1,35 +1,26 @@
 package ru.yarsu
 
 import org.awaitility.Awaitility.await
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestMethodOrder
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import ru.yarsu.TestConfig.options
+import ru.yarsu.TestConfig.driver
 import ru.yarsu.pages.AddTaskPage
 import ru.yarsu.pages.HeaderComponent
 import ru.yarsu.pages.SignInPage
 import ru.yarsu.pages.TaskListPage
 import ru.yarsu.pages.TaskPage
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class TaskTest {
-
-    private lateinit var driver: WebDriver
-    private lateinit var signInPage: SignInPage
-    private lateinit var headerComponent: HeaderComponent
-    private lateinit var taskListPage: TaskListPage
-    private lateinit var addTaskPage: AddTaskPage
-    private lateinit var taskPage: TaskPage
+class TaskTest : BaseTest() {
+    private val signInPage by lazy { SignInPage(driver) }
+    private val headerComponent by lazy { HeaderComponent(driver) }
+    private val taskListPage by lazy { TaskListPage(driver) }
+    private val addTaskPage by lazy { AddTaskPage(driver) }
+    private val taskPage by lazy { TaskPage(driver) }
 
     private val adminUsername = "admin"
     private val adminPassword = "pass"
@@ -40,18 +31,6 @@ class TaskTest {
     private val jsonConsoleCriterionFilePath = "src/jvmTest/resources/test-console-criterion.json"
     private val jsonSqlCriterionFilePath = "src/jvmTest/resources/test-sql-criterion.json"
     private val sqlScriptFilePath = "src/jvmTest/resources/test-script.sql"
-
-    @BeforeAll
-    fun setUp() {
-        driver = ChromeDriver(options)
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3))
-
-        signInPage = SignInPage(driver)
-        headerComponent = HeaderComponent(driver)
-        taskListPage = TaskListPage(driver)
-        addTaskPage = AddTaskPage(driver)
-        taskPage = TaskPage(driver)
-    }
 
     @Test
     @Order(1)
@@ -165,10 +144,5 @@ class TaskTest {
             !taskListPage.isTaskInList(sqlTaskName)
         }
         assertTrue(!taskListPage.isTaskInList(sqlTaskName), "После удаления SQL задача должна пропасть из списка")
-    }
-
-    @AfterAll
-    fun tearDown() {
-        driver.quit()
     }
 }

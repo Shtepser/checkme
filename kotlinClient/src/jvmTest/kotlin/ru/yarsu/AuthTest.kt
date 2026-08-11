@@ -1,42 +1,24 @@
 package ru.yarsu
 
 import org.awaitility.Awaitility.await
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import ru.yarsu.TestConfig.options
+import ru.yarsu.TestConfig.driver
 import ru.yarsu.pages.HeaderComponent
 import ru.yarsu.pages.SignInPage
 import ru.yarsu.pages.SignUpPage
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class AuthTest {
-    private lateinit var driver: WebDriver
-    private lateinit var signUpPage: SignUpPage
-    private lateinit var signInPage: SignInPage
-    private lateinit var header: HeaderComponent
+class AuthTest : BaseTest() {
+    private val signUpPage by lazy { SignUpPage(driver) }
+    private val signInPage by lazy { SignInPage(driver) }
+    private val header by lazy { HeaderComponent(driver) }
 
     private val testUsername = "testuser_${System.currentTimeMillis()}"
     private val testName = "Иван"
     private val testSurname = "Иванов"
     private val testPassword = "TestPassword123!"
-
-    @BeforeAll
-    fun setUp() {
-        driver = ChromeDriver(options)
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3))
-
-        signUpPage = SignUpPage(driver)
-        signInPage = SignInPage(driver)
-        header = HeaderComponent(driver)
-    }
 
     @Test
     fun `test registration and login`() {
@@ -75,10 +57,5 @@ class AuthTest {
         }
 
         assertFalse(header.isHeaderDisplayed(), "После выхода пользователь не должен быть авторизован")
-    }
-
-    @AfterAll
-    fun tearDown() {
-        driver.quit()
     }
 }

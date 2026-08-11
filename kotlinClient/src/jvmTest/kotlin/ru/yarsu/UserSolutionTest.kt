@@ -1,17 +1,12 @@
 package ru.yarsu
 
 import org.awaitility.Awaitility.await
-import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.MethodOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.api.TestMethodOrder
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
-import ru.yarsu.TestConfig.options
+import ru.yarsu.TestConfig.driver
 import ru.yarsu.pages.AddBundlePage
 import ru.yarsu.pages.AddTaskPage
 import ru.yarsu.pages.BundleListPage
@@ -26,28 +21,24 @@ import ru.yarsu.pages.SignUpPage
 import ru.yarsu.pages.SolutionPage
 import ru.yarsu.pages.TaskListPage
 import ru.yarsu.pages.TaskPage
-import java.time.Duration
 import java.util.concurrent.TimeUnit
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation::class)
-class UserSolutionTest {
-
-    private lateinit var driver: WebDriver
-    private lateinit var signInPage: SignInPage
-    private lateinit var signUpPage: SignUpPage
-    private lateinit var headerComponent: HeaderComponent
-    private lateinit var bundleListPage: BundleListPage
-    private lateinit var addBundlePage: AddBundlePage
-    private lateinit var bundlePage: BundlePage
-    private lateinit var selectBundleTasksPage: SelectBundleTasksPage
-    private lateinit var changeBundleTasksOrderPage: ChangeBundleTasksOrderPage
-    private lateinit var addTaskPage: AddTaskPage
-    private lateinit var taskListPage: TaskListPage
-    private lateinit var taskPage: TaskPage
-    private lateinit var myResultListPage: MyResultListPage
-    private lateinit var mySolutionListPage: MySolutionListPage
-    private lateinit var solutionPage: SolutionPage
+class UserSolutionTest : BaseTest() {
+    private val signInPage by lazy { SignInPage(driver) }
+    private val signUpPage by lazy { SignUpPage(driver) }
+    private val headerComponent by lazy { HeaderComponent(driver) }
+    private val bundleListPage by lazy { BundleListPage(driver) }
+    private val addBundlePage by lazy { AddBundlePage(driver) }
+    private val bundlePage by lazy { BundlePage(driver) }
+    private val selectBundleTasksPage by lazy { SelectBundleTasksPage(driver) }
+    private val changeBundleTasksOrderPage by lazy { ChangeBundleTasksOrderPage(driver) }
+    private val addTaskPage by lazy { AddTaskPage(driver) }
+    private val taskListPage by lazy { TaskListPage(driver) }
+    private val taskPage by lazy { TaskPage(driver) }
+    private val myResultListPage by lazy { MyResultListPage(driver) }
+    private val mySolutionListPage by lazy { MySolutionListPage(driver) }
+    private val solutionPage by lazy { SolutionPage(driver) }
 
     private val adminUsername = "admin"
     private val adminPassword = "pass"
@@ -66,27 +57,6 @@ class UserSolutionTest {
     private val sqlScriptFilePath = "src/jvmTest/resources/test-script.sql"
     private val consoleSolutionPath = "src/jvmTest/resources/console-solution.py"
     private val sqlSolutionPath = "src/jvmTest/resources/sql-solution.sql"
-
-    @BeforeAll
-    fun setUp() {
-        driver = ChromeDriver(options)
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3))
-
-        signInPage = SignInPage(driver)
-        signUpPage = SignUpPage(driver)
-        headerComponent = HeaderComponent(driver)
-        bundleListPage = BundleListPage(driver)
-        addBundlePage = AddBundlePage(driver)
-        bundlePage = BundlePage(driver)
-        selectBundleTasksPage = SelectBundleTasksPage(driver)
-        changeBundleTasksOrderPage = ChangeBundleTasksOrderPage(driver)
-        addTaskPage = AddTaskPage(driver)
-        taskListPage = TaskListPage(driver)
-        taskPage = TaskPage(driver)
-        myResultListPage = MyResultListPage(driver)
-        mySolutionListPage = MySolutionListPage(driver)
-        solutionPage = SolutionPage(driver)
-    }
 
     @Test
     @Order(1)
@@ -268,10 +238,5 @@ class UserSolutionTest {
         await().atMost(5, TimeUnit.SECONDS).until { !taskListPage.isTaskInList(sqlTaskName) }
         assertTrue(!taskListPage.isTaskInList(consoleTaskName), "Консольная задача должна быть удалена")
         assertTrue(!taskListPage.isTaskInList(sqlTaskName), "SQL задача должна быть удалена")
-    }
-
-    @AfterAll
-    fun tearDown() {
-        driver.quit()
     }
 }
