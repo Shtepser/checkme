@@ -3,6 +3,7 @@ package ru.yarsu.authorization
 import io.kvision.form.formPanel
 import io.kvision.form.text.Password
 import io.kvision.form.text.Text
+import io.kvision.html.ButtonStyle
 import io.kvision.html.button
 import io.kvision.html.h2
 import io.kvision.panel.HPanel
@@ -68,8 +69,8 @@ class SignUp(
             }
         }
         formPanelSignUp.add(HPanel(className = "authorization-buttons-panel") {
-            val buttonSignUp = button("Зарегистрироваться", className = "usually-button")
-            val buttonSignIn = button("Вход", className = "navigation-button")
+            val buttonSignUp = button("Зарегистрироваться", style = ButtonStyle.PRIMARY)
+            val buttonSignIn = button("Вход", style = ButtonStyle.LINK)
             buttonSignUp.onClick {
                 val validateForm = formPanelSignUp.validate()
                 if (validateForm) {
