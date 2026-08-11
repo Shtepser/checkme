@@ -3,6 +3,7 @@ package ru.yarsu
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.WebElement
+import org.openqa.selenium.chrome.ChromeOptions
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import java.io.File
@@ -32,5 +33,12 @@ object TestConfig {
     fun waitForElement(driver: WebDriver, selector: By): WebElement {
         val wait = WebDriverWait(driver, Duration.ofSeconds(10))
         return wait.until(ExpectedConditions.elementToBeClickable(selector))
+    }
+
+    val options = ChromeOptions().apply {
+        if (isHeadless)
+            addArguments("--headless", "--window-size=1920,1080", "--disable-gpu", "--no-sandbox")
+        else
+            addArguments("--window-size=1920,1080")
     }
 }
