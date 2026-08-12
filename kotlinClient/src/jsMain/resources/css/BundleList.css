@@ -1,20 +1,19 @@
-.main-page > div > div {
+/* Верхняя панель — только там, где заголовок лежит прямо в ней */
+.main-page > div > div:has(> h2) {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 1.5rem;
 }
 
-.main-page > div > div > .btn-link {
+.main-page > div > div:has(> h2) > .btn-link {
     margin-left: auto;
 }
 
-/* Обёртка списка всегда занимает всю строку */
-.main-page > div > div > div {
+.main-page > div > div:has(> h2) > div {
     flex-basis: 100%;
 }
 
-/* Пустой список: большая полупрозрачная надпись по центру */
 .not-found {
     padding: 3rem 0 1rem;
     text-align: center;
@@ -23,7 +22,8 @@
     user-select: none;
 }
 
-.main-page div:has(> .bundle-in-list) {
+/* Сетка карточек — НЕ затрагивает страницу набора */
+.main-page div:has(> .bundle-in-list):not(.Bundle) {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
     gap: 2.5rem 2rem;
@@ -56,7 +56,6 @@
     box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
 }
 
-/* Текст в карточках крупнее */
 .bundle-in-list .name {
     font-size: 1.75rem;
     font-weight: normal;
@@ -65,19 +64,19 @@
 }
 
 @media (max-width: 90rem) {
-    .main-page div:has(> .bundle-in-list) {
+    .main-page div:has(> .bundle-in-list):not(.Bundle) {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 64rem) {
-    .main-page div:has(> .bundle-in-list) {
+    .main-page div:has(> .bundle-in-list):not(.Bundle) {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 48rem) {
-    .main-page div:has(> .bundle-in-list) {
+    .main-page div:has(> .bundle-in-list):not(.Bundle) {
         grid-template-columns: 1fr;
     }
 }

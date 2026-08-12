@@ -1,6 +1,8 @@
 package ru.yarsu.contentPages.content.bundlesPages
 
 import io.kvision.core.onClick
+import io.kvision.dropdown.dropDown
+import io.kvision.html.ButtonStyle
 import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.html.h2
@@ -31,27 +33,19 @@ class BundleViewer(
     init {
         h2(bundle.name)
         if (UserInformationStorage.isAdmin()) {
-            button("Переименовать", className = "change-button").onClick {
-                routing.navigate("/bundle/change-name/${bundle.id}")
-            }
-        }
-        if (UserInformationStorage.isAdmin()) {
-            if (bundle.isActual == true) h4("Набор актуален")
-            else h4("Набор не является актуальным")
-        }
-        h3("Задачи набора")
-        if (tasksAndOrders.isEmpty()) div("Задачи не найдены")
-        if (UserInformationStorage.isAdmin()) {
-            hPanel(className = "button-row") {
+            dropDown("Действия", style = ButtonStyle.SECONDARY) {
+                button("Переименовать", style = ButtonStyle.PRIMARY).onClick {
+                    routing.navigate("/bundle/change-name/${bundle.id}")
+                }
                 if (tasksAndOrders.isEmpty()) {
-                    button("Добавить задачи", className = "usually-button").onClick {
+                    button("Добавить задачи", style = ButtonStyle.PRIMARY).onClick {
                         routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
                     }
                 } else {
-                    button("Изменить задачи", className = "usually-button").onClick {
+                    button("Изменить состав", style = ButtonStyle.PRIMARY).onClick {
                         routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
                     }
-                    button("Изменить порядок задач", className = "usually-button").onClick {
+                    button("Изменить порядок", style = ButtonStyle.PRIMARY).onClick {
                         routing.navigate("/bundle/select-order/${bundle.id}")
                     }
                 }
@@ -61,8 +55,17 @@ class BundleViewer(
                     bundle.id,
                 )
                 this.add(hiddenButton)
+                button("Удалить набор", style = ButtonStyle.DANGER).onClick {
+                    tryDeleteBundle()
+                }
             }
         }
+        if (UserInformationStorage.isAdmin()) {
+            if (bundle.isActual) h4("Набор актуален")
+            else h4("Набор не является актуальным")
+        }
+        h3("Задачи набора")
+        if (tasksAndOrders.isEmpty()) div("Задачи не найдены", className = "not-found")
         for (taskAndOrder in tasksAndOrders) {
             hPanel(className = "bundle-in-list") {
                 val taskItem = VPanel(className = "bundle-item") {
@@ -80,11 +83,6 @@ class BundleViewer(
                     }
                 }
                 this.add(taskItem)
-            }
-        }
-        if (UserInformationStorage.isAdmin()) {
-            button("Удалить набор", className = "usually-button warning-button").onClick {
-                tryDeleteBundle()
             }
         }
     }

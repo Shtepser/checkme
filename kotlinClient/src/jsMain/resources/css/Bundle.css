@@ -1,16 +1,113 @@
-.Bundle .usually-button {
-    height: 40px;
-    flex-wrap: wrap;
+.Bundle {
+    position: relative;
+}
+
+/* Имя набора — слева */
+.main-page .Bundle > h2 {
+    margin: 0;
+    text-align: left;
+}
+
+/* «Действия» справа на той же линии */
+.Bundle > .dropdown {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 1;
+}
+
+.Bundle .dropdown-menu {
+    left: auto;
+    right: 0;
+    transform: none;
+}
+
+/* Актуальность — по центру строки, между именем и «Действиями» */
+.Bundle h4 {
+    position: absolute;
+    top: 1.4rem;
+    transform: translateY(-50%);
+    left: 0;
+    right: 0;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: normal;
+    color: rgba(0, 0, 0, 0.6);
+    text-align: center;
+    pointer-events: none;
+}
+
+/* Заголовок секции: одинаковый отступ сверху и снизу */
+.Bundle h3 {
+    margin: 1.5rem 0;
+    font-size: 1.75rem;
+    font-weight: normal;
+}
+
+/* Строка задачи */
+.Bundle .bundle-in-list {
     width: 100%;
+    margin: 0 0 1.5rem;
 }
 
-.Bundle .change-button {
-    height: 40px;
-    flex-wrap: wrap;
-    width: 300px;
+.Bundle .bundle-in-list .bundle-item {
+    position: relative;
+    aspect-ratio: auto;
+    width: 100%;
+    min-height: 5.5rem;
+    padding: 1rem 6.5rem;
+    align-items: center;
+    justify-content: center;
+    background-color: #FFFFFF;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0.6875rem;
+    cursor: default;
 }
 
-.Bundle .button-row {
-    display: flex;
-    gap: 15px;
+/* Боковые блоки задач: белые с контуром, стали шире */
+.Bundle .bundle-item::before,
+.Bundle .bundle-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 5rem;
+    background-color: #FFFFFF;
+}
+
+.Bundle .bundle-item::before {
+    left: 0;
+    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0.6875rem 0 0 0.6875rem;
+}
+
+.Bundle .bundle-item::after {
+    right: 0;
+    border-left: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0 0.6875rem 0.6875rem 0;
+}
+
+/* Текст строки */
+.Bundle .bundle-in-list .name {
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.Bundle .bundle-item .name + div {
+    margin-top: 0.25rem;
+    font-size: 1rem;
+    color: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+/* Когда места мало — статус опускается под имя, по центру */
+@media (max-width: 90rem) {
+    .Bundle h4 {
+        position: static;
+        transform: none;
+        margin: 0.75rem 0 0;
+    }
 }
