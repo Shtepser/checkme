@@ -1,27 +1,3 @@
-/* Верхняя панель — только там, где заголовок лежит прямо в ней */
-.main-page > div > div:has(> h2) {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1.5rem;
-}
-
-.main-page > div > div:has(> h2) > .btn-link {
-    margin-left: auto;
-}
-
-.main-page > div > div:has(> h2) > div {
-    flex-basis: 100%;
-}
-
-.not-found {
-    padding: 3rem 0 1rem;
-    text-align: center;
-    font-size: 2.5rem;
-    color: rgba(0, 0, 0, 0.35);
-    user-select: none;
-}
-
 /* Сетка карточек — НЕ затрагивает страницу набора */
 .main-page div:has(> .bundle-in-list):not(.Bundle) {
     display: grid !important;

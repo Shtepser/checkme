@@ -33,8 +33,8 @@ external val cssTaskForm: dynamic
 @JsModule("./css/BundleForm.css")
 external val cssBundleForm: dynamic
 
-@JsModule("./css/TasksList.css")
-external val cssTasksList: dynamic
+@JsModule("./css/TaskList.css")
+external val cssTaskList: dynamic
 
 @JsModule("./css/BundleList.css")
 external val cssBundleList: dynamic
@@ -77,11 +77,11 @@ class CheckMe : Application() {
         useModule(cssFooter)
         useModule(cssBundleList)
         useModule(cssBundle)
+        useModule(cssTaskList)
 //        useModule(cssErrorMessage)
 //        useModule(cssTaskForm)
 //        useModule(cssBundleForm)
 //        useModule(cssJournal)
-//        useModule(cssTasksList)
 //        useModule(cssTask)
 //        useModule(cssUserList)
 //        useModule(cssResult)
