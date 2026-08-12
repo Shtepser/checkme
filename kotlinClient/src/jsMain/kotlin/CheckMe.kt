@@ -86,9 +86,9 @@ class CheckMe : Application() {
 //        useModule(cssUserList)
 //        useModule(cssResult)
 //        useModule(cssLoading)
-//        useModule(cssTable)
+        useModule(cssTable)
 //        useModule(cssAutomaticRegistration)
-//        useModule(jsTasks)
+        useModule(jsTasks)
 //        useModule(cssMyResultList)
     }
     override fun start() {
