@@ -1,6 +1,7 @@
 package ru.yarsu.contentPages.content.bundlesPages
 
 import io.kvision.core.onClick
+import io.kvision.html.ButtonStyle
 import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.panel.VPanel
@@ -28,7 +29,7 @@ class BundleListViewer(
                     }
                     this.add(bundleItem)
                     if (UserInformationStorage.isAdmin()) {
-                        button("Изменить задачи", className = "usually-button").onClick {
+                        button("Изменить", style = ButtonStyle.PRIMARY).onClick {
                             routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
                         }
                         val hiddenButton = BundleHiddenButton(

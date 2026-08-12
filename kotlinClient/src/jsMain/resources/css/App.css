@@ -17,6 +17,27 @@
 #checkMe:has(.Footer) {
     padding-bottom: 5rem;
 }
+/* ---------- Основной контент ---------- */
+/* Обёртки (внешняя, шапочная и футерная) остаются без отступов */
+.app-content {
+    box-sizing: border-box;
+}
+
+/* Отступы только у контентного блока: 8% по бокам —
+   контент чуть уже линии hr (6%) и выровнен с зонами шапки */
+.main-page {
+    padding: 1rem 8% 1.5rem;
+}
+
+.app-content h2 {
+    margin: 0;
+}
+
+@media (max-width: 64rem) {
+    .main-page {
+        padding: 0.75rem 4% 1.25rem;
+    }
+}
 
 h2 {
     font-weight: normal;

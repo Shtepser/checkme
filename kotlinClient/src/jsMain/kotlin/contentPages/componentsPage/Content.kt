@@ -3,7 +3,6 @@ package ru.yarsu.contentPages.componentsPage
 import io.kvision.panel.SimplePanel
 import io.kvision.routing.Routing
 import ru.yarsu.contentPages.content.bundlesPages.BundlesList
-import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.enumClasses.ListType
 
 class Content(
