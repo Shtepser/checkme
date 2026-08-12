@@ -73,9 +73,9 @@ class CheckMe : Application() {
     init {
         useModule(cssApp)
         useModule(cssAuthorization)
+        useModule(cssHeader)
+        useModule(cssFooter)
 //        useModule(cssErrorMessage)
-//        useModule(cssHeader)
-//        useModule(cssFooter)
 //        useModule(cssTaskForm)
 //        useModule(cssBundleForm)
 //        useModule(cssJournal)

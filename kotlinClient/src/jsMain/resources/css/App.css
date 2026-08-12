@@ -4,16 +4,18 @@
     font-style: normal;
     font-size: 1rem;
     background-color: #F8F9FA;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 #checkMe {
+    position: relative;
+    box-sizing: border-box;
     width: 100%;
-    display: flex;
-    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Резервируем место под футер, только когда он есть на странице */
+#checkMe:has(.Footer) {
+    padding-bottom: 5rem;
 }
 
 h2 {
@@ -28,7 +30,7 @@ button {
     font: inherit;
 }
 
-/* ---------- Кнопки (глобально) ---------- */
+/* ---------- Кнопки ---------- */
 .btn {
     font-size: 1.125rem;
     padding: 0.625rem 1.75rem;
@@ -53,6 +55,10 @@ button {
     background-color: #FFC285;
 }
 
+.btn-secondary {
+    background-color: #89B5DE;
+}
+
 .btn-link {
     background-color: #FFE782;
 }
@@ -64,7 +70,7 @@ button {
     cursor: not-allowed;
 }
 
-/* ---------- Всплывающие уведомления (глобально) ---------- */
+/* ---------- Всплывающие уведомления ---------- */
 .toastify {
     position: fixed;
     z-index: 1000;
