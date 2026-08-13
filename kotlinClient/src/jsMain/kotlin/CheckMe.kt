@@ -87,11 +87,11 @@ class CheckMe : Application() {
 //        useModule(cssBundleForm)
 //        useModule(cssJournal)
 //        useModule(cssTask)
-//        useModule(cssUserList)
+        useModule(cssUserList)
 //        useModule(cssResult)
 //        useModule(cssLoading)
         useModule(cssTable)
-//        useModule(cssAutomaticRegistration)
+        useModule(cssAutomaticRegistration)
         useModule(jsTasks)
 //        useModule(cssMyResultList)
     }

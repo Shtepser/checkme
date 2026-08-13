@@ -6,6 +6,7 @@ import io.kvision.routing.Routing
 import ru.yarsu.contentPages.componentsPage.Content
 import ru.yarsu.contentPages.componentsPage.Footer
 import ru.yarsu.contentPages.componentsPage.Header
+import ru.yarsu.contentPages.content.automaticRegistrationPage.AutomaticRegistration
 import ru.yarsu.contentPages.content.addBundlePage.AddBundle
 import ru.yarsu.contentPages.content.addBundlePage.ChangeBundleTasksOrder
 import ru.yarsu.contentPages.content.addBundlePage.SelectBundleTasks
@@ -106,6 +107,13 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
+        }).on("/automatic-registration", {
+            if (UserInformationStorage.isAdmin()) {
+                content.removeAll()
+                content.add(AutomaticRegistration(serverUrl))
+            } else {
+                routingMainPage.navigate("/")
+            }
         }).on("/user/change-password", {
             if (!UserInformationStorage.isAdmin()) {
                 content.removeAll()
@@ -173,7 +181,7 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
-        }).on("/solutions-table", { match ->
+        }).on("/solutions-table", { _ ->
             content.removeAll()
             content.add(AllSolutionsTable(serverUrl, routingMainPage))
         }).on("/hidden-task-list", {

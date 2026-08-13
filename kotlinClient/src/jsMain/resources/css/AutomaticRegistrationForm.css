@@ -1,20 +1,64 @@
-.AddUserAutomatically .base-form .separate-form-label {
-    font-weight: normal;
+.main-page > div:has(> .actionsPanel) {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100vh - 12rem);
+}
+
+.actionsPanel {
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.actionPanel {
+    flex: 1 1 20rem;
     align-items: center;
-    margin: 20px 0px;
-    font-size: 30px;
+    justify-content: space-between;
+    box-sizing: border-box;
+    min-height: 32rem;
+    padding: 2rem 1.5rem;
+    background-color: #FFFFFF;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0.6875rem;
 }
 
-.AddUserAutomatically input {
-    flex: 4;
-    border: 1px solid #ccc;
+.base-form {
+    flex: 1 1 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.AddUserAutomatically input[type="file"] {
+.base-form .separate-form-label {
+    margin: 0 0 auto;
+    font-size: 2rem;
+    font-weight: normal;
+    text-align: center;
+}
+
+.base-form .form-group {
     display: none;
 }
 
-.AddUserAutomatically .base-form .files-viewer {
-    margin: 20px 0px;
+.base-form .files-viewer {
+    margin: 0.75rem 0 auto;
+    text-align: center;
+}
+
+.files-viewer .btn {
+    font-size: 1rem;
+    padding: 0.25rem 2rem;
+}
+
+.actionPanel > .btn-primary {
+    position: static !important;
+    align-self: center;
+    margin-top: 1.5rem;
+}
+
+@media (max-width: 64rem) {
+    .actionPanel {
+        min-height: 24rem;
+    }
 }
