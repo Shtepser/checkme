@@ -69,6 +69,9 @@ external val cssAutomaticRegistration: dynamic
 @JsModule("./css/MyResultList.css")
 external val cssMyResultList: dynamic
 
+@JsModule("./css/AllSolutions.css")
+external val cssAllSolutions: dynamic
+
 class CheckMe : Application() {
     init {
         useModule(cssApp)
@@ -78,6 +81,7 @@ class CheckMe : Application() {
         useModule(cssBundleList)
         useModule(cssBundle)
         useModule(cssTaskList)
+        useModule(cssAllSolutions)
 //        useModule(cssErrorMessage)
 //        useModule(cssTaskForm)
 //        useModule(cssBundleForm)

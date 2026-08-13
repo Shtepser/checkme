@@ -1,8 +1,9 @@
 package ru.yarsu.contentPages.content.solutionsPages
 
 import io.kvision.core.onClick
+import io.kvision.html.Button
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
-import io.kvision.html.button
 import io.kvision.panel.SimplePanel
 import io.kvision.panel.VPanel
 import io.kvision.routing.Routing
@@ -13,7 +14,6 @@ import io.kvision.tabulator.TabulatorOptions
 import io.kvision.tabulator.tabulator
 import kotlinx.serialization.json.Json
 import ru.yarsu.serializableClasses.solution.IdScore
-import ru.yarsu.serializableClasses.solution.ResultScoreMessage
 import ru.yarsu.serializableClasses.solution.SolutionInformation
 import ru.yarsu.serializableClasses.solution.SolutionsTable
 
@@ -39,27 +39,14 @@ class AllSolutionsTableViewer(
                 "Неизвестный пользователь"
             }
             val row = mutableMapOf<String, String>()
-            row.put("id", user.first.toString())
-            row.put("solutions", Json.Default.encodeToString(user.second))
+            row["id"] = user.first.toString()
+            row["solutions"] = Json.Default.encodeToString(user.second)
             val listMaxScore = getListMaxScore(user.second)
             for (max in listMaxScore) {
-                row.put("taskId${max.id}", max.score.toString())
+                row["taskId${max.id}"] = max.score.toString()
             }
-            row.put("surnameNameLogin", surnameNameLogin)
+            row["surnameNameLogin"] = surnameNameLogin
             row
-        }
-    }
-
-    private fun getColorScore(score: Int?, result: Map<String, ResultScoreMessage>?): String {
-        return if ((score == null) || (score == 0) || (result == null)) {
-            "table-criteria-failed"
-        } else {
-            val criteriaScore = result.map { Pair(it.key, it.value.score) }.toMap()
-            if (criteriaScore.values.contains(0)) {
-                "table-criteria-fifty-fifty"
-            } else {
-                "table-criteria-passed"
-            }
         }
     }
 
@@ -81,9 +68,11 @@ class AllSolutionsTableViewer(
                 ).filter { it.taskId == taskId }
                 VPanel().apply {
                     this.addAll(
-                        solutions.map { solution ->
+                        solutions.filter {
+                            solution -> solution.totalScore == solutions.maxOf {solution -> solution.totalScore ?: -1}
+                        }.map { solution ->
                             val score = solution.totalScore
-                            Div("${solution.status}: $score", className = getColorScore(score, solution.result)).apply {
+                            Div("$score", className = "btn btn-link").apply {
                                 this.onClick {
                                     routing.navigate("/solution/${solution.id}")
                                 }
@@ -96,13 +85,15 @@ class AllSolutionsTableViewer(
     }
 
     init {
+        val downloadButton = Button("Скачать", style = ButtonStyle.PRIMARY)
+        add(downloadButton)
         val table = tabulator(data = getData(), false,
             options = TabulatorOptions(
                 columns = columns
             ),
             types = setOf(TableType.BORDERED)
         )
-        button("Скачать", className = "usually-button").onClick {
+        downloadButton.onClick {
             table.downloadCSV("solutionsTable")
         }
     }

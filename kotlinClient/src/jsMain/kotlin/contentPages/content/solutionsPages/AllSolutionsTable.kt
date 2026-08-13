@@ -1,5 +1,6 @@
 package ru.yarsu.contentPages.content.solutionsPages
 
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.button
 import io.kvision.html.h2
@@ -7,8 +8,6 @@ import io.kvision.panel.SimplePanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
-import org.w3c.fetch.RequestInit
-import ru.yarsu.localStorage.UserInformationStorage
 import kotlinx.serialization.json.Json
 import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.serializableClasses.ResponseError
@@ -20,7 +19,7 @@ class AllSolutionsTable(
 ) : SimplePanel() {
     init {
         h2("Все решения")
-        button("Список", className = "usually-button").onClick {
+        button("Список", style = ButtonStyle.LINK).onClick {
             routing.navigate("/solution-list/1")
         }
         val requestInit = createRequestHeaders(HttpMethod.GET)

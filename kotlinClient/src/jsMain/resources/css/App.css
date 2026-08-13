@@ -13,24 +13,18 @@
     min-height: 100vh;
 }
 
-/* Резервируем место под футер, только когда он есть на странице */
 #checkMe:has(.Footer) {
     padding-bottom: 5rem;
 }
-/* ---------- Основной контент ---------- */
-/* Обёртки (внешняя, шапочная и футерная) остаются без отступов */
+
 .app-content {
     box-sizing: border-box;
 }
 
-/* Отступы только у контентного блока: 8% по бокам —
-   контент чуть уже линии hr (6%) и выровнен с зонами шапки */
 .main-page {
-    padding: 1rem 8% 1.5rem;
+    padding: 1rem 8%;
 }
 
-/* ---------- Верхняя панель контентных страниц ---------- */
-/* Заголовок слева, желтая кнопка-действие справа, список ниже */
 .main-page > div > div:has(> h2) {
     display: flex;
     flex-wrap: wrap;
@@ -46,7 +40,6 @@
     flex-basis: 100%;
 }
 
-/* Пустой список: большая полупрозрачная надпись по центру */
 .not-found {
     padding: 3rem 0 1rem;
     text-align: center;
@@ -61,7 +54,7 @@
 
 @media (max-width: 64rem) {
     .main-page {
-        padding: 0.75rem 4% 1.25rem;
+        padding: 0.75rem 4%;
     }
 }
 
@@ -77,7 +70,6 @@ button {
     font: inherit;
 }
 
-/* ---------- Кнопки ---------- */
 .btn {
     font-size: 1.125rem;
     padding: 0.625rem 1.75rem;
@@ -121,7 +113,6 @@ button {
     cursor: not-allowed;
 }
 
-/* ---------- Всплывающие уведомления ---------- */
 .toastify {
     position: fixed;
     z-index: 1000;

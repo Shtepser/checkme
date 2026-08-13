@@ -24,7 +24,6 @@
     transform: translateY(-50%);
 }
 
-/* Кнопки шапки крупнее, но всё ещё компактнее формовых */
 .Header .btn {
     font-size: 1.125rem;
     padding: 0.5rem 2rem;

@@ -1,4 +1,3 @@
-/* Сетка карточек — НЕ затрагивает страницу набора */
 .main-page div:has(> .bundle-in-list):not(.Bundle) {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
