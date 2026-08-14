@@ -22,7 +22,7 @@
     border-radius: 0.6875rem;
 }
 
-.base-form {
+.actionsPanel .base-form {
     flex: 1 1 auto;
     width: 100%;
     display: flex;
@@ -30,18 +30,18 @@
     align-items: center;
 }
 
-.base-form .separate-form-label {
+.actionsPanel .base-form .separate-form-label {
     margin: 0 0 auto;
     font-size: 2rem;
     font-weight: normal;
     text-align: center;
 }
 
-.base-form .form-group {
+.actionsPanel .base-form .form-group {
     display: none;
 }
 
-.base-form .files-viewer {
+.actionsPanel .base-form .files-viewer {
     margin: 0.75rem 0 auto;
     text-align: center;
 }

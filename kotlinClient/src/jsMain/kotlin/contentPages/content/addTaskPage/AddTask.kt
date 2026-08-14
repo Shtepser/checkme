@@ -13,6 +13,7 @@ import io.kvision.form.text.TextArea
 import io.kvision.form.upload.Upload
 import io.kvision.form.upload.getFileWithContent
 import io.kvision.html.Button
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.Label
 import io.kvision.html.button
@@ -67,7 +68,7 @@ class AddTask(
             add(Label("JSON с критериями задачи", className = "separate-form-label"))
             val textArea = TextArea()
             add(
-                Label("Выберите JSON файл", forId = "input-file-0", className = "file-upload")
+                Label("Выберите JSON файл", forId = "input-file-0", className = "btn btn-secondary")
             )
             add(
                 Upload(accept = listOf(".json")) {
@@ -107,7 +108,7 @@ class AddTask(
             val scriptLabel = Label("Скрипт", className = "separate-form-label") {
                 display = Display.NONE
             }
-            val inputFileLabel = Label("Выберите файлы", forId = "input-file-1", className = "file-upload") {
+            val inputFileLabel = Label("Выберите файлы", forId = "input-file-1", className = "btn btn-secondary") {
                 display = Display.NONE
             }
             val addedScriptsFileViewer = Div("Файлы не выбраны", className = "files-viewer") {
@@ -160,7 +161,7 @@ class AddTask(
             this.validate()
             add(addedScriptsFileViewer)
         }
-        val buttonSend = button("Отправить", disabled = true, className = "usually-button")
+        val buttonSend = button("Отправить", disabled = true, style = ButtonStyle.PRIMARY)
         formPanelAddTask.onInput {
             buttonSend.disabled = !formPanelAddTask.validate()
         }
@@ -221,7 +222,7 @@ class AddTask(
             files.forEach { kFile ->
                 val fileViewer = Div().apply {
                     add(Div(kFile.name))
-                    add(Button("Удалить файл", className = "delete-file-button") {
+                    add(Button("Удалить файл", style = ButtonStyle.DANGER) {
                         onClick {
                             files.remove(kFile)
                             updateFilesViewer(filesViewer, files, form)
