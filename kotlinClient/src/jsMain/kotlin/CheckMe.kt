@@ -92,7 +92,7 @@ class CheckMe : Application() {
 //        useModule(cssJournal)
         useModule(cssTask)
         useModule(cssUserList)
-//        useModule(cssResult)
+        useModule(cssResult)
         useModule(cssLoading)
         useModule(cssTable)
         useModule(cssAutomaticRegistration)

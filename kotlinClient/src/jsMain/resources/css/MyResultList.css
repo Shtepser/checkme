@@ -70,6 +70,20 @@
     border-radius: 0 0.6875rem 0.6875rem 0;
 }
 
+.task-block-no::before,
+.task-block-incorrect::before,
+.task-block-partial::before,
+.task-block-correct::before {
+    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
+}
+
+.task-block-no::after,
+.task-block-incorrect::after,
+.task-block-partial::after,
+.task-block-correct::after {
+    border-left: 0.0625rem solid rgba(0, 0, 0, 0.5);
+}
+
 .task-block-correct::before,
 .task-block-correct::after {
     background-color: #619144;

@@ -1,6 +1,8 @@
 package ru.yarsu.contentPages.content.solutionPage
 
 import io.kvision.core.onClick
+import io.kvision.html.ButtonStyle
+import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.html.h2
 import io.kvision.panel.VPanel
@@ -19,12 +21,8 @@ class SolutionViewer(
         } else if (solution.status == "Проверено") {
             val score = solution.totalScore
             h2("Результат: $score")
-            div(solution.task.name, className = "task-link").onClick {
+            button("Перейти к заданию", style = ButtonStyle.LINK).onClick {
                 routing.navigate("task/${solution.task.id}")
-            }
-            hPanel(className="criteria-list") {
-                div("Критерий", className="criteria-message title")
-                div("Баллы", className="criteria-score title")
             }
             solution.result.values.forEach { (score, message) ->
                 hPanel(className="criteria-list") {

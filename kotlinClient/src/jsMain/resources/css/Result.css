@@ -1,44 +1,81 @@
-.criteria-passed {
-    color: #3E8D00;
+.main-page > div > div > div:has(> h2) {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
 }
 
-.criteria-passed::before {
-    content: "+";
-    margin-right: 5px;
+.main-page > div > div > div:has(> h2) > h2 {
+    margin: 0;
+    text-align: left;
 }
 
-.criteria-failed {
-    color: #CE2727;
+.main-page > div > div > div:has(> h2) > .btn-link {
+    margin-left: auto;
 }
 
-.criteria-failed::before {
-    content: "–";
-    margin-right: 5px;
+.main-page > div > div > div:has(> h2) > .criteria-list {
+    flex-basis: 100%;
 }
 
 .criteria-list {
-    display: flex;
-    margin-top: 10px;
+    position: relative;
+    box-sizing: border-box;
+    min-height: 6.25rem;
+    margin: 0 0 1.5rem;
+    background-color: #FFFFFF;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0.6875rem;
+    overflow: hidden;
 }
 
 .criteria-message {
-    flex: 4;
-    padding-right: 20px;
+    flex: 1 1 auto;
+    box-sizing: border-box;
+    padding: 0.75rem 1.5rem 0.75rem 6.5rem;
+    font-size: 1rem;
+    overflow-wrap: anywhere;
+}
+
+.criteria-message::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 5rem;
+}
+
+.criteria-message.criteria-passed::before {
+    background-color: #619144;
+    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
+}
+
+.criteria-message.criteria-failed::before {
+    background-color: #FF4444;
+    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
 }
 
 .criteria-score {
-    padding-left: 20px;
-    flex: 1;
+    flex: 0 0 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-left: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    font-size: 1.5rem;
 }
 
-.title {
-    font-weight: bold;
-}
+@media (max-width: 64rem) {
+    .criteria-message {
+        padding-left: 5.5rem;
+    }
 
-.task-link {
-    font-size: 24px;
-    display: block;
-    margin-bottom: 20px;
-    text-decoration: underline;
-    cursor: pointer;
+    .criteria-message::before {
+        width: 4rem;
+    }
+
+    .criteria-score {
+        flex-basis: 3.5rem;
+    }
 }

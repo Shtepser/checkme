@@ -27,7 +27,7 @@ class MySolutionList(
                     val jsonString = JSON.stringify(it)
                     val taskSolutions = Json.decodeFromString<TaskOrUserSolutionsFormat>(jsonString)
                     h2("Ваши решения задачи: ${taskSolutions.name}")
-                    button("Перейти к задаче", style = ButtonStyle.LINK).onClick {
+                    button("Перейти к заданию", style = ButtonStyle.LINK).onClick {
                         routing.navigate("task/${taskId}")
                     }
                     if (taskSolutions.solutions.isEmpty()) {
