@@ -1,6 +1,7 @@
 package ru.yarsu.contentPages.content.hiddenTask
 
 import io.kvision.html.Button
+import io.kvision.html.ButtonStyle
 import io.kvision.panel.HPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.toast.Toast
@@ -8,9 +9,7 @@ import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import kotlin.uuid.Uuid
 
@@ -19,7 +18,7 @@ class TaskHiddenButton(
     private var isActual: Boolean,
     private val taskId: Uuid,
     private val hPanel: HPanel? = null
-) : Button("", className = "hidden-button") {
+) : Button("", style = ButtonStyle.PRIMARY) {
     init {
         text = if (isActual) "Скрыть задачу" else "Показать задачу"
         this.onClick {

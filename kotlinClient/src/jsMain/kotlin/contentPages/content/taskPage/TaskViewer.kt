@@ -1,7 +1,6 @@
 package ru.yarsu.contentPages.content.taskPage
 
 import io.kvision.core.onChangeLaunch
-import io.kvision.core.onClick
 import io.kvision.core.onClickLaunch
 import io.kvision.core.onInput
 import io.kvision.form.FormPanel
@@ -10,6 +9,7 @@ import io.kvision.form.text.TextArea
 import io.kvision.form.upload.Upload
 import io.kvision.form.upload.getFileWithContent
 import io.kvision.html.Button
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.Label
 import io.kvision.html.button
@@ -53,7 +53,7 @@ class TaskViewer(
     init {
         h2(task.name)
         if (UserInformationStorage.isAdmin()) {
-            div("Решения задачи", className = "task-link").onClick {
+            button("Решения задачи", style = ButtonStyle.LINK).onClick {
                 routing.navigate("solution-list/task/${task.id}")
             }
         }
@@ -80,7 +80,7 @@ class TaskViewer(
         val formPanelSendSolution = formPanel<SolutionFileList>(className = "answer") {
             val addedFileViewer = Div("Файл не выбран", className = "file-viewer")
             add(
-                Label("Выберите файл c решением", forId = "input-solution-file", className = "file-upload")
+                Label("Выберите файл c решением", forId = "input-solution-file", className = "btn btn-secondary")
             )
             add(
                 SolutionFileList::file,
@@ -112,7 +112,7 @@ class TaskViewer(
                 addedFileViewer
             )
         }
-        val buttonSend = button("Отправить", disabled = true, className = "usually-button")
+        val buttonSend = button("Отправить ответ", disabled = true, style = ButtonStyle.PRIMARY)
         formPanelSendSolution.onInput {
             buttonSend.disabled = true
             if (formPanelSendSolution.validate()) {
@@ -151,7 +151,7 @@ class TaskViewer(
                 task.id
             )
             this.add(hiddenButton)
-            button("Удалить задачу", className = "usually-button warning-button").onClick {
+            button("Удалить задачу", style = ButtonStyle.DANGER).onClick {
                 deleteTask()
             }
         }
@@ -170,7 +170,7 @@ class TaskViewer(
             val file = Div().apply {
                 add(text)
                 add(Div(file.name))
-                add(Button("Удалить файл", className = "delete-file-button") {
+                add(Button("Удалить файл", style = ButtonStyle.DANGER) {
                     onClick {
                         text.value = ""
                         remove(text)

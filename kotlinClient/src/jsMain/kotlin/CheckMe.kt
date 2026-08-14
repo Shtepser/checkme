@@ -90,7 +90,7 @@ class CheckMe : Application() {
         useModule(cssTaskForm)
 //        useModule(cssBundleForm)
 //        useModule(cssJournal)
-//        useModule(cssTask)
+        useModule(cssTask)
         useModule(cssUserList)
 //        useModule(cssResult)
         useModule(cssLoading)

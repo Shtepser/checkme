@@ -2,7 +2,7 @@
     gap: 0.5rem;
 }
 
-.main-page > div > div > div > .btn-primary {
+.main-page > div > div > div:has(> .tabulator) > .btn-primary {
     position: absolute;
     top: 5.6rem;
     right: calc(8% + 9rem);
@@ -11,7 +11,7 @@
 }
 
 @media (max-width: 64rem) {
-    .main-page > div > div > div > .btn-primary {
+    .main-page > div > div > div:has(> .tabulator) > .btn-primary {
         right: calc(4% + 9rem);
     }
 }
