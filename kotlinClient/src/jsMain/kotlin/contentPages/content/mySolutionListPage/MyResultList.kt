@@ -1,5 +1,6 @@
 package ru.yarsu.contentPages.content.mySolutionListPage
 
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.button
 import io.kvision.html.div
@@ -24,12 +25,21 @@ class MyResultList(
         if ((page == null) || (page < 1)) {
             routing.navigate("/my-result-list/1")
         } else {
-            hPanel(className = "pagination") {
-                button("Назад").onClick {
+            hPanel(className = "pagination-top") {
+                button("Назад", style = ButtonStyle.LINK).onClick {
                     routing.navigate("/my-result-list/${page - 1}")
                 }
-                div("Страница $page")
-                button("Вперёд").onClick {
+                div("$page", className = "page")
+                button("Вперёд", style = ButtonStyle.LINK).onClick {
+                    routing.navigate("/my-result-list/${page + 1}")
+                }
+            }
+            hPanel(className = "pagination-bottom") {
+                button("Назад", style = ButtonStyle.LINK).onClick {
+                    routing.navigate("/my-result-list/${page - 1}")
+                }
+                div("$page", className = "page")
+                button("Вперёд", style = ButtonStyle.LINK).onClick {
                     routing.navigate("/my-result-list/${page + 1}")
                 }
             }
@@ -41,7 +51,7 @@ class MyResultList(
                         console.log(jsonString)
                         val solutionList = Json.decodeFromString<List<SolutionInMyListFormat>>(jsonString)
                         if (solutionList.isEmpty()) {
-                            this.add(Div("Решения не найдены"))
+                            this.add(Div("Решения не найдены", className = "not-found"))
                         } else {
                             this.add(MyResultListViewer(solutionList, routing))
                         }

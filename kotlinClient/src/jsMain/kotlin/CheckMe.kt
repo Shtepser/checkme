@@ -93,7 +93,7 @@ class CheckMe : Application() {
         useModule(cssTable)
         useModule(cssAutomaticRegistration)
         useModule(jsTasks)
-//        useModule(cssMyResultList)
+        useModule(cssMyResultList)
     }
     override fun start() {
         val serverUrl = js("SERVER_URL").toString()

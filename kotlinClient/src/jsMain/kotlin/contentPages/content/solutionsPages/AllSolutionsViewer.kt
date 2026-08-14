@@ -24,7 +24,7 @@ class AllSolutionsViewer(
                 div(solution.status)
                 if ((solution.status == "Проверено")) {
                     val score = solution.totalScore
-                    div("Результат: $score")
+                    div("$score")
                 }
                 val dateTime = LocalDateTime.parse(solution.date).let { LocalDateTime(it.year, it.month, it.day, it.hour, it.minute, it.second) }
                 div("${dateTime.date} ${dateTime.time}")

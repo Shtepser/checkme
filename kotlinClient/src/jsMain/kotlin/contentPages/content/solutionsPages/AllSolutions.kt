@@ -29,7 +29,7 @@ class AllSolutions(
         if ((page == null) || (page < 1)) {
             routing.navigate("/solution-list/1")
         } else {
-            hPanel(className = "pagination") {
+            hPanel(className = "pagination-top") {
                 button("Назад", style = ButtonStyle.LINK).onClick {
                     routing.navigate("/solution-list/${page - 1}")
                 }
@@ -68,7 +68,7 @@ class AllSolutions(
                     )
                 }
             }
-            hPanel(className = "pagination") {
+            hPanel(className = "pagination-bottom") {
                 button("Назад", style = ButtonStyle.LINK).onClick {
                     routing.navigate("/solution-list/${page - 1}")
                 }

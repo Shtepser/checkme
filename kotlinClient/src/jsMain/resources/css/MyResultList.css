@@ -1,56 +1,121 @@
+.bundle-name {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: normal;
+    text-align: center;
+}
+
 .bundle-block {
-
+    gap: 1.5rem;
 }
 
-.task-block-no {
-    margin-top: 22px;
-    background: #EBEBEB;
-    padding: 15px;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border-left: 25px solid;
-    border-left-color: #212121;
-    cursor: pointer;
-}
-
-.task-block-incorrect {
-    margin-top: 22px;
-    background: #EBEBEB;
-    padding: 15px;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border-left: 25px solid;
-    border-left-color: #FF4444;
-    cursor: pointer;
-}
-
-.task-block-partial {
-    margin-top: 22px;
-    background: #EBEBEB;
-    padding: 15px;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border-left: 25px solid;
-    border-left-color: #FFBB33;
-    cursor: pointer;
-}
-
+.task-block-no,
+.task-block-incorrect,
+.task-block-partial,
 .task-block-correct {
-    margin-top: 22px;
-    background: #EBEBEB;
-    padding: 15px;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border-left: 25px solid;
-    border-left-color: #00C851;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 7rem;
+    padding: 1rem 9.5rem;
+    background-color: #FFFFFF;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0.6875rem;
+    transition: box-shadow 0.15s ease-in-out;
+}
+
+.task-block-no,
+.task-block-incorrect,
+.task-block-partial,
+.task-block-correct {
     cursor: pointer;
 }
 
-h3.bundle-name {
-    margin-bottom: 0;
+.task-block-no:hover,
+.task-block-incorrect:hover,
+.task-block-partial:hover,
+.task-block-correct:hover {
+    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
 }
 
-.h2-task-link {
-    text-decoration: underline;
-    cursor: pointer;
+.task-block-no::before,
+.task-block-no::after,
+.task-block-incorrect::before,
+.task-block-incorrect::after,
+.task-block-partial::before,
+.task-block-partial::after,
+.task-block-correct::before,
+.task-block-correct::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 8rem;
+}
+
+.task-block-no::before,
+.task-block-incorrect::before,
+.task-block-partial::before,
+.task-block-correct::before {
+    left: 0;
+    border-radius: 0.6875rem 0 0 0.6875rem;
+}
+
+.task-block-no::after,
+.task-block-incorrect::after,
+.task-block-partial::after,
+.task-block-correct::after {
+    right: 0;
+    border-radius: 0 0.6875rem 0.6875rem 0;
+}
+
+.task-block-correct::before,
+.task-block-correct::after {
+    background-color: #619144;
+}
+
+.task-block-incorrect::before,
+.task-block-incorrect::after {
+    background-color: #FF4444;
+}
+
+.task-block-partial::before,
+.task-block-partial::after {
+    background-color: #FFBB33;
+}
+
+.task-block-no::before,
+.task-block-no::after {
+    background-color: #2D3748;
+}
+
+.task-block-no > div,
+.task-block-incorrect > div,
+.task-block-partial > div,
+.task-block-correct > div {
+    margin: 0.125rem 0;
+    font-size: 1.125rem;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 64rem) {
+    .task-block-no,
+    .task-block-incorrect,
+    .task-block-partial,
+    .task-block-correct {
+        padding: 1rem 6rem;
+    }
+
+    .task-block-no::before,
+    .task-block-no::after,
+    .task-block-incorrect::before,
+    .task-block-incorrect::after,
+    .task-block-partial::before,
+    .task-block-partial::after,
+    .task-block-correct::before,
+    .task-block-correct::after {
+        width: 4.5rem;
+    }
 }
