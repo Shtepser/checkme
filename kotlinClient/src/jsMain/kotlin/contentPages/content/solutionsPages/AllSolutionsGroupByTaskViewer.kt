@@ -27,14 +27,14 @@ class AllSolutionsGroupByTaskViewer(
                 if (!taskSolutions.solutions.isEmpty()) {
                     for (solution in taskSolutions.solutions) {
                         vPanel(className = "block") {
-                            div("Пользователь: ${solution.user.surname} ${solution.user.name}")
-                            div("Статус: ${solution.status}")
+                            div("${solution.user.surname} ${solution.user.name}")
+                            div(solution.status)
                             if ((solution.status == "Проверено")) {
                                 val score = solution.totalScore
-                                div("Результат: $score")
+                                div("$score")
                             }
                             val dateTime = LocalDateTime.parse(solution.date).let { LocalDateTime(it.year, it.month, it.day, it.hour, it.minute, it.second) }
-                            div("${solution.status} - ${dateTime.date} ${dateTime.time}")
+                            div("${dateTime.date} ${dateTime.time}")
                             onClick {
                                 routing.navigate("solution/${solution.id}")
                             }
@@ -42,7 +42,7 @@ class AllSolutionsGroupByTaskViewer(
                         tag(TAG.HR)
                     }
                 } else {
-                    div("Решения не найдены")
+                    div("Решения не найдены", className = "not-found")
                 }
             }
         }

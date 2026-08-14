@@ -282,3 +282,36 @@ button {
         width: 4.5rem;
     }
 }
+
+.block:has(> h4) {
+    padding: 1.5rem 2.5rem;
+    min-height: 0;
+    gap: 1.5rem;
+    cursor: default;
+}
+
+.block:has(> h4):hover {
+    box-shadow: none;
+}
+
+.block:has(> h4)::before,
+.block:has(> h4)::after {
+    content: none;
+}
+
+.block > h4 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: normal;
+    text-align: center;
+}
+
+.block hr {
+    display: none;
+}
+
+@media (max-width: 64rem) {
+    .block:has(> h4) {
+        padding: 1rem 1.25rem;
+    }
+}

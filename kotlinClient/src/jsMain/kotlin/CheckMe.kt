@@ -72,6 +72,9 @@ external val cssMyResultList: dynamic
 @JsModule("./css/AllSolutions.css")
 external val cssAllSolutions: dynamic
 
+@JsModule("./css/AllSolutionsGroupByTask.css")
+external val cssAllSolutionsGroupByTask: dynamic
+
 class CheckMe : Application() {
     init {
         useModule(cssApp)
@@ -82,6 +85,7 @@ class CheckMe : Application() {
         useModule(cssBundle)
         useModule(cssTaskList)
         useModule(cssAllSolutions)
+        useModule(cssAllSolutionsGroupByTask)
 //        useModule(cssErrorMessage)
 //        useModule(cssTaskForm)
 //        useModule(cssBundleForm)
