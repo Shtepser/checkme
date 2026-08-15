@@ -88,7 +88,7 @@ class CheckMe : Application() {
         useModule(cssAllSolutionsGroupByTask)
 //        useModule(cssErrorMessage)
         useModule(cssTaskForm)
-//        useModule(cssBundleForm)
+        useModule(cssBundleForm)
 //        useModule(cssJournal)
         useModule(cssTask)
         useModule(cssUserList)

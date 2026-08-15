@@ -15,9 +15,10 @@
 }
 
 .Bundle .dropdown-menu {
-    left: auto;
-    right: 0;
-    transform: none;
+    top: calc(100% + 0.25rem) !important;
+    left: auto !important;
+    right: 0 !important;
+    transform: none !important;
 }
 
 .Bundle h4 {

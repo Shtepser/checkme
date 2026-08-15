@@ -9,13 +9,42 @@ import io.kvision.html.tag
 import io.kvision.panel.VPanel
 import io.kvision.panel.hPanel
 import io.kvision.routing.Routing
+import kotlinx.browser.document
+import org.w3c.dom.HTMLElement
 import ru.yarsu.localStorage.UserInformationStorage
 
 class Header(
     private val routing: Routing,
     private val routingMainPage: Routing,
 ) : VPanel() {
+    companion object {
+        private var autoCloseInstalled = false
+
+        fun installAutoClose() {
+            if (autoCloseInstalled) return
+            autoCloseInstalled = true
+
+            document.addEventListener("click", { ev ->
+                val target = ev.target as? HTMLElement ?: return@addEventListener
+                val current = target.closest(".dropdown") as? HTMLElement
+                val dropdowns = document.querySelectorAll(".dropdown")
+                for (i in 0 until dropdowns.length) {
+                    val node = dropdowns.item(i) as? HTMLElement ?: continue
+                    if (node == current) continue
+                    (node.querySelector(".dropdown-menu") as? HTMLElement)
+                        ?.classList?.remove("show")
+                    (node.querySelector(".dropdown-toggle") as? HTMLElement)?.let { toggle ->
+                        toggle.classList.remove("show")
+                        toggle.setAttribute("aria-expanded", "false")
+                    }
+                    node.classList.remove("show")
+                }
+            }, true)
+        }
+    }
+
     init {
+        installAutoClose()
         hPanel(className = "Header") {
             div("CheckMe", className = "app-title")
             if (!UserInformationStorage.isAdmin()) {
@@ -82,62 +111,10 @@ class Header(
                     ).onClick { routingMainPage.navigate("/journal/1") }
                 }
             }
-
-
-
-//            div(className = "navigation") {
-//                button(
-//                    "Наборы задач",
-//                    className = "navigation-button"
-//                ).onClick { routingMainPage.navigate("/") }
-//                if (UserInformationStorage.isAdmin()) {
-//                    button(
-//                        "Список скрытых наборов",
-//                        className = "navigation-button"
-//                    ).onClick { routingMainPage.navigate("/hidden-bundle-list") }
-//                }
-//                if (UserInformationStorage.isAdmin()) {
-//                    button(
-//                        "Список задач",
-//                        className = "navigation-button"
-//                    ).onClick { routingMainPage.navigate("/tasks/all") }
-//                    button(
-//                        "Список скрытых задач",
-//                        className = "navigation-button"
-//                    ).onClick { routingMainPage.navigate("/hidden-task-list") }
-//                }
-//                button(
-//                    "Мои решения",
-//                    className = "navigation-button"
-//                ).onClick { routingMainPage.navigate("/my-result-list/1") }
-//                if (UserInformationStorage.isAdmin()) {
-//                    button(
-//                        "Все решения",
-//                        className = "navigation-button"
-//                    ).onClick { routingMainPage.navigate("/solution-list/1") }
-//                    button(
-//                        "Решения по задачам",
-//                        className = "navigation-button"
-//                    ).onClick { routingMainPage.navigate("/task-solutions-list/1") }
-//                    button(
-//                        "Пользователи",
-//                        className = "navigation-button"
-//                    ).onClick { routingMainPage.navigate("/user-list") }
-//                    button(
-//                        "Информация о пользователях",
-//                        className = "navigation-button"
-//                    ).onClick { routingMainPage.navigate("/user-info") }
-//                    button(
-//                        "Журнал",
-//                        className = "navigation-button"
-//                    ).onClick { routingMainPage.navigate("/journal/1") }
-//                }
-//            }
             val userName = UserInformationStorage.getUserInformation()
             if (userName == null) {
                 routing.navigate("/authorization/sign_in")
             } else {
-//                div(userName.username, className = "username")
                 dropDown(userName.username, style = ButtonStyle.SECONDARY) {
                     if (!UserInformationStorage.isAdmin()) {
                         button("Сменить пароль", style = ButtonStyle.PRIMARY) {
@@ -154,19 +131,6 @@ class Header(
                     }
                 }
             }
-//            if (!UserInformationStorage.isAdmin()) {
-//                button("Сменить пароль", className = "usually-button") {
-//                    onClick {
-//                        routingMainPage.navigate("/user/change-password")
-//                    }
-//                }
-//            }
-//            button("Выйти", className = "usually-button signout") {
-//                onClick {
-//                    UserInformationStorage.deleteUserInformation()
-//                    routing.navigate("/authorization/sign_in")
-//                }
-//            }
         }
         tag(TAG.HR)
     }

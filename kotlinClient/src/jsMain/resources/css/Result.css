@@ -1,20 +1,20 @@
-.main-page > div > div > div:has(> h2) {
+.main-page > div > div > div:has(> h2):not(.Bundle):not(.Task) {
     flex-direction: row !important;
     flex-wrap: wrap;
     align-items: center;
     gap: 1.5rem;
 }
 
-.main-page > div > div > div:has(> h2) > h2 {
+.main-page > div > div > div:has(> h2):not(.Bundle):not(.Task) > h2 {
     margin: 0;
     text-align: left;
 }
 
-.main-page > div > div > div:has(> h2) > .btn-link {
+.main-page > div > div > div:has(> h2):not(.Bundle):not(.Task) > .btn-link {
     margin-left: auto;
 }
 
-.main-page > div > div > div:has(> h2) > .criteria-list {
+.main-page > div > div > div:has(> h2):not(.Bundle):not(.Task) > .criteria-list {
     flex-basis: 100%;
 }
 

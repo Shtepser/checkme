@@ -9,6 +9,7 @@ import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
+import ru.yarsu.contentPages.content.addBundlePage.AddBundle
 import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.enumClasses.ListType
 import ru.yarsu.localStorage.UserInformationStorage
@@ -26,11 +27,12 @@ class BundlesList(
         } else {
             h2("Скрытые наборы заданий")
         }
+        val addBundle = AddBundle(serverUrl, routing)
         if (UserInformationStorage.isAdmin()) {
             button(
                 "Cоздать набор",
                 style = ButtonStyle.LINK
-            ).onClick { routing.navigate("/add-bundle") }
+            ).onClick { addBundle.show() }
         }
         val requestInit = createRequestHeaders(HttpMethod.GET)
         window.fetch(serverUrl + "bundle/${listType.keyWord}", requestInit).then { response ->
