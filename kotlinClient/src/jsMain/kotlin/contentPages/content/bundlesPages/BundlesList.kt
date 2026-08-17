@@ -31,7 +31,7 @@ class BundlesList(
         if (UserInformationStorage.isAdmin()) {
             button(
                 "Cоздать набор",
-                style = ButtonStyle.LINK
+                style = ButtonStyle.PRIMARY
             ).onClick { addBundle.show() }
         }
         val requestInit = createRequestHeaders(HttpMethod.GET)

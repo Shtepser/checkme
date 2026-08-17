@@ -32,7 +32,7 @@
     gap: 1.5rem;
 }
 
-.main-page > div > div:has(> h2) > .btn-link {
+.main-page > div > div:has(> h2):not(.Task):not(.TaskAdd) > .btn {
     margin-left: auto;
 }
 
@@ -314,4 +314,140 @@ button {
     .block:has(> h4) {
         padding: 1rem 1.25rem;
     }
+}
+
+.modal-window.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    z-index: 1050;
+}
+
+.modal-window .modal-dialog {
+    pointer-events: none;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 42rem;
+}
+
+.modal-window .modal-content {
+    pointer-events: auto;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #FFFFFF;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0.6875rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.25);
+}
+
+.modal-window .modal-header {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0;
+    border: 0;
+}
+
+.modal-window .modal-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: normal;
+}
+
+.modal-window .btn-close {
+    position: relative;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    background-color: #FFFFFF;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0.5rem;
+    box-shadow: none;
+    cursor: pointer;
+    transition: box-shadow 0.15s ease-in-out, background-color 0.15s ease-in-out;
+}
+
+.modal-window .btn-close:hover {
+    background-color: #F56565;
+    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-window .btn-close::before,
+.modal-window .btn-close::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1rem;
+    height: 0.125rem;
+    background-color: #000000;
+}
+
+.modal-window .btn-close::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.modal-window .btn-close::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.modal-window .modal-body {
+    padding: 2rem 1.5rem 1.5rem;
+}
+
+.modal-window .separate-form-label {
+    display: block;
+    margin: 1.5rem 0 0.75rem;
+    font-size: 1.5rem;
+    font-weight: normal;
+    text-align: left;
+}
+
+.modal-window input[type="text"],
+.modal-window input[type="password"] {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background-color: #FFFFFF;
+    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-radius: 0.6875rem;
+    font: inherit;
+    font-size: 1rem;
+}
+
+.modal-window .invalid-feedback {
+    color: #FF4444;
+}
+
+.modal-window .is-invalid {
+    border-color: #FF4444;
+}
+
+.modal-window .base-form > div:last-child {
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.modal-window .modal-footer:empty {
+    display: none;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1040;
 }

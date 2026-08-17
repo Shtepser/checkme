@@ -66,12 +66,6 @@
     margin: 0;
 }
 
-.Task > .btn-primary:nth-last-child(2) {
-    grid-column: 3;
-    grid-row: 1;
-    margin: 0;
-}
-
 .Task > .btn-danger:last-child {
     grid-column: 4;
     grid-row: 1;
@@ -175,10 +169,22 @@
     font-size: 1rem;
 }
 
-.Task > .btn-primary:nth-last-child(3) {
+.Task > .answer + .btn-primary {
     grid-column: 1;
     grid-row: 6;
     justify-self: start;
+    margin: 0;
+}
+
+.Task > .answer + .btn-primary + .btn-primary {
+    grid-column: 3;
+    grid-row: 1;
+    margin: 0;
+}
+
+.Task > .btn-danger:last-child {
+    grid-column: 4;
+    grid-row: 1;
     margin: 0;
 }
 
@@ -194,16 +200,16 @@
     .Task > .best-solution,
     .Task > .solution-label,
     .Task > .answer,
-    .Task > .btn-primary:nth-last-child(3),
-    .Task > .btn-primary:nth-last-child(2),
+    .Task > .answer + .btn-primary,
+    .Task > .answer + .btn-primary + .btn-primary,
     .Task > .btn-danger:last-child {
         grid-column: 1;
         grid-row: auto;
     }
 
     .Task > .btn-link,
-    .Task > .btn-primary:nth-last-child(3),
-    .Task > .btn-primary:nth-last-child(2),
+    .Task > .answer + .btn-primary,
+    .Task > .answer + .btn-primary + .btn-primary,
     .Task > .btn-danger:last-child {
         justify-self: start;
     }

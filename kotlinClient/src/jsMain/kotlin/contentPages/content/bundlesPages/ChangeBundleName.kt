@@ -26,7 +26,7 @@ class ChangeBundleName(
     private val serverUrl: String,
     bundleId: String,
     private val routing: Routing
-) : Modal(className = "BundleAdd") {
+) : Modal(className = "modal-window BundleAdd") {
     init {
         h2("Редактирование набора")
         val formPanelAddBundle = formPanel<FormAddBundle>(className = "base-form") {

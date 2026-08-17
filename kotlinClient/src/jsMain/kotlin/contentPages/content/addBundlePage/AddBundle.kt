@@ -25,7 +25,7 @@ import ru.yarsu.serializableClasses.bundle.FormAddBundle
 class AddBundle(
     private val serverUrl: String,
     private val routing: Routing
-) : Modal(className = "BundleAdd") {
+) : Modal(className = "modal-window BundleAdd") {
     init {
         this.hide()
         h2("Создание набора")

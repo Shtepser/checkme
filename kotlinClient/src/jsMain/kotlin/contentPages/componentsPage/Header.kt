@@ -11,9 +11,11 @@ import io.kvision.panel.hPanel
 import io.kvision.routing.Routing
 import kotlinx.browser.document
 import org.w3c.dom.HTMLElement
+import ru.yarsu.contentPages.content.userPages.ChangeUserPassword
 import ru.yarsu.localStorage.UserInformationStorage
 
 class Header(
+    private val serverUrl: String,
     private val routing: Routing,
     private val routingMainPage: Routing,
 ) : VPanel() {
@@ -117,9 +119,10 @@ class Header(
             } else {
                 dropDown(userName.username, style = ButtonStyle.SECONDARY) {
                     if (!UserInformationStorage.isAdmin()) {
+                        val windowChangeUserPassword = ChangeUserPassword(serverUrl, routingMainPage)
                         button("Сменить пароль", style = ButtonStyle.PRIMARY) {
                             onClick {
-                                routingMainPage.navigate("/user/change-password")
+                                windowChangeUserPassword.show()
                             }
                         }
                     }

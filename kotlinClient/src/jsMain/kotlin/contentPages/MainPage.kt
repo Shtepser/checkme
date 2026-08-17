@@ -26,7 +26,6 @@ import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
 import ru.yarsu.contentPages.content.userInfoPage.UserInfoTable
 import ru.yarsu.contentPages.content.userListPage.UserList
-import ru.yarsu.contentPages.content.userPages.ChangeUserPassword
 import ru.yarsu.enumClasses.ListType
 import kotlin.uuid.Uuid
 
@@ -40,7 +39,7 @@ class MainPage(
         if (userName == null){
             routing.navigate("/authorization/sign_in")
         }
-        val header = Header(routing, routingMainPage)
+        val header = Header(serverUrl, routing, routingMainPage)
         val content = Content(serverUrl, routingMainPage)
         val footer = Footer()
         div(className = "app-content"){
@@ -94,13 +93,6 @@ class MainPage(
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
                 content.add(AutomaticRegistration(serverUrl))
-            } else {
-                routingMainPage.navigate("/")
-            }
-        }).on("/user/change-password", {
-            if (!UserInformationStorage.isAdmin()) {
-                content.removeAll()
-                content.add(ChangeUserPassword(serverUrl, routingMainPage))
             } else {
                 routingMainPage.navigate("/")
             }
