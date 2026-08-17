@@ -118,6 +118,7 @@ button {
     z-index: 1000;
     padding: 0.875rem 1.5rem;
     border-radius: 0.6875rem;
+    border-color: rgba(0, 0, 0, 0.5);
     box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
     color: #FFFFFF;
 }
@@ -131,7 +132,11 @@ button {
 }
 
 .kv-toastify-danger {
-    background-color: #FF4444;
+    background-color: #FF4444 !important;
+}
+
+.kv-toastify-success {
+    background-color: #619144 !important;
 }
 
 .main-page > div > div:has(> :is(.pagination, .pagination-top, .pagination-bottom)) {

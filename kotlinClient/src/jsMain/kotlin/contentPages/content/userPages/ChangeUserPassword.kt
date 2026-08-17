@@ -74,10 +74,18 @@ class ChangeUserPassword(
         window.fetch(serverUrl + "user/change-password", requestInit).then { response ->
             if (response.status.toInt() == 200) {
                 response.json().then {
-                    routing.navigate("/")
+                    formPanelChangePassword.clearData()
+                    Toast.success(
+                        "Пароль успешно изменён",
+                        ToastOptions(
+                            duration = 3000,
+                            position = ToastPosition.TOPRIGHT,
+                        )
+                    )
                 }
             } else if (response.status.toInt() == 400) {
                 response.json().then {
+                    formPanelChangePassword.clearData()
                     val jsonString = JSON.stringify(it)
                     val responseError =
                         Json.Default.decodeFromString<ResponseError>(jsonString)
@@ -90,6 +98,7 @@ class ChangeUserPassword(
                     )
                 }
             } else {
+                formPanelChangePassword.clearData()
                 Toast.danger(
                     "Код ошибки ${response.status}: ${response.statusText}",
                     ToastOptions(
