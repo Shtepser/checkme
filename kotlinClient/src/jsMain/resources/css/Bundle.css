@@ -46,8 +46,9 @@
     margin: 0 0 1.5rem;
 }
 
-.Bundle .bundle-in-list .bundle-item {
+.Bundle .bundle-in-list [class*="bundle-item-"] {
     position: relative;
+    box-sizing: border-box;
     aspect-ratio: auto;
     width: 100%;
     min-height: 5.5rem;
@@ -57,11 +58,16 @@
     background-color: #FFFFFF;
     border: 0.0625rem solid rgba(0, 0, 0, 0.5);
     border-radius: 0.6875rem;
-    cursor: default;
+    cursor: pointer;
+    transition: box-shadow 0.15s ease-in-out;
 }
 
-.Bundle .bundle-item::before,
-.Bundle .bundle-item::after {
+.Bundle .bundle-in-list [class*="bundle-item-"]:hover {
+    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+}
+
+.Bundle [class*="bundle-item-"]::before,
+.Bundle [class*="bundle-item-"]::after {
     content: '';
     position: absolute;
     top: 0;
@@ -70,26 +76,39 @@
     background-color: #FFFFFF;
 }
 
-.Bundle .bundle-item::before {
+.Bundle [class*="bundle-item-"]::before {
     left: 0;
     border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
     border-radius: 0.6875rem 0 0 0.6875rem;
 }
 
-.Bundle .bundle-item::after {
+.Bundle [class*="bundle-item-"]::after {
     right: 0;
     border-left: 0.0625rem solid rgba(0, 0, 0, 0.5);
     border-radius: 0 0.6875rem 0.6875rem 0;
 }
 
-.Bundle .bundle-in-list .name {
-    font-size: 1.25rem;
-    font-weight: bold;
-    text-align: center;
-    overflow-wrap: anywhere;
+.Bundle [class*="bundle-item-correct" i]::before,
+.Bundle [class*="bundle-item-correct" i]::after {
+    background-color: #619144;
 }
 
-.Bundle .bundle-item .name + div {
+.Bundle [class*="bundle-item-partial" i]::before,
+.Bundle [class*="bundle-item-partial" i]::after {
+    background-color: #FFBB33;
+}
+
+.Bundle [class*="bundle-item-incorrect" i]::before,
+.Bundle [class*="bundle-item-incorrect" i]::after {
+    background-color: #FF4444;
+}
+
+.Bundle [class*="bundle-item-no" i]::before,
+.Bundle [class*="bundle-item-no" i]::after {
+    background-color: #2D3748;
+}
+
+.Bundle [class*="bundle-item-"] .name + div {
     margin-top: 0.25rem;
     font-size: 1rem;
     color: rgba(0, 0, 0, 0.7);

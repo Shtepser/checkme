@@ -9,6 +9,7 @@ import io.kvision.panel.VPanel
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
 import kotlinx.datetime.LocalDateTime
+import ru.yarsu.contentPages.content.getSolutionBlockColorName
 import ru.yarsu.serializableClasses.solution.SolutionsGroupByTask
 
 class AllSolutionsGroupByTaskViewer(
@@ -26,7 +27,7 @@ class AllSolutionsGroupByTaskViewer(
                 tag(TAG.HR)
                 if (!taskSolutions.solutions.isEmpty()) {
                     for (solution in taskSolutions.solutions) {
-                        vPanel(className = "block") {
+                        vPanel(className = "solution-block-${getSolutionBlockColorName(solution.result)}") {
                             div("${solution.user.surname} ${solution.user.name}")
                             div(solution.status)
                             if ((solution.status == "Проверено")) {

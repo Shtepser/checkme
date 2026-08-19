@@ -59,6 +59,22 @@ internal fun selectBundleTasks(
     }
 }
 
+internal fun selectBundleTasksWithBestScore(
+    bundleId: UUID,
+    userId: UUID,
+    bundleOperations: BundleOperationHolder,
+): Result<List<TaskAndOrder>, FetchingBundleTasksError> {
+    return when (
+        val tasks = bundleOperations.fetchBundleTasksWithBestScoreById(bundleId, userId)
+    ) {
+        is Success -> Success(tasks.value)
+        is Failure -> when (tasks.reason) {
+            BundleFetchingError.NO_SUCH_BUNDLE -> Failure(FetchingBundleTasksError.NO_SUCH_BUNDLE)
+            BundleFetchingError.UNKNOWN_DATABASE_ERROR -> Failure(FetchingBundleTasksError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
 internal fun selectBundles(bundleOperations: BundleOperationHolder): Result<List<Bundle>, FetchingBundleError> {
     return when (
         val bundles = bundleOperations.fetchAllBundles()

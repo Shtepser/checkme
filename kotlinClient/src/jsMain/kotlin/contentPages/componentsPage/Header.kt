@@ -26,20 +26,20 @@ class Header(
             if (autoCloseInstalled) return
             autoCloseInstalled = true
 
-            document.addEventListener("click", { ev ->
-                val target = ev.target as? HTMLElement ?: return@addEventListener
+            document.addEventListener("click", { event ->
+                val target = event.target as? HTMLElement ?: return@addEventListener
                 val current = target.closest(".dropdown") as? HTMLElement
                 val dropdowns = document.querySelectorAll(".dropdown")
                 for (i in 0 until dropdowns.length) {
-                    val node = dropdowns.item(i) as? HTMLElement ?: continue
-                    if (node == current) continue
-                    (node.querySelector(".dropdown-menu") as? HTMLElement)
+                    val element = dropdowns.item(i) as? HTMLElement ?: continue
+                    if (element == current) continue
+                    (element.querySelector(".dropdown-menu") as? HTMLElement)
                         ?.classList?.remove("show")
-                    (node.querySelector(".dropdown-toggle") as? HTMLElement)?.let { toggle ->
-                        toggle.classList.remove("show")
-                        toggle.setAttribute("aria-expanded", "false")
+                    (element.querySelector(".dropdown-toggle") as? HTMLElement)?.let { element ->
+                        element.classList.remove("show")
+                        element.setAttribute("aria-expanded", "false")
                     }
-                    node.classList.remove("show")
+                    element.classList.remove("show")
                 }
             }, true)
         }

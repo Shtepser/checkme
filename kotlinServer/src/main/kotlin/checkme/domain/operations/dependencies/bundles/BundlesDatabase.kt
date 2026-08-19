@@ -14,6 +14,8 @@ interface BundlesDatabase {
 
     fun selectBundleTasksById(id: UUID): List<TaskAndOrder>
 
+    fun selectBundleTasksWithBestScoreById(bundleId: UUID, userId: UUID): List<TaskAndOrder>
+
     fun selectAllBundlesByTaskId(taskId: UUID): List<Bundle>
 
     fun selectAllBundleTasksWithUserBestResult(

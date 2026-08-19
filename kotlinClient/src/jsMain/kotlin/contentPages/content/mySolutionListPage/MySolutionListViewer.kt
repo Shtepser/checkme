@@ -6,6 +6,7 @@ import io.kvision.panel.VPanel
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
 import kotlinx.datetime.LocalDateTime
+import ru.yarsu.contentPages.content.getSolutionBlockColorName
 import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
 
 class MySolutionListViewer(
@@ -14,7 +15,7 @@ class MySolutionListViewer(
 ) : VPanel() {
     init {
         for (solution in solutionList) {
-            vPanel(className = "block") {
+            vPanel(className = "solution-block-${getSolutionBlockColorName(solution.result)}") {
                 div(solution.status)
                 if ((solution.status == "Проверено")) {
                     val score = solution.totalScore

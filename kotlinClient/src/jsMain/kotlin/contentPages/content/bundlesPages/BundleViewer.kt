@@ -19,6 +19,7 @@ import ru.yarsu.contentPages.content.hiddenBundle.BundleHiddenButton
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import ru.yarsu.contentPages.content.createRequestHeaders
+import ru.yarsu.contentPages.content.getTaskBlockColorName
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.BundleFormat
@@ -69,7 +70,9 @@ class BundleViewer(
         if (tasksAndOrders.isEmpty()) div("Задачи не найдены", className = "not-found")
         for (taskAndOrder in tasksAndOrders) {
             hPanel(className = "bundle-in-list") {
-                val taskItem = VPanel(className = "bundle-item") {
+                val highestScore = taskAndOrder.task.highestScore ?: -2
+                val bestScore = taskAndOrder.task.bestScore ?: -2
+                val taskItem = VPanel(className = "bundle-item-${getTaskBlockColorName(highestScore, bestScore).cssName}") {
                     div(taskAndOrder.task.name, className = "name")
                     val description = taskAndOrder.task.description
                         .replace("(<([^>]+)>)".toRegex(), "")

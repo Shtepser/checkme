@@ -6,6 +6,7 @@ import io.kvision.html.h3
 import io.kvision.panel.VPanel
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
+import ru.yarsu.contentPages.content.getTaskBlockColorName
 import ru.yarsu.serializableClasses.solution.SolutionInMyListFormat
 
 class MyResultListViewer(
@@ -17,7 +18,7 @@ class MyResultListViewer(
             vPanel(className = "bundle-block") {
                 h3(bundle.bundleName, className = "bundle-name")
                 for (task in bundle.taskWithBestResult){
-                    val taskBlockName = getTaskBlockName(task.highestScore, task.bestSolution)
+                    val taskBlockName = getTaskBlockColorName(task.highestScore, task.bestSolution)
                     vPanel(className = "task-block-${taskBlockName.cssName}") {
                         div(task.taskName)
                         val bestSolution = task.bestSolution
@@ -32,23 +33,4 @@ class MyResultListViewer(
             }
         }
     }
-
-    private fun getTaskBlockName(score: Int, result: Int): Result {
-        return if (result < 0) {
-            Result.NO
-        } else if (result == 0) {
-            Result.INCORRECT
-        } else if (result < score) {
-            Result.PARTIAL
-        } else {
-            Result.CORRECT
-        }
-    }
-}
-
-enum class Result(val message: String, val cssName: String) {
-    NO("Нет решений", "no"),
-    INCORRECT("Нажмите, чтобы посмотреть все отправленные решения", "incorrect"),
-    PARTIAL("Нажмите, чтобы посмотреть все отправленные решения", "partial"),
-    CORRECT("Нажмите, чтобы посмотреть все отправленные решения", "correct"),
 }

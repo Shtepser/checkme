@@ -6,6 +6,7 @@ import io.kvision.panel.VPanel
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
 import kotlinx.datetime.LocalDateTime
+import ru.yarsu.contentPages.content.getSolutionBlockColorName
 import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
 
 class AllSolutionsViewer(
@@ -14,7 +15,7 @@ class AllSolutionsViewer(
 ) : VPanel() {
     init {
         for (solution in solutionListForAdmin){
-            vPanel(className = "block") {
+            vPanel(className = "solution-block-${getSolutionBlockColorName(solution.result)}") {
                 if (solution.user != null){
                     div("${solution.user.surname} ${solution.user.name}")
                 }

@@ -33,11 +33,9 @@ class AllSolutionsTableViewer(
     private fun getData() : List<Map<String, String>> {
         return solutionsTable.solutions.toList().mapIndexed { index, user ->
             val userStats = solutionsTable.users.find { it.id == user.first }
-            val surnameNameLogin = if (userStats != null) {
-                "${userStats.surname} ${userStats.name} (${userStats.login})"
-            } else {
-                "Неизвестный пользователь"
-            }
+            val login = userStats?.login ?: "None"
+            val surname = userStats?.surname ?: "None"
+            val name = userStats?.name ?: "None"
             val row = mutableMapOf<String, String>()
             row["id"] = user.first.toString()
             row["solutions"] = Json.Default.encodeToString(user.second)
@@ -45,17 +43,29 @@ class AllSolutionsTableViewer(
             for (max in listMaxScore) {
                 row["taskId${max.id}"] = max.score.toString()
             }
-            row["surnameNameLogin"] = surnameNameLogin
+            row["login"] = login
+            row["surname"] = surname
+            row["name"] = name
             row
         }
     }
 
     private val columns = listOf<ColumnDefinition<Map<String, String>>>(
         ColumnDefinition(
-            "Фамилия имя (логин)",
-            field = "surnameNameLogin",
+            "Логин",
+            field = "login",
             headerFilter = Editor.INPUT
-        )
+        ),
+        ColumnDefinition(
+            "Фамилия",
+            field = "surname",
+            headerFilter = Editor.INPUT
+        ),
+        ColumnDefinition(
+            "Имя",
+            field = "name",
+            headerFilter = Editor.INPUT
+        ),
     ) + solutionsTable.tasks.mapIndexed { index, title ->
         val taskId = title.id
         ColumnDefinition(
