@@ -19,7 +19,7 @@ class MyResultList(
     private val page: Int?,
     serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "paged-layout") {
     init {
         h2("Мои решения")
         if ((page == null) || (page < 1)) {

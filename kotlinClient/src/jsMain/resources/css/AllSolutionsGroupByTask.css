@@ -1,8 +1,0 @@
-.main-page .block:has(> h4) {
-    align-items: stretch;
-}
-
-.main-page .block:has(> h4) .not-found {
-    padding: 0.75rem 0 0.5rem;
-    font-size: 1.5rem;
-}

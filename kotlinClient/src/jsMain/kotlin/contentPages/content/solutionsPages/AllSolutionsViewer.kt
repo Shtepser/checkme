@@ -15,7 +15,7 @@ class AllSolutionsViewer(
 ) : VPanel() {
     init {
         for (solution in solutionListForAdmin){
-            vPanel(className = "solution-block-${getSolutionBlockColorName(solution.result)}") {
+            vPanel(className = "solution-block ${getSolutionBlockColorName(solution.result)}") {
                 if (solution.user != null){
                     div("${solution.user.surname} ${solution.user.name}")
                 }

@@ -7,8 +7,8 @@
     align-items: center;
     padding: 0.625rem;
     margin: 0.3125rem 0;
-    border: 0.125rem solid #89B5DE;
-    border-radius: 0.6875rem;
+    border: 0.125rem solid var(--color-secondary);
+    border-radius: var(--radius);
     cursor: pointer;
     width: 100%;
     box-sizing: border-box;
@@ -16,7 +16,7 @@
 }
 
 .task-item:hover {
-    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-hover);
 }
 
 .task-checkbox {
@@ -28,13 +28,6 @@
     grid-template-columns: 1fr auto 13rem 13rem;
     gap: 1.5rem 2rem;
     align-items: center;
-}
-
-.main-page .Task > .btn-primary,
-.main-page .Task > .btn-danger {
-    position: static;
-    top: auto;
-    right: auto;
 }
 
 .Task > h2 {
@@ -66,9 +59,9 @@
     box-sizing: border-box;
     min-height: 26rem;
     padding: 1.5rem 2rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
+    background-color: var(--color-surface);
+    border: var(--border);
+    border-radius: var(--radius);
     font-size: 1.5rem;
     white-space: pre-line;
     overflow-wrap: anywhere;
@@ -85,9 +78,9 @@
     padding: 1rem;
     max-height: 26rem;
     overflow-y: auto;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
+    background-color: var(--color-surface);
+    border: var(--border);
+    border-radius: var(--radius);
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.4) transparent;
 }
@@ -105,7 +98,7 @@
     background: transparent;
 }
 
-.Task .sent-solutions > div:not([class]) {
+.Task .sent-solutions .solutions-label {
     padding: 0.25rem 0;
     text-align: center;
     font-size: 1.25rem;
@@ -113,59 +106,38 @@
 
 .Task .sent-solutions .best-solution,
 .Task .sent-solutions .mini-block {
-    position: relative;
+    --status-color: transparent;
+    --bar-width: 2.5rem;
     box-sizing: border-box;
-    padding: 0.625rem 3.5rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
-    overflow: hidden;
-    color: #000000;
+    padding: 0.625rem calc(var(--bar-width) + 1rem);
+    border: var(--border);
+    border-radius: var(--radius);
+    color: var(--color-text);
     text-align: center;
+    background-color: var(--color-surface);
+    background-image:
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--line), var(--line)),
+            linear-gradient(var(--line), var(--line));
+    background-position:
+            0 0,
+            100% 0,
+            var(--bar-width) 0,
+            calc(100% - var(--bar-width)) 0;
+    background-size:
+            var(--bar-width) 100%,
+            var(--bar-width) 100%,
+            0.0625rem 100%,
+            0.0625rem 100%;
+    background-repeat: no-repeat;
 }
 
-.Task .sent-solutions .best-solution::before,
-.Task .sent-solutions .mini-block::before,
-.Task .sent-solutions .best-solution::after,
-.Task .sent-solutions .mini-block::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 2.5rem;
-}
-
-.Task .sent-solutions .best-solution::before,
-.Task .sent-solutions .mini-block::before {
-    left: 0;
-    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
-}
-
-.Task .sent-solutions .best-solution::after,
-.Task .sent-solutions .mini-block::after {
-    right: 0;
-    border-left: 0.0625rem solid rgba(0, 0, 0, 0.5);
-}
-
-.Task .sent-solutions .correct::before,
-.Task .sent-solutions .correct::after {
-    background-color: #619144;
-}
-
-.Task .sent-solutions .partial::before,
-.Task .sent-solutions .partial::after {
-    background-color: #FFBB33;
-}
-
-.Task .sent-solutions .incorrect::before,
-.Task .sent-solutions .incorrect::after {
-    background-color: #FF4444;
-}
-
-.Task .sent-solutions .no::before,
-.Task .sent-solutions .no::after {
-    background-color: #2D3748;
-}
+.Task .sent-solutions .correct   { --status-color: var(--status-correct); }
+.Task .sent-solutions .partial   { --status-color: var(--status-partial); }
+.Task .sent-solutions .incorrect { --status-color: var(--status-incorrect); }
+.Task .sent-solutions .no        { --status-color: var(--status-no); }
+.Task .sent-solutions .error     { --status-color: var(--color-surface); }
 
 .Task .mini-block {
     font-size: 1.125rem;
@@ -174,7 +146,7 @@
 }
 
 .Task .mini-block:hover {
-    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-hover);
 }
 
 .Task > .solution-label {
@@ -228,9 +200,9 @@
     field-sizing: content;
     resize: none;
     padding: 0.5rem 0.75rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
+    background-color: var(--color-surface);
+    border: var(--border);
+    border-radius: var(--radius);
     font-family: 'Courier New', Courier, monospace;
     font-size: 1rem;
 }
@@ -280,14 +252,9 @@
 
     .Task .sent-solutions .best-solution,
     .Task .sent-solutions .mini-block {
-        padding: 0.5rem 2.75rem;
-    }
-
-    .Task .sent-solutions .best-solution::before,
-    .Task .sent-solutions .mini-block::before,
-    .Task .sent-solutions .best-solution::after,
-    .Task .sent-solutions .mini-block::after {
-        width: 2rem;
+        --bar-width: 2rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
     }
 
     .Task > .btn-link,

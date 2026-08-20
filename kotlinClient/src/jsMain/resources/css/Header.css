@@ -1,33 +1,27 @@
 .Header {
-    position: relative;
-    display: flex;
+    display: grid !important;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
-    flex-wrap: wrap;
     gap: 0.75rem 1.5rem;
-    padding: 1.25rem calc(8% + 9rem) 1rem calc(8% + 13rem);
+    padding: 1.25rem 8% 1rem;
 }
 
 .app-title {
-    position: absolute;
-    left: 8%;
-    top: 50%;
-    transform: translateY(-50%);
     font-size: 2.5rem;
     font-weight: bold;
     user-select: none;
 }
 
-.Header .dropdown {
-    position: relative;
-    z-index: 20;
+.Header .navigation {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
 }
 
-.Header .dropdown:last-child {
-    position: absolute;
-    right: 8%;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 20;
+.Header .user-menu {
+    justify-self: end;
 }
 
 .Header .btn {
@@ -52,10 +46,10 @@
     min-width: 100%;
     width: max-content;
     padding: 0.5rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
-    box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.15);
+    background-color: var(--color-surface);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-float);
 }
 
 .Header .dropdown-menu {
@@ -76,28 +70,14 @@ hr {
     width: auto;
     height: 0;
     border: none;
-    border-top: 0.03125rem solid #000000;
+    border-top: 0.03125rem solid var(--color-text);
     margin: 0 6%;
 }
 
 @media (max-width: 64rem) {
-    .Header {
-        padding: 1rem calc(4% + 9rem) 0.75rem calc(4% + 13rem);
-    }
-
-    .app-title {
-        left: 4%;
-    }
-
-    .Header .dropdown:last-child {
-        right: 4%;
-    }
-
-    hr {
-        margin: 0 3%;
-    }
-
-    .Header .dropdown:last-child .dropdown-menu {
+    .Header { padding: 1rem 4% 0.75rem; }
+    hr { margin: 0 3%; }
+    .Header .user-menu .dropdown-menu {
         left: auto !important;
         right: 0 !important;
         transform: none !important;
@@ -106,18 +86,12 @@ hr {
 
 @media (max-width: 48rem) {
     .Header {
-        flex-direction: column;
-        align-items: center;
+        grid-template-columns: 1fr;
+        justify-items: center;
         padding: 1rem 4% 0.75rem;
     }
-
-    .app-title,
-    .Header .dropdown:last-child {
-        position: static;
-        transform: none;
-    }
-
-    .Header .dropdown:last-child .dropdown-menu {
+    .Header .user-menu { justify-self: center; }
+    .Header .user-menu .dropdown-menu {
         left: 50% !important;
         right: auto !important;
         transform: translateX(-50%) !important;

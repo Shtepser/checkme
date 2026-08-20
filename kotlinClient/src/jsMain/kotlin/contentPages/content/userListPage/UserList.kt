@@ -16,7 +16,7 @@ import ru.yarsu.serializableClasses.user.UserInList
 class UserList(
     serverUrl: String,
     routing: Routing
-) : SimplePanel(className = "AddUserAutomatically") {
+) : SimplePanel(className = "page-head") {
     init {
         h2("Список пользователей")
         button("Автоматическая регистрация", style = ButtonStyle.LINK).onClick {

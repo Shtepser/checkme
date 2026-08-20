@@ -20,7 +20,7 @@ class AllSolutionsGroupByTask(
     private val page: Int?,
     serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "paged-layout") {
     init {
         h2("Все решения")
         if ((page == null) || (page < 1)) {

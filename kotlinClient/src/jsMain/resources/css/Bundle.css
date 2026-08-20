@@ -1,17 +1,49 @@
 .Bundle {
-    position: relative;
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 1.5rem;
 }
 
-.main-page .Bundle > h2 {
+.Bundle > h2 {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
     margin: 0;
     text-align: left;
 }
 
+.Bundle > h4 {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: center;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: normal;
+    color: rgba(0, 0, 0, 0.6);
+    text-align: center;
+}
+
 .Bundle > .dropdown {
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1;
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+}
+
+.Bundle > h3,
+.Bundle > .bundle-in-list,
+.Bundle > .not-found {
+    grid-column: 1 / -1;
+}
+
+.Bundle > h3 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: normal;
+}
+
+.Bundle .bundle-in-list {
+    width: 100%;
+    margin: 0;
 }
 
 .Bundle .dropdown-menu {
@@ -21,94 +53,50 @@
     transform: none !important;
 }
 
-.Bundle h4 {
-    position: absolute;
-    top: 1.4rem;
-    transform: translateY(-50%);
-    left: 0;
-    right: 0;
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: normal;
-    color: rgba(0, 0, 0, 0.6);
-    text-align: center;
-    pointer-events: none;
-}
-
-.Bundle h3 {
-    margin: 1.5rem 0;
-    font-size: 1.75rem;
-    font-weight: normal;
-}
-
-.Bundle .bundle-in-list {
-    width: 100%;
-    margin: 0 0 1.5rem;
-}
-
-.Bundle .bundle-in-list [class*="bundle-item-"] {
-    position: relative;
+.Bundle .bundle-item {
+    --status-color: transparent;
+    --bar-width: 5rem;
     box-sizing: border-box;
-    aspect-ratio: auto;
     width: 100%;
     min-height: 5.5rem;
-    padding: 1rem 6.5rem;
+    aspect-ratio: auto;
+    padding: 1rem calc(var(--bar-width) + 1.5rem);
     align-items: center;
     justify-content: center;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
+    border: var(--border);
+    border-radius: var(--radius);
     cursor: pointer;
     transition: box-shadow 0.15s ease-in-out;
+    background-color: var(--color-surface);
+    background-image:
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--line), var(--line)),
+            linear-gradient(var(--line), var(--line));
+    background-position:
+            0 0,
+            100% 0,
+            var(--bar-width) 0,
+            calc(100% - var(--bar-width)) 0;
+    background-size:
+            var(--bar-width) 100%,
+            var(--bar-width) 100%,
+            0.0625rem 100%,
+            0.0625rem 100%;
+    background-repeat: no-repeat;
 }
 
-.Bundle .bundle-in-list [class*="bundle-item-"]:hover {
-    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+.Bundle .bundle-item:hover {
+    box-shadow: var(--shadow-hover);
 }
 
-.Bundle [class*="bundle-item-"]::before,
-.Bundle [class*="bundle-item-"]::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 5rem;
-    background-color: #FFFFFF;
-}
+.Bundle .bundle-item.correct   { --status-color: var(--status-correct); }
+.Bundle .bundle-item.partial   { --status-color: var(--status-partial); }
+.Bundle .bundle-item.incorrect { --status-color: var(--status-incorrect); }
+.Bundle .bundle-item.no        { --status-color: var(--status-no); }
+.Bundle .bundle-item.error     { --status-color: var(--color-surface); }
 
-.Bundle [class*="bundle-item-"]::before {
-    left: 0;
-    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem 0 0 0.6875rem;
-}
-
-.Bundle [class*="bundle-item-"]::after {
-    right: 0;
-    border-left: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0 0.6875rem 0.6875rem 0;
-}
-
-.Bundle [class*="bundle-item-correct" i]::before,
-.Bundle [class*="bundle-item-correct" i]::after {
-    background-color: #619144;
-}
-
-.Bundle [class*="bundle-item-partial" i]::before,
-.Bundle [class*="bundle-item-partial" i]::after {
-    background-color: #FFBB33;
-}
-
-.Bundle [class*="bundle-item-incorrect" i]::before,
-.Bundle [class*="bundle-item-incorrect" i]::after {
-    background-color: #FF4444;
-}
-
-.Bundle [class*="bundle-item-no" i]::before,
-.Bundle [class*="bundle-item-no" i]::after {
-    background-color: #2D3748;
-}
-
-.Bundle [class*="bundle-item-"] .name + div {
+.Bundle .bundle-item .name + div {
     margin-top: 0.25rem;
     font-size: 1rem;
     color: rgba(0, 0, 0, 0.7);
@@ -116,10 +104,17 @@
     overflow-wrap: anywhere;
 }
 
-@media (max-width: 90rem) {
-    .Bundle h4 {
-        position: static;
-        transform: none;
-        margin: 0.75rem 0 0;
+@media (max-width: 64rem) {
+    .Bundle {
+        grid-template-columns: 1fr auto;
+    }
+
+    .Bundle > .dropdown {
+        grid-column: 2;
+    }
+
+    .Bundle > h4 {
+        grid-column: 1 / -1;
+        grid-row: 2;
     }
 }

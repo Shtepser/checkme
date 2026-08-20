@@ -17,7 +17,7 @@ class TaskOrUserSolutions(
     private val taskOrUser: String,
     serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "paged-layout") {
     init {
         val title = H2("Решения")
         add(title)

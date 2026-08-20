@@ -15,7 +15,7 @@ class BundleListViewer(
     private val serverUrl: String,
     private val routing: Routing,
     bundleList: List<BundleFormat>
-) : VPanel() {
+) : VPanel(className = "bundle-grid") {
     init {
         for (bundle in bundleList) {
             if (bundle.isActual || UserInformationStorage.isAdmin()) {

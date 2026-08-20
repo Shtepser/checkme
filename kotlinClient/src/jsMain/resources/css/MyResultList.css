@@ -9,105 +9,48 @@
     gap: 1.5rem;
 }
 
-.task-block-no,
-.task-block-incorrect,
-.task-block-partial,
-.task-block-correct {
-    position: relative;
+.task-block {
+    --status-color: transparent;
+    --bar-width: 8rem;
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
     min-height: 7rem;
-    padding: 1rem 9.5rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
-    transition: box-shadow 0.15s ease-in-out;
-}
-
-.task-block-no,
-.task-block-incorrect,
-.task-block-partial,
-.task-block-correct {
+    padding: 1rem calc(var(--bar-width) + 1.5rem);
+    border: var(--border);
+    border-radius: var(--radius);
     cursor: pointer;
+    transition: box-shadow 0.15s ease-in-out;
+    background-color: var(--color-surface);
+    background-image:
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--line), var(--line)),
+            linear-gradient(var(--line), var(--line));
+    background-position:
+            0 0,
+            100% 0,
+            var(--bar-width) 0,
+            calc(100% - var(--bar-width)) 0;
+    background-size:
+            var(--bar-width) 100%,
+            var(--bar-width) 100%,
+            0.0625rem 100%,
+            0.0625rem 100%;
+    background-repeat: no-repeat;
 }
 
-.task-block-no:hover,
-.task-block-incorrect:hover,
-.task-block-partial:hover,
-.task-block-correct:hover {
-    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+.task-block:hover {
+    box-shadow: var(--shadow-hover);
 }
 
-.task-block-no::before,
-.task-block-no::after,
-.task-block-incorrect::before,
-.task-block-incorrect::after,
-.task-block-partial::before,
-.task-block-partial::after,
-.task-block-correct::before,
-.task-block-correct::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 8rem;
-}
+.task-block.correct   { --status-color: var(--status-correct); }
+.task-block.partial   { --status-color: var(--status-partial); }
+.task-block.incorrect { --status-color: var(--status-incorrect); }
+.task-block.no        { --status-color: var(--status-no); }
+.task-block.error     { --status-color: var(--color-surface); }
 
-.task-block-no::before,
-.task-block-incorrect::before,
-.task-block-partial::before,
-.task-block-correct::before {
-    left: 0;
-    border-radius: 0.6875rem 0 0 0.6875rem;
-}
-
-.task-block-no::after,
-.task-block-incorrect::after,
-.task-block-partial::after,
-.task-block-correct::after {
-    right: 0;
-    border-radius: 0 0.6875rem 0.6875rem 0;
-}
-
-.task-block-no::before,
-.task-block-incorrect::before,
-.task-block-partial::before,
-.task-block-correct::before {
-    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
-}
-
-.task-block-no::after,
-.task-block-incorrect::after,
-.task-block-partial::after,
-.task-block-correct::after {
-    border-left: 0.0625rem solid rgba(0, 0, 0, 0.5);
-}
-
-.task-block-correct::before,
-.task-block-correct::after {
-    background-color: #619144;
-}
-
-.task-block-incorrect::before,
-.task-block-incorrect::after {
-    background-color: #FF4444;
-}
-
-.task-block-partial::before,
-.task-block-partial::after {
-    background-color: #FFBB33;
-}
-
-.task-block-no::before,
-.task-block-no::after {
-    background-color: #2D3748;
-}
-
-.task-block-no > div,
-.task-block-incorrect > div,
-.task-block-partial > div,
-.task-block-correct > div {
+.task-block > div {
     margin: 0.125rem 0;
     font-size: 1.125rem;
     text-align: center;
@@ -115,21 +58,7 @@
 }
 
 @media (max-width: 64rem) {
-    .task-block-no,
-    .task-block-incorrect,
-    .task-block-partial,
-    .task-block-correct {
-        padding: 1rem 6rem;
-    }
-
-    .task-block-no::before,
-    .task-block-no::after,
-    .task-block-incorrect::before,
-    .task-block-incorrect::after,
-    .task-block-partial::before,
-    .task-block-partial::after,
-    .task-block-correct::before,
-    .task-block-correct::after {
-        width: 4.5rem;
+    .task-block {
+        --bar-width: 4.5rem;
     }
 }

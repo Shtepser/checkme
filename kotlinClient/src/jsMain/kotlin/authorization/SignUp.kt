@@ -8,7 +8,6 @@ import io.kvision.html.button
 import io.kvision.html.h2
 import io.kvision.panel.HPanel
 import io.kvision.panel.VPanel
-import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import io.kvision.toast.Toast

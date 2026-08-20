@@ -2,7 +2,7 @@
     width: max-content;
     max-width: 100%;
     margin: 0 auto;
-    border-radius: 0.6875rem;
+    border-radius: var(--radius);
     overflow: hidden;
 }
 
@@ -35,9 +35,9 @@
 }
 
 .tabulator-header-filter input {
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
-    background-color: #FFFFFF;
+    border: var(--border);
+    border-radius: var(--radius);
+    background-color: var(--color-surface);
     font: inherit;
     font-size: 0.875rem;
 }
@@ -59,16 +59,16 @@
 }
 
 .table-criteria-passed {
-    color: #3E8D00;
+    color: var(--status-correct);
     text-decoration: underline;
 }
 
 .table-criteria-fifty-fifty {
-    color: #FCCA12;
+    color: var(--status-partial);
     text-decoration: underline;
 }
 
 .table-criteria-failed {
-    color: #CE2727;
+    color: var(--status-incorrect);
     text-decoration: underline;
 }

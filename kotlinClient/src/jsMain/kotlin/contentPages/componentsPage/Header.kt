@@ -49,87 +49,91 @@ class Header(
         installAutoClose()
         hPanel(className = "Header") {
             div("CheckMe", className = "app-title")
-            if (!UserInformationStorage.isAdmin()) {
-                button(
-                    "Наборы заданий",
-                    style = ButtonStyle.LINK
-                ).onClick { routingMainPage.navigate("/") }
-            }
-            if (UserInformationStorage.isAdmin()) {
-                dropDown("Задания", style = ButtonStyle.SECONDARY) {
+            div(className = "navigation") {
+                if (!UserInformationStorage.isAdmin()) {
                     button(
-                        "Наборы",
+                        "Наборы заданий",
                         style = ButtonStyle.LINK
                     ).onClick { routingMainPage.navigate("/") }
-                    button(
-                        "Скрытые наборы",
-                        style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/hidden-bundle-list") }
-                    button(
-                        "Задания",
-                        style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/tasks/all") }
-                    button(
-                        "Скрытые задания",
-                        style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/hidden-task-list") }
                 }
-            }
-            if (!UserInformationStorage.isAdmin()) {
-                button(
-                    "Мои решения",
-                    style = ButtonStyle.LINK
-                ).onClick { routingMainPage.navigate("/my-result-list/1") }
-            }
-            if (UserInformationStorage.isAdmin()) {
-                dropDown("Решения", style = ButtonStyle.SECONDARY) {
+                if (UserInformationStorage.isAdmin()) {
+                    dropDown("Задания", style = ButtonStyle.SECONDARY) {
+                        button(
+                            "Наборы",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/") }
+                        button(
+                            "Скрытые наборы",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/hidden-bundle-list") }
+                        button(
+                            "Задания",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/tasks/all") }
+                        button(
+                            "Скрытые задания",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/hidden-task-list") }
+                    }
+                }
+                if (!UserInformationStorage.isAdmin()) {
                     button(
-                        "Мои",
+                        "Мои решения",
                         style = ButtonStyle.LINK
                     ).onClick { routingMainPage.navigate("/my-result-list/1") }
-                    button(
-                        "Все",
-                        style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/solution-list/1") }
-                    button(
-                        "По задачам",
-                        style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/task-solutions-list/1") }
                 }
-            }
-            if (UserInformationStorage.isAdmin()) {
-                dropDown("Пользователи", style = ButtonStyle.SECONDARY) {
-                    button(
-                        "Список",
-                        style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/user-list") }
-                    button(
-                        "Управление",
-                        style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/user-info") }
-                    button(
-                        "Журнал действий",
-                        style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/journal/1") }
+                if (UserInformationStorage.isAdmin()) {
+                    dropDown("Решения", style = ButtonStyle.SECONDARY) {
+                        button(
+                            "Мои",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/my-result-list/1") }
+                        button(
+                            "Все",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/solution-list/1") }
+                        button(
+                            "По задачам",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/task-solutions-list/1") }
+                    }
+                }
+                if (UserInformationStorage.isAdmin()) {
+                    dropDown("Пользователи", style = ButtonStyle.SECONDARY) {
+                        button(
+                            "Список",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/user-list") }
+                        button(
+                            "Управление",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/user-info") }
+                        button(
+                            "Журнал действий",
+                            style = ButtonStyle.LINK
+                        ).onClick { routingMainPage.navigate("/journal/1") }
+                    }
                 }
             }
             val userName = UserInformationStorage.getUserInformation()
             if (userName == null) {
                 routing.navigate("/authorization/sign_in")
             } else {
-                dropDown(userName.username, style = ButtonStyle.SECONDARY) {
-                    if (!UserInformationStorage.isAdmin()) {
-                        val windowChangeUserPassword = ChangeUserPassword(serverUrl, routingMainPage)
-                        button("Сменить пароль", style = ButtonStyle.PRIMARY) {
-                            onClick {
-                                windowChangeUserPassword.show()
+                div(className = "user-menu") {
+                    dropDown(userName.username, style = ButtonStyle.SECONDARY) {
+                        if (!UserInformationStorage.isAdmin()) {
+                            val windowChangeUserPassword = ChangeUserPassword(serverUrl)
+                            button("Сменить пароль", style = ButtonStyle.PRIMARY) {
+                                onClick {
+                                    windowChangeUserPassword.show()
+                                }
                             }
                         }
-                    }
-                    button("Выйти", style = ButtonStyle.PRIMARY) {
-                        onClick {
-                            UserInformationStorage.deleteUserInformation()
-                            routing.navigate("/authorization/sign_in")
+                        button("Выйти", style = ButtonStyle.PRIMARY) {
+                            onClick {
+                                UserInformationStorage.deleteUserInformation()
+                                routing.navigate("/authorization/sign_in")
+                            }
                         }
                     }
                 }

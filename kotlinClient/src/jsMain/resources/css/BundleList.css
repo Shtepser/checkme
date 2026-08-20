@@ -1,4 +1,4 @@
-.main-page div:has(> .bundle-in-list):not(.Bundle) {
+.bundle-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr);
     gap: 2.5rem 2rem;
@@ -19,16 +19,16 @@
     justify-content: center;
     box-sizing: border-box;
     padding: 1rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
+    background-color: var(--color-surface);
+    border: var(--border);
+    border-radius: var(--radius);
     aspect-ratio: 1 / 1;
     cursor: pointer;
     transition: box-shadow 0.15s ease-in-out;
 }
 
 .bundle-in-list .bundle-item:hover {
-    box-shadow: 0 0.25rem 0.25rem rgba(0, 0, 0, 0.15);
+    box-shadow: var(--shadow-hover);
 }
 
 .bundle-in-list .name {
@@ -39,19 +39,19 @@
 }
 
 @media (max-width: 90rem) {
-    .main-page div:has(> .bundle-in-list):not(.Bundle) {
+    .bundle-grid {
         grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media (max-width: 64rem) {
-    .main-page div:has(> .bundle-in-list):not(.Bundle) {
+    .bundle-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media (max-width: 48rem) {
-    .main-page div:has(> .bundle-in-list):not(.Bundle) {
+    .bundle-grid {
         grid-template-columns: 1fr;
     }
 }

@@ -18,7 +18,7 @@ class LogFile(
     private val serverUrl: String,
     private val routing: Routing,
     private val name: String?
-) : SimplePanel() {
+) : SimplePanel(className = "page-head") {
     init {
         h2("Файл $name") {
             if (name == null) {
@@ -27,7 +27,7 @@ class LogFile(
                 loadLogsFromFile(name)
             }
         }
-        hPanel {
+        hPanel(className = "page-actions") {
             button("Назад к списку файлов", style = ButtonStyle.LINK).onClick {
                 routing.navigate("/journal/1")
             }

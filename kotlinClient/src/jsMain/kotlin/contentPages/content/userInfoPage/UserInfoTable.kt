@@ -12,7 +12,7 @@ import ru.yarsu.serializableClasses.admin.UserFullData
 
 class UserInfoTable(
     serverUrl: String,
-) : SimplePanel() {
+) : SimplePanel(className = "page-head") {
     init {
         h2("Информация о пользователях")
         val requestInit = createRequestHeaders(HttpMethod.GET)

@@ -72,7 +72,7 @@ class BundleViewer(
             hPanel(className = "bundle-in-list") {
                 val highestScore = taskAndOrder.task.highestScore ?: -2
                 val bestScore = taskAndOrder.task.bestScore ?: -2
-                val taskItem = VPanel(className = "bundle-item-${getTaskBlockColorName(highestScore, bestScore).cssName}") {
+                val taskItem = VPanel(className = "bundle-item ${getTaskBlockColorName(highestScore, bestScore).cssName}") {
                     div(taskAndOrder.task.name, className = "name")
                     val description = taskAndOrder.task.description
                         .replace("(<([^>]+)>)".toRegex(), "")

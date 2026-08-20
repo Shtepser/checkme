@@ -9,7 +9,6 @@ import io.kvision.html.button
 import io.kvision.html.h2
 import io.kvision.modal.Modal
 import io.kvision.panel.HPanel
-import io.kvision.routing.Routing
 import ru.yarsu.serializableClasses.user.FormChangePassword
 import io.kvision.rest.HttpMethod
 import io.kvision.toast.Toast
@@ -24,7 +23,6 @@ import ru.yarsu.serializableClasses.ResponseError
 
 class ChangeUserPassword(
     private val serverUrl: String,
-    private val routing: Routing
 ) : Modal(className = "modal-window ChangeUserPassword") {
     init {
         this.hide()

@@ -10,7 +10,7 @@ import ru.yarsu.serializableClasses.user.UserInList
 class UserListViewer(
     userList: List<UserInList>,
     private val routing: Routing
-) : VPanel(className = "UserList") {
+) : VPanel(className = "user-grid") {
     init {
         for (user in userList) {
             div(className = "user-block") {

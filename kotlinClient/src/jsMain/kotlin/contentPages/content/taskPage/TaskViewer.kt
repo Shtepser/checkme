@@ -37,7 +37,8 @@ import org.w3c.xhr.FormData
 import ru.yarsu.contentPages.Loading
 import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.contentPages.content.hiddenTask.TaskHiddenButton
-import ru.yarsu.contentPages.content.Result
+import ru.yarsu.contentPages.content.getSolutionBlockColorName
+import ru.yarsu.contentPages.content.getTaskBlockColorName
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.CheckId
 import ru.yarsu.serializableClasses.ResponseError
@@ -67,7 +68,9 @@ class TaskViewer(
             task.bestScore.toString()
         }
         hPanel(className = "sent-solutions") {
-            div("Ваш лучший результат: $bestResult", className = "best-solution ${getClassNameForColor(task.bestScore, task.highestScore)}")
+            val bestScore = task.bestScore ?: -2
+            val highestScore = task.highestScore ?: -2
+            div("Ваш лучший результат: $bestResult", className = "best-solution ${getTaskBlockColorName(highestScore, bestScore).cssName}")
             getMySolutions(this)
         }
         h3("Описание")
@@ -189,30 +192,6 @@ class TaskViewer(
         }
     }
 
-    fun getClassNameForColor(result: Int?, score: Int?): String {
-        return if (result != null && score != null) {
-            when (result) {
-                -1 -> {
-                    Result.NO.cssName
-                }
-
-                0 -> {
-                    Result.INCORRECT.cssName
-                }
-
-                score -> {
-                    Result.CORRECT.cssName
-                }
-
-                else -> {
-                    Result.PARTIAL.cssName
-                }
-            }
-        } else {
-            Result.NO.cssName
-        }
-    }
-
     private fun createSolution(
         formData: FormData
     ) {
@@ -281,7 +260,7 @@ class TaskViewer(
     }
     
     private fun getMySolutions(hPanel: HPanel) {
-        hPanel.add(Div("Отправленные решения:"))
+        hPanel.add(Div("Отправленные решения:", className = "solutions-label"))
         val requestInit = createRequestHeaders(HttpMethod.GET)
         window.fetch(serverUrl + "solution/user-and-task/${task.id}", requestInit).then { response ->
             when (response.status.toInt()) {
@@ -295,7 +274,7 @@ class TaskViewer(
                             hPanel.add(
                                 Div(
                                     solution.totalScore.toString(),
-                                    className = "mini-block ${getClassNameForColor(solution.totalScore, task.highestScore)}") {
+                                    className = "mini-block ${getSolutionBlockColorName(solution.result)}") {
                                     onClick {
                                         routing.navigate("/solution/${solution.id}")
                                     }

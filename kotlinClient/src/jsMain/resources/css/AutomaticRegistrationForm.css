@@ -1,13 +1,8 @@
-.main-page > div:has(> .actionsPanel) {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    min-height: calc(100vh - 12rem);
-}
-
 .actionsPanel {
     gap: 1.5rem;
     flex-wrap: wrap;
+    min-height: calc(100vh - 12rem);
+    align-content: center;
 }
 
 .actionPanel {
@@ -17,9 +12,9 @@
     box-sizing: border-box;
     min-height: 32rem;
     padding: 2rem 1.5rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
+    background-color: var(--color-surface);
+    border: var(--border);
+    border-radius: var(--radius);;
 }
 
 .actionsPanel .base-form {

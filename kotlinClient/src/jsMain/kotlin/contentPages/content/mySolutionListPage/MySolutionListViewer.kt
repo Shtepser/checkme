@@ -15,7 +15,7 @@ class MySolutionListViewer(
 ) : VPanel() {
     init {
         for (solution in solutionList) {
-            vPanel(className = "solution-block-${getSolutionBlockColorName(solution.result)}") {
+            vPanel(className = "solution-block ${getSolutionBlockColorName(solution.result)}") {
                 div(solution.status)
                 if ((solution.status == "Проверено")) {
                     val score = solution.totalScore

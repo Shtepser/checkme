@@ -2,7 +2,6 @@ package ru.yarsu.contentPages.content.solutionsPages
 
 import io.kvision.core.onClick
 import io.kvision.html.Button
-import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.panel.SimplePanel
 import io.kvision.panel.VPanel
@@ -20,6 +19,7 @@ import ru.yarsu.serializableClasses.solution.SolutionsTable
 class AllSolutionsTableViewer(
     private val routing: Routing,
     private val solutionsTable: SolutionsTable,
+    private val downloadButton: Button,
 ): SimplePanel() {
     private fun getListMaxScore(solutions: List<SolutionInformation>) : List<IdScore> {
         return solutionsTable.tasks.map { task ->
@@ -95,8 +95,6 @@ class AllSolutionsTableViewer(
     }
 
     init {
-        val downloadButton = Button("Скачать", style = ButtonStyle.PRIMARY)
-        add(downloadButton)
         val table = tabulator(data = getData(), false,
             options = TabulatorOptions(
                 columns = columns

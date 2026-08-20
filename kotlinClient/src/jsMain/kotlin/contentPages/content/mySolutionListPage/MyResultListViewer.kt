@@ -19,7 +19,7 @@ class MyResultListViewer(
                 h3(bundle.bundleName, className = "bundle-name")
                 for (task in bundle.taskWithBestResult){
                     val taskBlockName = getTaskBlockColorName(task.highestScore, task.bestSolution)
-                    vPanel(className = "task-block-${taskBlockName.cssName}") {
+                    vPanel(className = "task-block ${taskBlockName.cssName}") {
                         div(task.taskName)
                         val bestSolution = task.bestSolution
                         if (bestSolution != -1) {

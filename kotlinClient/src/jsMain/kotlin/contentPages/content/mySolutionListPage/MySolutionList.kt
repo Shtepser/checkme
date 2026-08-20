@@ -18,7 +18,7 @@ class MySolutionList(
     taskId: Uuid?,
     serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "paged-layout") {
     init {
         val requestInit = createRequestHeaders(HttpMethod.GET)
         window.fetch(serverUrl + "solution/user-and-task/${taskId.toString()}", requestInit).then { response ->

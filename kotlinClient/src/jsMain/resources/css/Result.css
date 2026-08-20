@@ -1,59 +1,55 @@
-.main-page > div > div > div:has(> h2):not(.Bundle):not(.Task) {
+.result-page {
+    display: flex !important;
     flex-direction: row !important;
     flex-wrap: wrap;
     align-items: center;
     gap: 1.5rem;
 }
 
-.main-page > div > div > div:has(> h2):not(.Bundle):not(.Task) > h2 {
+.result-page > h2 {
     margin: 0;
     text-align: left;
 }
 
-.main-page > div > div > div:has(> h2):not(.Bundle):not(.Task) > .btn-link {
+.result-page > .btn-link {
     margin-left: auto;
 }
 
-.main-page > div > div > div:has(> h2):not(.Bundle):not(.Task) > .criteria-list {
+.result-page > .criteria-list {
     flex-basis: 100%;
 }
 
+
 .criteria-list {
-    position: relative;
+    --status-color: transparent;
+    --bar-width: 5rem;
     box-sizing: border-box;
     min-height: 6.25rem;
     margin: 0 0 1.5rem;
-    background-color: #FFFFFF;
-    border: 0.0625rem solid rgba(0, 0, 0, 0.5);
-    border-radius: 0.6875rem;
-    overflow: hidden;
+    border: var(--border);
+    border-radius: var(--radius);
+    background-color: var(--color-surface);
+    background-image:
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--line), var(--line));
+    background-position:
+            0 0,
+            var(--bar-width) 0;
+    background-size:
+            var(--bar-width) 100%,
+            0.0625rem 100%;
+    background-repeat: no-repeat;
 }
+
+.criteria-list.criteria-passed { --status-color: var(--status-correct); }
+.criteria-list.criteria-failed { --status-color: var(--status-incorrect); }
 
 .criteria-message {
     flex: 1 1 auto;
     box-sizing: border-box;
-    padding: 0.75rem 1.5rem 0.75rem 6.5rem;
+    padding: 0.75rem 1.5rem 0.75rem calc(var(--bar-width) + 1.5rem);
     font-size: 1rem;
     overflow-wrap: anywhere;
-}
-
-.criteria-message::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 5rem;
-}
-
-.criteria-message.criteria-passed::before {
-    background-color: #619144;
-    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
-}
-
-.criteria-message.criteria-failed::before {
-    background-color: #FF4444;
-    border-right: 0.0625rem solid rgba(0, 0, 0, 0.5);
 }
 
 .criteria-score {
@@ -62,17 +58,13 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
-    border-left: 0.0625rem solid rgba(0, 0, 0, 0.5);
+    border-left: var(--border);
     font-size: 1.5rem;
 }
 
 @media (max-width: 64rem) {
-    .criteria-message {
-        padding-left: 5.5rem;
-    }
-
-    .criteria-message::before {
-        width: 4rem;
+    .criteria-list {
+        --bar-width: 4rem;
     }
 
     .criteria-score {

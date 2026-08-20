@@ -12,9 +12,7 @@ import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.TaskFormatForList
 import ru.yarsu.serializableClasses.task.TaskWithBundlesForList
@@ -25,14 +23,14 @@ class SelectBundleTasks(
     bundleId: String,
     serverUrl: String,
     private val routing: Routing,
-) : SimplePanel() {
+) : SimplePanel(className = "task-selection-page") {
     private val selectedTasks = mutableSetOf<String>()
 
     init {
         h2("Выбор задач")
         val saveButton = button(
             "Далее",
-            className = "usually-button"
+            style = ButtonStyle.PRIMARY,
         ).apply {
             disabled = true
             onClick {

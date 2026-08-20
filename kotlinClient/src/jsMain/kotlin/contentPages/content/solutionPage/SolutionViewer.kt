@@ -1,6 +1,5 @@
 package ru.yarsu.contentPages.content.solutionPage
 
-import io.kvision.core.onClick
 import io.kvision.html.ButtonStyle
 import io.kvision.html.button
 import io.kvision.html.div
@@ -14,7 +13,7 @@ import ru.yarsu.serializableClasses.solution.SolutionFormat
 class SolutionViewer(
     private val solution: SolutionFormat,
     private val routing: Routing
-) : VPanel() {
+) : VPanel(className = "result-page") {
     init {
         if ((solution.status == "В процессе") || (solution.result == null)) {
             add(Loading("Проверяем эту задачу"))
@@ -25,8 +24,8 @@ class SolutionViewer(
                 routing.navigate("task/${solution.task.id}")
             }
             solution.result.values.forEach { (score, message) ->
-                hPanel(className="criteria-list") {
-                    div(message, className=if (score > 0) "criteria-message criteria-passed" else "criteria-message criteria-failed")
+                hPanel(className=if (score > 0) "criteria-list criteria-passed" else "criteria-list criteria-failed") {
+                    div(message, className="criteria-message")
                     div(score.toString(), className="criteria-score")
                 }
             }

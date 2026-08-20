@@ -2,16 +2,23 @@
     gap: 0.5rem;
 }
 
-.main-page > div > div > div:has(> .tabulator) > .btn-primary {
-    position: absolute;
-    top: 5.6rem;
-    right: calc(8% + 9rem);
-    width: fit-content;
+.main-page .paged-layout > .page-actions {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    align-self: center;
+    justify-content: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: auto;
     margin: 0;
 }
 
 @media (max-width: 64rem) {
-    .main-page > div > div > div:has(> .tabulator) > .btn-primary {
-        right: calc(4% + 9rem);
+    .main-page .paged-layout > .page-actions {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        justify-self: end;
     }
 }

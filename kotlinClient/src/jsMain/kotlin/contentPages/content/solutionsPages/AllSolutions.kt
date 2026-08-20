@@ -20,7 +20,7 @@ class AllSolutions(
     private val page: Int?,
     serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "paged-layout") {
     init {
         h2("Все решения")
         button("Таблица", style = ButtonStyle.LINK).onClick {

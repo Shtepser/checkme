@@ -19,7 +19,7 @@ class TaskList(
     serverUrl: String,
     private val routing: Routing,
     listType: ListType
-) : SimplePanel() {
+) : SimplePanel(className = "page-head") {
     init {
         if (listType.ordinal == 0) {
             h2("Список задач")

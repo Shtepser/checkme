@@ -15,7 +15,7 @@ class Journal(
     private val page: Int?,
     private val serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "paged-layout") {
     init {
         h2("Журнал действий")
         if ((page == null) || (page < 1)) {

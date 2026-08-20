@@ -1,6 +1,7 @@
 package ru.yarsu.contentPages.content.addBundlePage
 
 import io.kvision.core.Container
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.button
 import io.kvision.html.div
@@ -14,9 +15,7 @@ import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.TaskFormatWithOrder
 
@@ -24,7 +23,7 @@ class ChangeBundleTasksOrder(
     bundleId: String,
     serverUrl: String,
     private val routing: Routing,
-) : SimplePanel() {
+) : SimplePanel(className = "task-selection-page") {
     init {
         h2("Укажите порядок заданий в наборе")
         val requestInit = createRequestHeaders(HttpMethod.GET)
@@ -39,7 +38,7 @@ class ChangeBundleTasksOrder(
                         add(tasksContainer)
                         val saveButton = button(
                             "Сохранить",
-                            className = "usually-button"
+                            style = ButtonStyle.PRIMARY
                         )
                             .apply {
                                 onClick {

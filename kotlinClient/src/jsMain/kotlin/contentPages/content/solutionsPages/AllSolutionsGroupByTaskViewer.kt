@@ -18,7 +18,7 @@ class AllSolutionsGroupByTaskViewer(
 ) : VPanel() {
     init {
         for (taskSolutions in solutionsGroupByTask) {
-            vPanel(className = "block") {
+            vPanel(className = "block task-group") {
                 h4("Задача ${taskSolutions.task.name}") {
                     onClick {
                         routing.navigate("task/${taskSolutions.task.id}")
@@ -27,7 +27,7 @@ class AllSolutionsGroupByTaskViewer(
                 tag(TAG.HR)
                 if (!taskSolutions.solutions.isEmpty()) {
                     for (solution in taskSolutions.solutions) {
-                        vPanel(className = "solution-block-${getSolutionBlockColorName(solution.result)}") {
+                        vPanel(className = "solution-block ${getSolutionBlockColorName(solution.result)}") {
                             div("${solution.user.surname} ${solution.user.name}")
                             div(solution.status)
                             if ((solution.status == "Проверено")) {
