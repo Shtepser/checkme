@@ -28,7 +28,6 @@ class BundleHandler(
             bundleId == null -> objectMapper.sendBadRequestError(ViewBundleError.NO_BUNDLE_ID_ERROR.errorText)
             else -> tryFetchBundleAndTasks(
                 bundleId = bundleId,
-
                 objectMapper = objectMapper,
                 bundleOperations = bundleOperations,
                 user = user

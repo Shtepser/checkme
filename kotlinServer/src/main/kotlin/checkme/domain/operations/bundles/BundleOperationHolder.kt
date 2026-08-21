@@ -34,7 +34,8 @@ class BundleOperationHolder(
             bundleDatabase.selectBundleTasksById(bundleId)
         }
 
-    val fetchBundleTasksWithBestScoreById: (bundleId: UUID, userId: UUID) -> Result<List<TaskAndOrder>, BundleFetchingError> =
+    val fetchBundleTasksWithBestScoreById: (bundleId: UUID, userId: UUID)
+    -> Result<List<TaskAndOrder>, BundleFetchingError> =
         FetchBundleTasksWithBestScore {
                 bundleId,
                 userId,
