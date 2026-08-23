@@ -67,18 +67,19 @@ private fun tryAddTaskAndFiles(
     objectMapper: ObjectMapper,
     form: MultipartForm,
 ): Response {
-    val criterions = validatedNewTask.addTaskFilesToDirectory(
-        files = form.files,
-        criterions = validatedNewTask.criterions,
-    )
     return when (
         val newTask =
             addTask(
-                task = validatedNewTask.copy(criterions = criterions),
+                task = validatedNewTask.copy(criterions = validatedNewTask.criterions),
                 taskOperations = taskOperations
             )
     ) {
         is Success -> {
+            validatedNewTask.addTaskFilesToDirectory(
+                newTask.value.id.toString(),
+                files = form.files,
+                criterions = validatedNewTask.criterions,
+            )
             ServerLogger.log(
                 user = user,
                 action = "New task addition",

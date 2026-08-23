@@ -77,21 +77,35 @@ private fun tryChangeTask(
     tasksOperations: TaskOperationsHolder,
     form: MultipartForm,
 ): Response {
-    val criterions = validatedTask.addTaskFilesToDirectory(
-        files = form.files,
-        criterions = validatedTask.criterions,
-    )
     return when (
         val editedTask = changeTask(taskToChange, tasksOperations)
     ) {
         is Success -> {
-            ServerLogger.log(
-                user = user,
-                action = "Task edited",
-                message = "User is changed task ${editedTask.value.id}-${editedTask.value.name}",
-                type = LoggerType.INFO
+            val isReplaced = validatedTask.replaceTaskFilesInDirectory(
+                nameDirectory = taskToChange.id.toString(),
+                files = form.files,
+                criterions = validatedTask.criterions,
             )
-            objectMapper.sendOKResponse(mapOf("taskId" to editedTask.value.id))
+            when (isReplaced) {
+                is Success -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "Task edited",
+                        message = "User is changed task ${editedTask.value.id}-${editedTask.value.name}",
+                        type = LoggerType.INFO
+                    )
+                    objectMapper.sendOKResponse(mapOf("taskId" to editedTask.value.id))
+                }
+                is Failure -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "Task edited warnings",
+                        message = "Something wrong when try edit Task. Error: ${isReplaced.reason}",
+                        type = LoggerType.WARN
+                    )
+                    objectMapper.sendBadRequestError(isReplaced.reason)
+                }
+            }
         }
 
         is Failure -> {
