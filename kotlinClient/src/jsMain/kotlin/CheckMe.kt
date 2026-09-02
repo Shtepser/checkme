@@ -33,8 +33,8 @@ external val cssTaskForm: dynamic
 @JsModule("./css/BundleForm.css")
 external val cssBundleForm: dynamic
 
-@JsModule("./css/TasksList.css")
-external val cssTasksList: dynamic
+@JsModule("./css/TaskList.css")
+external val cssTaskList: dynamic
 
 @JsModule("./css/BundleList.css")
 external val cssBundleList: dynamic
@@ -69,27 +69,35 @@ external val cssAutomaticRegistration: dynamic
 @JsModule("./css/MyResultList.css")
 external val cssMyResultList: dynamic
 
+@JsModule("./css/AllSolutions.css")
+external val cssAllSolutions: dynamic
+
+@JsModule("./css/AllSolutionsGroupByTask.css")
+external val cssAllSolutionsGroupByTask: dynamic
+
 class CheckMe : Application() {
     init {
+        useModule(cssApp)
         useModule(cssAuthorization)
-        useModule(cssErrorMessage)
         useModule(cssHeader)
         useModule(cssFooter)
-        useModule(cssApp)
+        useModule(cssBundleList)
+        useModule(cssBundle)
+        useModule(cssTaskList)
+        useModule(cssAllSolutions)
+        useModule(cssAllSolutionsGroupByTask)
+        useModule(cssErrorMessage)
         useModule(cssTaskForm)
         useModule(cssBundleForm)
         useModule(cssJournal)
-        useModule(cssTasksList)
-        useModule(cssBundleList)
         useModule(cssTask)
-        useModule(cssBundle)
         useModule(cssUserList)
         useModule(cssResult)
         useModule(cssLoading)
         useModule(cssTable)
         useModule(cssAutomaticRegistration)
-        useModule(jsTasks)
         useModule(cssMyResultList)
+        useModule(jsTasks)
     }
     override fun start() {
         val serverUrl = js("SERVER_URL").toString()

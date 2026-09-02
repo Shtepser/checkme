@@ -1,5 +1,6 @@
 package ru.yarsu.contentPages.content.bundlesPages
 
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.button
 import io.kvision.html.h2
@@ -8,7 +9,7 @@ import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
+import ru.yarsu.contentPages.content.addBundlePage.AddBundle
 import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.enumClasses.ListType
 import ru.yarsu.localStorage.UserInformationStorage
@@ -19,18 +20,19 @@ class BundlesList(
     serverUrl: String,
     private val routing: Routing,
     listType: ListType
-) : SimplePanel() {
+) : SimplePanel(className = "page-head") {
     init {
         if (listType.ordinal == 0) {
-            h2("Список наборов заданий")
+            h2("Наборы заданий")
         } else {
-            h2("Список скрытых наборов")
+            h2("Скрытые наборы заданий")
         }
+        val addBundle = AddBundle(serverUrl, routing)
         if (UserInformationStorage.isAdmin()) {
             button(
                 "Cоздать набор",
-                className = "usually-button"
-            ).onClick { routing.navigate("/add-bundle") }
+                style = ButtonStyle.PRIMARY
+            ).onClick { addBundle.show() }
         }
         val requestInit = createRequestHeaders(HttpMethod.GET)
         window.fetch(serverUrl + "bundle/${listType.keyWord}", requestInit).then { response ->
@@ -39,7 +41,7 @@ class BundlesList(
                     val jsonString = JSON.stringify(it)
                     val bundleList = Json.decodeFromString<List<BundleFormat>>(jsonString)
                     if (bundleList.isEmpty()) {
-                        this.add(Div("Наборы не найдены"))
+                        this.add(Div("Наборы не найдены", className = "not-found"))
                     } else {
                         this.add(BundleListViewer(serverUrl, routing, bundleList))
                     }

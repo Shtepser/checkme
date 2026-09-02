@@ -1,5 +1,6 @@
 package ru.yarsu.contentPages.content.taskListPage
 
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.button
 import io.kvision.html.h2
@@ -8,20 +9,17 @@ import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.enumClasses.ListType
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
-import ru.yarsu.serializableClasses.bundle.BundleFormat
-import ru.yarsu.serializableClasses.task.TaskFormatForList
 import ru.yarsu.serializableClasses.task.TaskWithBundlesForList
 
 class TaskList(
     serverUrl: String,
     private val routing: Routing,
     listType: ListType
-) : SimplePanel() {
+) : SimplePanel(className = "page-head") {
     init {
         if (listType.ordinal == 0) {
             h2("Список задач")
@@ -31,7 +29,7 @@ class TaskList(
         if (UserInformationStorage.isAdmin()) {
             button(
                 "Cоздать задачу",
-                className = "usually-button"
+                style = ButtonStyle.LINK,
             ).onClick { routing.navigate("/add-task") }
         }
         val requestInit = createRequestHeaders(HttpMethod.GET)
@@ -41,7 +39,7 @@ class TaskList(
                     val jsonString = JSON.stringify(it)
                     val taskList = Json.decodeFromString<List<TaskWithBundlesForList>>(jsonString)
                     if (taskList.isEmpty()){
-                        this.add(Div("Задачи не найдены"))
+                        this.add(Div("Задачи не найдены", className = "not-found"))
                     } else {
                         this.add(TaskListViewer(serverUrl, routing, taskList))
                     }

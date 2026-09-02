@@ -1,6 +1,20 @@
 .Footer {
-    padding-top: 10px;
-    line-height: 2px;
-    font-size: 14px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.75rem 0 1rem;
+    font-size: 0.875rem;
     color: #363636;
+}
+
+.Footer p {
+    margin: 0.75rem 0 0;
+    padding: 0 8%;
+}
+
+@media (max-width: 64rem) {
+    .Footer p {
+        padding: 0 4%;
+    }
 }

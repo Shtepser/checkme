@@ -111,6 +111,11 @@ class BundleOperations(
 
     override fun selectBundleTasksById(id: UUID): List<TaskAndOrder> = selectBundleTasksByIDRecords(id)
 
+    override fun selectBundleTasksWithBestScoreById(
+        bundleId: UUID,
+        userId: UUID,
+    ): List<TaskAndOrder> = selectBundleTasksWithBestScoreByIDRecords(bundleId, userId)
+
     override fun insertBundle(name: String): Bundle? {
         return jooqContext.insertInto(BUNDLES)
             .set(BUNDLES.NAME, name)
@@ -193,6 +198,19 @@ class BundleOperations(
         return result
     }
 
+    private fun selectBundleTasksWithBestScoreByIDRecords(
+        bundleId: UUID,
+        userId: UUID,
+    ) = jooqContext.select(
+        BUNDLE_TASKS.TASK_ID,
+        BUNDLE_TASKS.TASK_ORDER,
+    ).from(BUNDLE_TASKS)
+        .where(BUNDLE_TASKS.BUNDLE_ID.eq(bundleId))
+        .fetch()
+        .mapNotNull {
+            it.toTaskWithBestScoreAndOrder(taskOperations, userId)
+        }
+
     private fun selectBundleTasksByIDRecords(id: UUID) =
         jooqContext.select(
             BUNDLE_TASKS.TASK_ID,
@@ -252,6 +270,22 @@ internal fun Record.toTaskAndOrder(taskOperations: TasksOperations): TaskAndOrde
         this[BUNDLE_TASKS.TASK_ORDER],
     ) { taskID, order ->
         taskOperations.selectTaskById(taskID)?.let {
+            when {
+                it.isActual -> TaskAndOrder(it, order)
+                else -> null
+            }
+        }
+    }
+
+internal fun Record.toTaskWithBestScoreAndOrder(
+    taskOperations: TasksOperations,
+    userId: UUID,
+): TaskAndOrder? =
+    safeLet(
+        this[BUNDLE_TASKS.TASK_ID],
+        this[BUNDLE_TASKS.TASK_ORDER],
+    ) { taskID, order ->
+        taskOperations.selectTaskByIdWithBestScore(taskID, userId)?.let {
             when {
                 it.isActual -> TaskAndOrder(it, order)
                 else -> null

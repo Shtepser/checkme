@@ -82,9 +82,9 @@ class UserInfoTableViewer(
                 "name" to user.name,
                 "password" to if (user.isSystemPass) "Системный" else "Пользовательский",
                 "system-pass" to user.systemPass,
-                "action" to if (user.isSystemPass) "<button class='table-button-inactive' user-id='${user.id}' " +
+                "action" to if (user.isSystemPass) "<button class='btn btn-primary' user-id='${user.id}' " +
                         "disabled>Установить системный пароль</button>" else
-                    "<button class='table-button' user-id='${user.id}'>Установить системный пароль</button>"
+                    "<button class='btn btn-primary' user-id='${user.id}'>Установить системный пароль</button>"
             )
         }
     }

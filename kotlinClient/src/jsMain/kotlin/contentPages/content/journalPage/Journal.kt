@@ -7,9 +7,7 @@ import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.logger.LogFileInfo
 
@@ -17,18 +15,27 @@ class Journal(
     private val page: Int?,
     private val serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "paged-layout") {
     init {
         h2("Журнал действий")
         if ((page == null) || (page < 1)) {
             routing.navigate("/journal/1")
         } else {
-            hPanel(className = "pagination") {
-                button("Назад").onClick {
+            hPanel(className = "pagination-top") {
+                button("Назад", style = ButtonStyle.LINK).onClick {
                     routing.navigate("/journal/${page - 1}")
                 }
-                div("Страница $page")
-                button("Вперёд").onClick {
+                div("$page", className = "page")
+                button("Вперёд", style = ButtonStyle.LINK).onClick {
+                    routing.navigate("/journal/${page + 1}")
+                }
+            }
+            hPanel(className = "pagination-bottom") {
+                button("Назад", style = ButtonStyle.LINK).onClick {
+                    routing.navigate("/journal/${page - 1}")
+                }
+                div("$page", className = "page")
+                button("Вперёд", style = ButtonStyle.LINK).onClick {
                     routing.navigate("/journal/${page + 1}")
                 }
             }
@@ -46,7 +53,7 @@ class Journal(
                     val jsonString = JSON.stringify(it)
                     val logFiles = Json.decodeFromString<List<LogFileInfo>>(jsonString)
                     if (logFiles.isEmpty()) {
-                        this.add(Div("Нет данных для отображения"))
+                        this.add(Div("Нет данных для отображения", className = "not-found"))
                     } else {
                         this.add(JournalViewer(routing, logFiles))
                     }

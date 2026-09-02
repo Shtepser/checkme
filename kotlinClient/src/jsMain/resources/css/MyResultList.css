@@ -1,56 +1,64 @@
+.bundle-name {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: normal;
+    text-align: center;
+}
+
 .bundle-block {
-
+    gap: 1.5rem;
 }
 
-.task-block-no {
-    margin-top: 22px;
-    background: #EBEBEB;
-    padding: 15px;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border-left: 25px solid;
-    border-left-color: #212121;
+.task-block {
+    --status-color: transparent;
+    --bar-width: 8rem;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 7rem;
+    padding: 1rem calc(var(--bar-width) + 1.5rem);
+    border: var(--border);
+    border-radius: var(--radius);
     cursor: pointer;
+    transition: box-shadow 0.15s ease-in-out;
+    background-color: var(--color-surface);
+    background-image:
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--line), var(--line)),
+            linear-gradient(var(--line), var(--line));
+    background-position:
+            0 0,
+            100% 0,
+            var(--bar-width) 0,
+            calc(100% - var(--bar-width)) 0;
+    background-size:
+            var(--bar-width) 100%,
+            var(--bar-width) 100%,
+            0.0625rem 100%,
+            0.0625rem 100%;
+    background-repeat: no-repeat;
 }
 
-.task-block-incorrect {
-    margin-top: 22px;
-    background: #EBEBEB;
-    padding: 15px;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border-left: 25px solid;
-    border-left-color: #FF4444;
-    cursor: pointer;
+.task-block:hover {
+    box-shadow: var(--shadow-hover);
 }
 
-.task-block-partial {
-    margin-top: 22px;
-    background: #EBEBEB;
-    padding: 15px;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border-left: 25px solid;
-    border-left-color: #FFBB33;
-    cursor: pointer;
+.task-block.correct   { --status-color: var(--status-correct); }
+.task-block.partial   { --status-color: var(--status-partial); }
+.task-block.incorrect { --status-color: var(--status-incorrect); }
+.task-block.no        { --status-color: var(--status-no); }
+.task-block.error     { --status-color: var(--color-surface); }
+
+.task-block > div {
+    margin: 0.125rem 0;
+    font-size: 1.125rem;
+    text-align: center;
+    overflow-wrap: anywhere;
 }
 
-.task-block-correct {
-    margin-top: 22px;
-    background: #EBEBEB;
-    padding: 15px;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border-left: 25px solid;
-    border-left-color: #00C851;
-    cursor: pointer;
-}
-
-h3.bundle-name {
-    margin-bottom: 0;
-}
-
-.h2-task-link {
-    text-decoration: underline;
-    cursor: pointer;
+@media (max-width: 64rem) {
+    .task-block {
+        --bar-width: 4.5rem;
+    }
 }

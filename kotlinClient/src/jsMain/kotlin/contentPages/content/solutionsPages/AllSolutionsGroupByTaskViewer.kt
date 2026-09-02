@@ -9,6 +9,7 @@ import io.kvision.panel.VPanel
 import io.kvision.panel.vPanel
 import io.kvision.routing.Routing
 import kotlinx.datetime.LocalDateTime
+import ru.yarsu.contentPages.content.getSolutionBlockColorName
 import ru.yarsu.serializableClasses.solution.SolutionsGroupByTask
 
 class AllSolutionsGroupByTaskViewer(
@@ -17,7 +18,7 @@ class AllSolutionsGroupByTaskViewer(
 ) : VPanel() {
     init {
         for (taskSolutions in solutionsGroupByTask) {
-            vPanel(className = "block") {
+            vPanel(className = "block task-group") {
                 h4("Задача ${taskSolutions.task.name}") {
                     onClick {
                         routing.navigate("task/${taskSolutions.task.id}")
@@ -26,15 +27,15 @@ class AllSolutionsGroupByTaskViewer(
                 tag(TAG.HR)
                 if (!taskSolutions.solutions.isEmpty()) {
                     for (solution in taskSolutions.solutions) {
-                        vPanel(className = "block") {
-                            div("Пользователь: ${solution.user.surname} ${solution.user.name}")
-                            div("Статус: ${solution.status}")
+                        vPanel(className = "solution-block ${getSolutionBlockColorName(solution.result)}") {
+                            div("${solution.user.surname} ${solution.user.name}")
+                            div(solution.status)
                             if ((solution.status == "Проверено")) {
                                 val score = solution.totalScore
-                                div("Результат: $score")
+                                div("$score")
                             }
                             val dateTime = LocalDateTime.parse(solution.date).let { LocalDateTime(it.year, it.month, it.day, it.hour, it.minute, it.second) }
-                            div("${solution.status} - ${dateTime.date} ${dateTime.time}")
+                            div("${dateTime.date} ${dateTime.time}")
                             onClick {
                                 routing.navigate("solution/${solution.id}")
                             }
@@ -42,7 +43,7 @@ class AllSolutionsGroupByTaskViewer(
                         tag(TAG.HR)
                     }
                 } else {
-                    div("Решения не найдены")
+                    div("Решения не найдены", className = "not-found")
                 }
             }
         }

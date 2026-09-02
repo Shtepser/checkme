@@ -15,7 +15,7 @@ class Solution(
     solutionId: Uuid?,
     serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "page-head") {
     init {
         val requestInit = createRequestHeaders(HttpMethod.GET)
         window.fetch(serverUrl + "solution/$solutionId", requestInit).then { response ->

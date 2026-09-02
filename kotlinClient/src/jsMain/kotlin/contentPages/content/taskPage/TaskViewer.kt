@@ -10,12 +10,14 @@ import io.kvision.form.text.TextArea
 import io.kvision.form.upload.Upload
 import io.kvision.form.upload.getFileWithContent
 import io.kvision.html.Button
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.Label
 import io.kvision.html.button
 import io.kvision.html.div
 import io.kvision.html.h2
 import io.kvision.html.h3
+import io.kvision.panel.HPanel
 import io.kvision.panel.VPanel
 import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
@@ -35,9 +37,12 @@ import org.w3c.xhr.FormData
 import ru.yarsu.contentPages.Loading
 import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.contentPages.content.hiddenTask.TaskHiddenButton
+import ru.yarsu.contentPages.content.getSolutionBlockColorName
+import ru.yarsu.contentPages.content.getTaskBlockColorName
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.task.CheckId
 import ru.yarsu.serializableClasses.ResponseError
+import ru.yarsu.serializableClasses.solution.TaskOrUserSolutionsFormat
 import ru.yarsu.serializableClasses.task.SolutionFileList
 import ru.yarsu.serializableClasses.task.TaskFormat
 import kotlin.io.encoding.Base64
@@ -53,7 +58,7 @@ class TaskViewer(
     init {
         h2(task.name)
         if (UserInformationStorage.isAdmin()) {
-            div("Решения задачи", className = "task-link").onClick {
+            button("Решения задачи", style = ButtonStyle.LINK).onClick {
                 routing.navigate("solution-list/task/${task.id}")
             }
         }
@@ -62,9 +67,11 @@ class TaskViewer(
         } else {
             task.bestScore.toString()
         }
-        hPanel(className = "best-solution") {
-            div("Ваш лучший результат: ")
-            div(bestResult, className = getClassNameForColor(task.bestScore, task.highestScore))
+        hPanel(className = "sent-solutions") {
+            val bestScore = task.bestScore ?: -2
+            val highestScore = task.highestScore ?: -2
+            div("Ваш лучший результат: $bestResult", className = "best-solution ${getTaskBlockColorName(highestScore, bestScore).cssName}")
+            getMySolutions(this)
         }
         h3("Описание")
         div(task.description, className = "task-description", rich = true)
@@ -80,7 +87,7 @@ class TaskViewer(
         val formPanelSendSolution = formPanel<SolutionFileList>(className = "answer") {
             val addedFileViewer = Div("Файл не выбран", className = "file-viewer")
             add(
-                Label("Выберите файл c решением", forId = "input-solution-file", className = "file-upload")
+                Label("Выберите файл c решением", forId = "input-solution-file", className = "btn btn-secondary")
             )
             add(
                 SolutionFileList::file,
@@ -112,7 +119,7 @@ class TaskViewer(
                 addedFileViewer
             )
         }
-        val buttonSend = button("Отправить", disabled = true, className = "usually-button")
+        val buttonSend = button("Отправить ответ", disabled = true, style = ButtonStyle.PRIMARY)
         formPanelSendSolution.onInput {
             buttonSend.disabled = true
             if (formPanelSendSolution.validate()) {
@@ -151,7 +158,7 @@ class TaskViewer(
                 task.id
             )
             this.add(hiddenButton)
-            button("Удалить задачу", className = "usually-button warning-button").onClick {
+            button("Удалить задачу", style = ButtonStyle.DANGER).onClick {
                 deleteTask()
             }
         }
@@ -170,7 +177,7 @@ class TaskViewer(
             val file = Div().apply {
                 add(text)
                 add(Div(file.name))
-                add(Button("Удалить файл", className = "delete-file-button") {
+                add(Button("Удалить файл", style = ButtonStyle.DANGER) {
                     onClick {
                         text.value = ""
                         remove(text)
@@ -182,26 +189,6 @@ class TaskViewer(
                 })
             }
             fileViewer.add(file)
-        }
-    }
-
-    fun getClassNameForColor(result: Int?, score: Int?): String {
-        return if (result != null && score != null) {
-            when (result) {
-                -1 -> {
-                    "bad-result"
-                }
-
-                score -> {
-                    "excellent-result"
-                }
-
-                else -> {
-                    "medium-result"
-                }
-            }
-        } else {
-            "bad-result"
         }
     }
 
@@ -266,6 +253,48 @@ class TaskViewer(
                     ToastOptions(
                         duration = 5000,
                         position = ToastPosition.TOPRIGHT,
+                    )
+                )
+            }
+        }
+    }
+    
+    private fun getMySolutions(hPanel: HPanel) {
+        hPanel.add(Div("Отправленные решения:", className = "solutions-label"))
+        val requestInit = createRequestHeaders(HttpMethod.GET)
+        window.fetch(serverUrl + "solution/user-and-task/${task.id}", requestInit).then { response ->
+            when (response.status.toInt()) {
+                200 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val taskSolutions = Json.decodeFromString<TaskOrUserSolutionsFormat>(jsonString)
+                    if (taskSolutions.solutions.isEmpty()) {
+                        hPanel.add(Div("Решения не найдены", className = "not-found"))
+                    } else {
+                        taskSolutions.solutions.forEach { solution ->
+                            hPanel.add(
+                                Div(
+                                    solution.totalScore.toString(),
+                                    className = "mini-block ${getSolutionBlockColorName(solution.result)}") {
+                                    onClick {
+                                        routing.navigate("/solution/${solution.id}")
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+
+                400 -> response.json().then {
+                    val jsonString = JSON.stringify(it)
+                    val responseError =
+                        Json.Default.decodeFromString<ResponseError>(jsonString)
+                    hPanel.add(Div(responseError.error, className = "error-message"))
+                }
+
+                else -> hPanel.add(
+                    Div(
+                        "Код ошибки ${response.status}: ${response.statusText}",
+                        className = "error-message"
                     )
                 )
             }

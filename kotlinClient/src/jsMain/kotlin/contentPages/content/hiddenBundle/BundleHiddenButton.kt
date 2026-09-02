@@ -1,17 +1,15 @@
 package ru.yarsu.contentPages.content.hiddenBundle
 
 import io.kvision.html.Button
+import io.kvision.html.ButtonStyle
 import io.kvision.panel.HPanel
 import io.kvision.rest.HttpMethod
-import io.kvision.routing.Routing
 import io.kvision.toast.Toast
 import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import kotlin.uuid.Uuid
 
@@ -20,9 +18,9 @@ class BundleHiddenButton(
     private var isActual: Boolean,
     private val bundleId: Uuid,
     private val hPanel: HPanel? = null,
-) : Button("", className = "usually-button") {
+) : Button("", style = ButtonStyle.PRIMARY) {
     init {
-        text = if (isActual) "Скрыть набор" else "Показать набор"
+        text = if (isActual) "Скрыть" else "Показать"
         this.onClick {
             val requestInit = createRequestHeaders(HttpMethod.POST)
             window.fetch(serverUrl + "bundle/change-actuality/$bundleId", requestInit).then { response ->
@@ -32,7 +30,7 @@ class BundleHiddenButton(
                             hPanel.visible = false
                         else {
                             isActual = !isActual
-                            text = if (isActual) "Скрыть набор" else "Показать набор"
+                            text = if (isActual) "Скрыть" else "Показать"
                         }
                         js("window.location.reload()")
                     }

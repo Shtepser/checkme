@@ -3,10 +3,11 @@ package ru.yarsu.contentPages.content.addBundlePage
 import io.kvision.form.FormPanel
 import io.kvision.form.formPanel
 import io.kvision.html.Label
-import io.kvision.panel.VPanel
 import io.kvision.form.text.Text
+import io.kvision.html.ButtonStyle
 import io.kvision.html.button
 import io.kvision.html.h2
+import io.kvision.modal.Modal
 import io.kvision.panel.HPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
@@ -15,10 +16,8 @@ import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import org.w3c.xhr.FormData
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.bundle.BundleId
 import ru.yarsu.serializableClasses.bundle.FormAddBundle
@@ -26,8 +25,9 @@ import ru.yarsu.serializableClasses.bundle.FormAddBundle
 class AddBundle(
     private val serverUrl: String,
     private val routing: Routing
-) : VPanel(className = "BundleAdd") {
+) : Modal(className = "modal-window BundleAdd") {
     init {
+        this.hide()
         h2("Создание набора")
         val formPanelAddBundle = formPanel<FormAddBundle>(className = "base-form") {
             add(Label("Название набора", className = "separate-form-label"))
@@ -39,9 +39,12 @@ class AddBundle(
             )
         }
         formPanelAddBundle.add(HPanel(className = "add-bundle-buttons-panel") {
-            button("Отправить", className = "usually-button").onClick {
+            button("Отправить", style = ButtonStyle.PRIMARY).onClick {
                 val validateForm = formPanelAddBundle.validate()
-                if (validateForm) createBundle(formPanelAddBundle)
+                if (validateForm) {
+                    this@AddBundle.hide()
+                    createBundle(formPanelAddBundle)
+                }
             }
         })
     }

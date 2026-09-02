@@ -6,14 +6,13 @@ import io.kvision.routing.Routing
 import ru.yarsu.contentPages.componentsPage.Content
 import ru.yarsu.contentPages.componentsPage.Footer
 import ru.yarsu.contentPages.componentsPage.Header
-import ru.yarsu.contentPages.content.addBundlePage.AddBundle
+import ru.yarsu.contentPages.content.automaticRegistrationPage.AutomaticRegistration
 import ru.yarsu.contentPages.content.addBundlePage.ChangeBundleTasksOrder
 import ru.yarsu.contentPages.content.addBundlePage.SelectBundleTasks
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.addTaskPage.AddTask
 import ru.yarsu.contentPages.content.bundlesPages.Bundle
 import ru.yarsu.contentPages.content.bundlesPages.BundlesList
-import ru.yarsu.contentPages.content.bundlesPages.ChangeBundleName
 import ru.yarsu.contentPages.content.journalPage.Journal
 import ru.yarsu.contentPages.content.journalPage.LogFile
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
@@ -27,7 +26,6 @@ import ru.yarsu.contentPages.content.taskListPage.TaskList
 import ru.yarsu.contentPages.content.solutionsPages.TaskOrUserSolutions
 import ru.yarsu.contentPages.content.userInfoPage.UserInfoTable
 import ru.yarsu.contentPages.content.userListPage.UserList
-import ru.yarsu.contentPages.content.userPages.ChangeUserPassword
 import ru.yarsu.enumClasses.ListType
 import kotlin.uuid.Uuid
 
@@ -41,7 +39,7 @@ class MainPage(
         if (userName == null){
             routing.navigate("/authorization/sign_in")
         }
-        val header = Header(routing, routingMainPage)
+        val header = Header(serverUrl, routing, routingMainPage)
         val content = Content(serverUrl, routingMainPage)
         val footer = Footer()
         div(className = "app-content"){
@@ -76,21 +74,6 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
-        }).on("/add-bundle", {
-            if (UserInformationStorage.isAdmin()) {
-                content.removeAll()
-                content.add(AddBundle(serverUrl, routingMainPage))
-            } else {
-                routingMainPage.navigate("/")
-            }
-        }).on("/bundle/change-name/:id", {match ->
-            if (UserInformationStorage.isAdmin()) {
-                content.removeAll()
-                val id = match.data.id.toString()
-                content.add(ChangeBundleName(serverUrl, id, routingMainPage))
-            } else {
-                routingMainPage.navigate("/")
-            }
         }).on("/task/:id", { match ->
             content.removeAll()
             val id = try {
@@ -106,10 +89,10 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
-        }).on("/user/change-password", {
-            if (!UserInformationStorage.isAdmin()) {
+        }).on("/automatic-registration", {
+            if (UserInformationStorage.isAdmin()) {
                 content.removeAll()
-                content.add(ChangeUserPassword(serverUrl, routingMainPage))
+                content.add(AutomaticRegistration(serverUrl))
             } else {
                 routingMainPage.navigate("/")
             }
@@ -173,7 +156,7 @@ class MainPage(
             } else {
                 routingMainPage.navigate("/")
             }
-        }).on("/solutions-table", { match ->
+        }).on("/solutions-table", { _ ->
             content.removeAll()
             content.add(AllSolutionsTable(serverUrl, routingMainPage))
         }).on("/hidden-task-list", {

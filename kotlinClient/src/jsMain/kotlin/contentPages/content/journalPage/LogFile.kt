@@ -1,24 +1,16 @@
 package ru.yarsu.contentPages.content.journalPage
 
-import io.kvision.core.onEvent
-import io.kvision.form.check.checkBox
-import io.kvision.form.number.numericInput
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
-import io.kvision.html.InputType
 import io.kvision.html.button
 import io.kvision.html.h2
-import io.kvision.html.input
-import io.kvision.html.span
 import io.kvision.panel.SimplePanel
 import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
-import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.json.Json
-import org.w3c.fetch.RequestInit
 import ru.yarsu.contentPages.content.createRequestHeaders
-import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.logger.LogFormat
 
@@ -26,7 +18,7 @@ class LogFile(
     private val serverUrl: String,
     private val routing: Routing,
     private val name: String?
-) : SimplePanel() {
+) : SimplePanel(className = "page-head") {
     init {
         h2("Файл $name") {
             if (name == null) {
@@ -35,11 +27,11 @@ class LogFile(
                 loadLogsFromFile(name)
             }
         }
-        hPanel {
-            button("Назад к списку файлов", className = "navigation-button button-min").onClick {
+        hPanel(className = "page-actions") {
+            button("Назад к списку файлов", style = ButtonStyle.LINK).onClick {
                 routing.navigate("/journal/1")
             }
-            button("Обновить", className = "navigation-button button-min").onClick {
+            button("Обновить", style = ButtonStyle.SECONDARY).onClick {
                 js("window.location.reload()")
             }
         }
@@ -55,7 +47,7 @@ class LogFile(
                     val jsonString = JSON.stringify(it)
                     val logs = Json.decodeFromString<List<LogFormat>>(jsonString)
                     if (logs.isEmpty()) {
-                        this.add(Div("Нет данных для отображения"))
+                        this.add(Div("Нет данных для отображения", className = "not-found"))
                     } else {
                         this.add(LogFileViewer(logs))
                     }

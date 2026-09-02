@@ -1,8 +1,8 @@
 package ru.yarsu.contentPages.content.solutionsPages
 
 import io.kvision.core.onClick
+import io.kvision.html.Button
 import io.kvision.html.Div
-import io.kvision.html.button
 import io.kvision.panel.SimplePanel
 import io.kvision.panel.VPanel
 import io.kvision.routing.Routing
@@ -13,13 +13,13 @@ import io.kvision.tabulator.TabulatorOptions
 import io.kvision.tabulator.tabulator
 import kotlinx.serialization.json.Json
 import ru.yarsu.serializableClasses.solution.IdScore
-import ru.yarsu.serializableClasses.solution.ResultScoreMessage
 import ru.yarsu.serializableClasses.solution.SolutionInformation
 import ru.yarsu.serializableClasses.solution.SolutionsTable
 
 class AllSolutionsTableViewer(
     private val routing: Routing,
     private val solutionsTable: SolutionsTable,
+    private val downloadButton: Button,
 ): SimplePanel() {
     private fun getListMaxScore(solutions: List<SolutionInformation>) : List<IdScore> {
         return solutionsTable.tasks.map { task ->
@@ -33,42 +33,39 @@ class AllSolutionsTableViewer(
     private fun getData() : List<Map<String, String>> {
         return solutionsTable.solutions.toList().mapIndexed { index, user ->
             val userStats = solutionsTable.users.find { it.id == user.first }
-            val surnameNameLogin = if (userStats != null) {
-                "${userStats.surname} ${userStats.name} (${userStats.login})"
-            } else {
-                "Неизвестный пользователь"
-            }
+            val login = userStats?.login ?: "None"
+            val surname = userStats?.surname ?: "None"
+            val name = userStats?.name ?: "None"
             val row = mutableMapOf<String, String>()
-            row.put("id", user.first.toString())
-            row.put("solutions", Json.Default.encodeToString(user.second))
+            row["id"] = user.first.toString()
+            row["solutions"] = Json.Default.encodeToString(user.second)
             val listMaxScore = getListMaxScore(user.second)
             for (max in listMaxScore) {
-                row.put("taskId${max.id}", max.score.toString())
+                row["taskId${max.id}"] = max.score.toString()
             }
-            row.put("surnameNameLogin", surnameNameLogin)
+            row["login"] = login
+            row["surname"] = surname
+            row["name"] = name
             row
-        }
-    }
-
-    private fun getColorScore(score: Int?, result: Map<String, ResultScoreMessage>?): String {
-        return if ((score == null) || (score == 0) || (result == null)) {
-            "table-criteria-failed"
-        } else {
-            val criteriaScore = result.map { Pair(it.key, it.value.score) }.toMap()
-            if (criteriaScore.values.contains(0)) {
-                "table-criteria-fifty-fifty"
-            } else {
-                "table-criteria-passed"
-            }
         }
     }
 
     private val columns = listOf<ColumnDefinition<Map<String, String>>>(
         ColumnDefinition(
-            "Фамилия имя (логин)",
-            field = "surnameNameLogin",
+            "Логин",
+            field = "login",
             headerFilter = Editor.INPUT
-        )
+        ),
+        ColumnDefinition(
+            "Фамилия",
+            field = "surname",
+            headerFilter = Editor.INPUT
+        ),
+        ColumnDefinition(
+            "Имя",
+            field = "name",
+            headerFilter = Editor.INPUT
+        ),
     ) + solutionsTable.tasks.mapIndexed { index, title ->
         val taskId = title.id
         ColumnDefinition(
@@ -81,9 +78,11 @@ class AllSolutionsTableViewer(
                 ).filter { it.taskId == taskId }
                 VPanel().apply {
                     this.addAll(
-                        solutions.map { solution ->
+                        solutions.filter {
+                            solution -> solution.totalScore == solutions.maxOf {solution -> solution.totalScore ?: -1}
+                        }.map { solution ->
                             val score = solution.totalScore
-                            Div("${solution.status}: $score", className = getColorScore(score, solution.result)).apply {
+                            Div("$score", className = "btn btn-link").apply {
                                 this.onClick {
                                     routing.navigate("/solution/${solution.id}")
                                 }
@@ -102,7 +101,7 @@ class AllSolutionsTableViewer(
             ),
             types = setOf(TableType.BORDERED)
         )
-        button("Скачать", className = "usually-button").onClick {
+        downloadButton.onClick {
             table.downloadCSV("solutionsTable")
         }
     }

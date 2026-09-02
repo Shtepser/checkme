@@ -1,44 +1,73 @@
-.criteria-passed {
-    color: #3E8D00;
+.result-page {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
 }
 
-.criteria-passed::before {
-    content: "+";
-    margin-right: 5px;
+.result-page > h2 {
+    margin: 0;
+    text-align: left;
 }
 
-.criteria-failed {
-    color: #CE2727;
+.result-page > .btn-link {
+    margin-left: auto;
 }
 
-.criteria-failed::before {
-    content: "–";
-    margin-right: 5px;
+.result-page > .criteria-list {
+    flex-basis: 100%;
 }
+
 
 .criteria-list {
-    display: flex;
-    margin-top: 10px;
+    --status-color: transparent;
+    --bar-width: 5rem;
+    box-sizing: border-box;
+    min-height: 6.25rem;
+    margin: 0 0 1.5rem;
+    border: var(--border);
+    border-radius: var(--radius);
+    background-color: var(--color-surface);
+    background-image:
+            linear-gradient(var(--status-color), var(--status-color)),
+            linear-gradient(var(--line), var(--line));
+    background-position:
+            0 0,
+            var(--bar-width) 0;
+    background-size:
+            var(--bar-width) 100%,
+            0.0625rem 100%;
+    background-repeat: no-repeat;
 }
 
+.criteria-list.criteria-passed { --status-color: var(--status-correct); }
+.criteria-list.criteria-failed { --status-color: var(--status-incorrect); }
+
 .criteria-message {
-    flex: 4;
-    padding-right: 20px;
+    flex: 1 1 auto;
+    box-sizing: border-box;
+    padding: 0.75rem 1.5rem 0.75rem calc(var(--bar-width) + 1.5rem);
+    font-size: 1rem;
+    overflow-wrap: anywhere;
 }
 
 .criteria-score {
-    padding-left: 20px;
-    flex: 1;
+    flex: 0 0 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border-left: var(--border);
+    font-size: 1.5rem;
 }
 
-.title {
-    font-weight: bold;
-}
+@media (max-width: 64rem) {
+    .criteria-list {
+        --bar-width: 4rem;
+    }
 
-.task-link {
-    font-size: 24px;
-    display: block;
-    margin-bottom: 20px;
-    text-decoration: underline;
-    cursor: pointer;
+    .criteria-score {
+        flex-basis: 3.5rem;
+    }
 }

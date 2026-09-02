@@ -17,7 +17,7 @@ class TaskOrUserSolutions(
     private val taskOrUser: String,
     serverUrl: String,
     private val routing: Routing
-) : SimplePanel() {
+) : SimplePanel(className = "paged-layout") {
     init {
         val title = H2("Решения")
         add(title)
@@ -34,7 +34,7 @@ class TaskOrUserSolutions(
                         title.content = "Решения задачи: ${taskOrUserSolutions.name}"
                     }
                     if (taskOrUserSolutions.solutions.isEmpty()) {
-                        add(Div("Решения не найдены"))
+                        add(Div("Решения не найдены", className = "not-found"))
                     } else {
                         add(AllSolutionsViewer(taskOrUserSolutions.solutions, routing))
                     }

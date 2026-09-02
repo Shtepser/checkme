@@ -79,6 +79,20 @@ class FetchBundleTasks(
     }
 }
 
+class FetchBundleTasksWithBestScore(
+    private val selectBundleTasks: (UUID, UUID) -> List<TaskAndOrder>?,
+) : (UUID, UUID) -> Result4k<List<TaskAndOrder>, BundleFetchingError> {
+    override fun invoke(
+        bundleId: UUID,
+        userId: UUID,
+    ): Result4k<List<TaskAndOrder>, BundleFetchingError> {
+        return when (val tasks = selectBundleTasks(bundleId, userId)) {
+            is List<TaskAndOrder> -> Success(tasks)
+            else -> Failure(BundleFetchingError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+}
+
 class FetchBundleTasksWithUserBestResult(
     private val fetchBundleTasksWithUserBestResult: (Int, UUID) -> List<BundleTasksWithBestResult>?,
 ) : (Int, UUID) -> Result4k<List<BundleTasksWithBestResult>, BundleFetchingError> {

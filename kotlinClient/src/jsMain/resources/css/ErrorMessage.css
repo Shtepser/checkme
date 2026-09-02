@@ -1,7 +1,7 @@
 .error-message {
-    color: #e62d2d;
-    font-size: 16px;
-    display: block;
-    max-width: 100%;
-    margin: 10px 0px;
+    padding: 3rem 0 1rem;
+    text-align: center;
+    font-size: 2.5rem;
+    color: var(--color-error-message);
+    user-select: none;
 }

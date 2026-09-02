@@ -3,12 +3,12 @@ package ru.yarsu.contentPages.content.userPages
 import io.kvision.form.FormPanel
 import io.kvision.form.formPanel
 import io.kvision.form.text.Text
+import io.kvision.html.ButtonStyle
 import io.kvision.html.Label
 import io.kvision.html.button
 import io.kvision.html.h2
+import io.kvision.modal.Modal
 import io.kvision.panel.HPanel
-import io.kvision.panel.VPanel
-import io.kvision.routing.Routing
 import ru.yarsu.serializableClasses.user.FormChangePassword
 import io.kvision.rest.HttpMethod
 import io.kvision.toast.Toast
@@ -20,13 +20,12 @@ import org.w3c.fetch.RequestInit
 import org.w3c.xhr.FormData
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.ResponseError
-import ru.yarsu.serializableClasses.bundle.BundleId
 
 class ChangeUserPassword(
     private val serverUrl: String,
-    private val routing: Routing
-) : VPanel(className = "ChangeUserPassword") {
+) : Modal(className = "modal-window ChangeUserPassword") {
     init {
+        this.hide()
         h2("Изменение пароля")
         val formPanelChangePassword = formPanel<FormChangePassword>(className = "base-form") {
             add(Label("Пароль", className =  "separate-form-label"))
@@ -45,9 +44,10 @@ class ChangeUserPassword(
             )
         }
         formPanelChangePassword.add(HPanel(className = "change-name-button") {
-            button("Изменить", className = "usually-button").onClick {
+            button("Изменить", style = ButtonStyle.PRIMARY).onClick {
                 val validateForm = formPanelChangePassword.validate()
                 if (validateForm) {
+                    this@ChangeUserPassword.hide()
                     sendPasswordsResponse(
                         formPanelChangePassword = formPanelChangePassword
                     )
@@ -72,10 +72,18 @@ class ChangeUserPassword(
         window.fetch(serverUrl + "user/change-password", requestInit).then { response ->
             if (response.status.toInt() == 200) {
                 response.json().then {
-                    routing.navigate("/")
+                    formPanelChangePassword.clearData()
+                    Toast.success(
+                        "Пароль успешно изменён",
+                        ToastOptions(
+                            duration = 3000,
+                            position = ToastPosition.TOPRIGHT,
+                        )
+                    )
                 }
             } else if (response.status.toInt() == 400) {
                 response.json().then {
+                    formPanelChangePassword.clearData()
                     val jsonString = JSON.stringify(it)
                     val responseError =
                         Json.Default.decodeFromString<ResponseError>(jsonString)
@@ -88,6 +96,7 @@ class ChangeUserPassword(
                     )
                 }
             } else {
+                formPanelChangePassword.clearData()
                 Toast.danger(
                     "Код ошибки ${response.status}: ${response.statusText}",
                     ToastOptions(

@@ -50,6 +50,7 @@ private fun tryFetchBundleAndTasks(
             } else {
                 tryFetchBundleTasks(
                     bundle = bundle.value,
+                    user = user,
                     bundleOperations = bundleOperations,
                     objectMapper = objectMapper
                 )
@@ -60,10 +61,11 @@ private fun tryFetchBundleAndTasks(
 
 private fun tryFetchBundleTasks(
     bundle: Bundle,
+    user: User,
     bundleOperations: BundleOperationHolder,
     objectMapper: ObjectMapper,
 ): Response {
-    return when (val bundleTasks = selectBundleTasks(bundle.id, bundleOperations)) {
+    return when (val bundleTasks = selectBundleTasksWithBestScore(bundle.id, user.id, bundleOperations)) {
         is Failure -> objectMapper.sendBadRequestError(bundleTasks.reason.errorText)
         is Success -> objectMapper.sendOKResponse(BundleAndTasks(bundle = bundle, tasks = bundleTasks.value))
     }
