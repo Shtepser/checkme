@@ -28,7 +28,7 @@ class ChangeTaskHandler(
         val user = userLens(request)
         val taskId = request.idOrNull()
             ?: return objectMapper.sendBadRequestError(ChangeTaskError.NO_ID_TO_CHANGE_TASK.errorText)
-        val form: MultipartForm = TaskLenses.multipartFormFieldsAll(request)
+        val form: MultipartForm = TaskLenses.multipartFormFieldsAllWithFlag(request)
         return when {
             user?.isAdmin() != true ->
                 objectMapper.sendBadRequestError(ChangeTaskError.USER_HAS_NOT_RIGHTS.errorText)
@@ -78,14 +78,17 @@ private fun tryChangeTask(
     form: MultipartForm,
 ): Response {
     return when (
-        val editedTask = changeTask(taskToChange, tasksOperations)
+        val editedTask = changeTask(taskToChange.id, validatedTask, tasksOperations)
     ) {
         is Success -> {
-            val isReplaced = validatedTask.replaceTaskFilesInDirectory(
-                nameDirectory = taskToChange.id.toString(),
-                files = form.files,
-                criterions = validatedTask.criterions,
-            )
+            val isReplaced = if (TaskLenses.editScriptsField(form).value.toBoolean()) {
+                validatedTask.addOrReplaceTaskFilesToDirectory(
+                    directoryName = taskToChange.id.toString(),
+                    files = form.files,
+                )
+            } else {
+                Success("The files do not need to be replaced.")
+            }
             when (isReplaced) {
                 is Success -> {
                     ServerLogger.log(

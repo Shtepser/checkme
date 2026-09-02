@@ -19,3 +19,5 @@ fun ObjectMapper.sendStatusUnauthorized(message: Any) =
         .body(this.writeValueAsString(mapOf("error" to message)))
 
 fun ObjectMapper.sendStatusCreated(data: Any) = Response(Status.CREATED).body(this.writeValueAsString(data))
+
+fun ObjectMapper.sendStatusNotFound(message: Any) = Response(Status.NOT_FOUND).body(this.writeValueAsString(mapOf("error" to message)))

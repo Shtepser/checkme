@@ -75,18 +75,30 @@ private fun tryAddTaskAndFiles(
             )
     ) {
         is Success -> {
-            validatedNewTask.addTaskFilesToDirectory(
+            val isAdded = validatedNewTask.addOrReplaceTaskFilesToDirectory(
                 newTask.value.id.toString(),
                 files = form.files,
-                criterions = validatedNewTask.criterions,
             )
-            ServerLogger.log(
-                user = user,
-                action = "New task addition",
-                message = "User is created new task ${newTask.value.id}-${newTask.value.name}",
-                type = LoggerType.INFO
-            )
-            objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
+            when (isAdded) {
+                is Success -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "New task addition",
+                        message = "User is created new task ${newTask.value.id}-${newTask.value.name}",
+                        type = LoggerType.INFO
+                    )
+                    objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
+                }
+                is Failure -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "New task addition warnings",
+                        message = "Something wrong when try add task. Error: ${isAdded.reason}",
+                        type = LoggerType.WARN
+                    )
+                    objectMapper.sendBadRequestError(isAdded.reason)
+                }
+            }
         }
 
         is Failure -> {

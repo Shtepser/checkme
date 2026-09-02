@@ -41,12 +41,13 @@ internal fun addTask(
 }
 
 internal fun changeTask(
+    taskId: UUID,
     task: Task,
     taskOperations: TaskOperationsHolder,
 ): Result<Task, ChangingTaskError> {
     return when (
         val editedTask = taskOperations.updateTask(
-            task.id,
+            taskId,
             task.name,
             task.criterions,
             task.answerFormat,
@@ -178,57 +179,39 @@ fun MultipartForm.validateForm(): Result<Task, ValidateTaskError> {
 
 // первоначально функция добавляет все файлы с проверками, относящиеся к заданию, в соответствующую директорию,
 // затем вызывается функция tryRenameFileAndUpdateCriterions для обновления имен файлов-проверок с особыми критериями
-fun Task.addTaskFilesToDirectory(
-    nameDirectory: String,
+fun Task.addOrReplaceTaskFilesToDirectory(
+    directoryName: String,
     files: Map<String, List<MultipartFormFile>>,
-    criterions: Map<String, Criterion>,
-): Map<String, Criterion> {
-    val tasksDir = File(
-        "..$TASKS_DIR" +
-            "/$nameDirectory"
-    )
-    if (!tasksDir.exists()) {
-        tasksDir.mkdirs()
-    }
-    for (file in files.values.flatten()) {
-        val filePath = File(tasksDir, file.filename)
-        val fileBytes = file.content.use { it.readAllBytes() }
-        filePath.writeBytes(fileBytes)
-    }
-    return criterions
-}
-
-fun Task.replaceTaskFilesInDirectory(
-    nameDirectory: String,
-    files: Map<String, List<MultipartFormFile>>,
-    criterions: Map<String, Criterion>,
-) : Result<Map<String, Criterion>, String> {
-    val tasksDir = File(
-        "..$TASKS_DIR" +
-                "/$nameDirectory"
-    )
-    return if (!tasksDir.exists()) {
-        tasksDir.mkdirs()
-        for (file in files.values.flatten()) {
-            val filePath = File(tasksDir, file.filename)
-            val fileBytes = file.content.use { it.readAllBytes() }
-            filePath.writeBytes(fileBytes)
-        }
-        Success(criterions)
-    } else {
-        try {
-            if (tasksDir.isDirectory) {
-                val files = tasksDir.listFiles()
-                if (files != null) {
-                    for (file in files) {
-                        file.delete()
-                    }
+): Result<String, String> {
+    return try {
+        val tasksDir = File(
+            "..$TASKS_DIR" +
+                "/$directoryName"
+        )
+        if (!tasksDir.exists()) {
+            tasksDir.mkdirs()
+            for (file in files.values.flatten()) {
+                val filePath = File(tasksDir, file.filename)
+                val fileBytes = file.content.use { it.readAllBytes() }
+                filePath.writeBytes(fileBytes)
+            }
+            Success("Directory $directoryName successful created and files added")
+        } else {
+            val oldFiles = tasksDir.listFiles()
+            if (oldFiles != null) {
+                for (file in oldFiles) {
+                    file.delete()
                 }
             }
-            Success(criterions)
-        } catch (e: Exception) {
-            Failure(e.message ?: "Something happened while replacement files in task directory: $nameDirectory.")
+            for (file in files.values.flatten()) {
+                val filePath = File(tasksDir, file.filename)
+                val fileBytes = file.content.use { it.readAllBytes() }
+                filePath.writeBytes(fileBytes)
+            }
+            Success("Files successfully replaced in directory $directoryName.")
         }
+    } catch (e: Exception) {
+        Failure(e.message ?: "Something happened while replacement files in task directory: $directoryName.")
     }
 }
 
@@ -256,5 +239,5 @@ enum class RemovingTaskError(val errorText: String) {
 enum class ChangingTaskError(val errorText: String) {
     UNKNOWN_DATABASE_ERROR("Something happened. Please try again later or ask for help"),
     NO_SUCH_TASK("The task does not exist"),
-    UNKNOWN_UPDATE_ERROR("Something was wrong until task changing. Please try again later.")
+    UNKNOWN_UPDATE_ERROR("Something was wrong until task changing. Please try again later."),
 }

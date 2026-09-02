@@ -162,6 +162,9 @@ class TaskViewer(
             button("Удалить задачу", style = ButtonStyle.DANGER) { id = "task-delete-button" } .onClick {
                 deleteTask()
             }
+            button("Изменить задачу", style = ButtonStyle.LINK).onClick {
+                routing.navigate("/change-task/${task.id}")
+            }
         }
     }
 
