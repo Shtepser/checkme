@@ -19,12 +19,13 @@ class SolutionViewer(
             add(Loading("Проверяем эту задачу"))
         } else if (solution.status == "Проверено") {
             val score = solution.totalScore
-            h2("Результат: $score")
+            h2("Результат: $score") { id = "solution-score" }
             button("Перейти к заданию", style = ButtonStyle.LINK).onClick {
                 routing.navigate("task/${solution.task.id}")
             }
             solution.result.values.forEach { (score, message) ->
                 hPanel(className=if (score > 0) "criteria-list criteria-passed" else "criteria-list criteria-failed") {
+                    id = "row-criteria-list"
                     div(message, className="criteria-message")
                     div(score.toString(), className="criteria-score")
                 }

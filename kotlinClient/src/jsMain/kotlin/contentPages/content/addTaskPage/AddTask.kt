@@ -49,26 +49,26 @@ class AddTask(
 ) : VPanel(className = "TaskAdd") {
     private val scriptFile = mutableListOf<KFile>()
     init {
-        h2("Создание задачи")
+        h2("Создание задачи") { id = "add-task-h2" }
         val formPanelAddTask = formPanel<FormAddTask>(className = "base-form") {
             add(Label("Название", className = "separate-form-label"))
             add(
                 FormAddTask::name,
-                Text(),
+                Text { this.input.id = "add-task-name" },
                 required = true,
                 requiredMessage = ""
             )
             add(Label("Описание", className = "separate-form-label"))
             add(
                 FormAddTask::description,
-                RichText(),
+                RichText { this.input.id = "add-task-description" },
                 required = true,
                 requiredMessage = ""
             )
             add(Label("JSON с критериями задачи", className = "separate-form-label"))
             val textArea = TextArea()
             add(
-                Label("Выберите JSON файл", forId = "input-file-0", className = "btn btn-secondary")
+                Label("Выберите JSON файл", forId = "input-file-0", className = "btn btn-secondary") { id = "add-task-criterions" }
             )
             add(
                 Upload(accept = listOf(".json")) {
@@ -109,9 +109,11 @@ class AddTask(
                 display = Display.NONE
             }
             val inputFileLabel = Label("Выберите файлы", forId = "input-file-1", className = "btn btn-secondary") {
+                id = "add-task-script-file"
                 display = Display.NONE
             }
             val addedScriptsFileViewer = Div("Файлы не выбраны", className = "files-viewer") {
+                id = "add-task-script-no-file-div"
                 display = Display.NONE
             }
             val uploadScriptFiles = Upload(accept = listOf(".sql"), multiple = true) {
@@ -161,7 +163,7 @@ class AddTask(
             this.validate()
             add(addedScriptsFileViewer)
         }
-        val buttonSend = button("Отправить", disabled = true, style = ButtonStyle.PRIMARY)
+        val buttonSend = button("Отправить", disabled = true, style = ButtonStyle.PRIMARY) { id = "add-task-send" }
         formPanelAddTask.onInput {
             buttonSend.disabled = !formPanelAddTask.validate()
         }
@@ -219,10 +221,11 @@ class AddTask(
         if (files.isEmpty()) {
             filesViewer.content = "Файлы не выбраны"
         } else {
-            files.forEach { kFile ->
+            files.forEachIndexed { index, kFile ->
                 val fileViewer = Div().apply {
-                    add(Div(kFile.name))
+                    add(Div(kFile.name) { id = "added-script-file-name-${index + 1}" })
                     add(Button("Удалить файл", style = ButtonStyle.DANGER) {
+                        id = "delete-file-${index + 1}-button"
                         onClick {
                             files.remove(kFile)
                             updateFilesViewer(filesViewer, files, form)

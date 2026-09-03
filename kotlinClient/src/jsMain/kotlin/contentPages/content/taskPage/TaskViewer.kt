@@ -56,9 +56,9 @@ class TaskViewer(
     private var solutionFile: KFile? = null
 
     init {
-        h2(task.name)
+        h2(task.name) { id = "task-name-h2" }
         if (UserInformationStorage.isAdmin()) {
-            button("Решения задачи", style = ButtonStyle.LINK).onClick {
+            button("Решения задачи", style = ButtonStyle.LINK) { id = "task-solutions-navigation" } .onClick {
                 routing.navigate("solution-list/task/${task.id}")
             }
         }
@@ -70,24 +70,25 @@ class TaskViewer(
         hPanel(className = "sent-solutions") {
             val bestScore = task.bestScore ?: -2
             val highestScore = task.highestScore ?: -2
-            div("Ваш лучший результат: $bestResult", className = "best-solution ${getTaskBlockColorName(highestScore, bestScore).cssName}")
+            div("Ваш лучший результат: $bestResult", className = "best-solution ${getTaskBlockColorName(highestScore, bestScore).cssName}") { id = "best-result-div" }
             getMySolutions(this)
         }
         h3("Описание")
-        div(task.description, className = "task-description", rich = true)
+        div(task.description, className = "task-description", rich = true) { id = "task-description-div" }
         val taskType = task.answerFormat.first().type
         if (taskType == "file") {
-            div("Предоставьте ответ в виде файла с расширением .sql", className = "solution-label")
+            div("Предоставьте ответ в виде файла с расширением .sql", className = "solution-label") { id = "task-solution-info-sql" }
         } else {
-            div("Предоставьте ответ в виде текстового файла", className = "solution-label")
+            div("Предоставьте ответ в виде текстового файла", className = "solution-label") { id = "task-solution-info-text" }
         }
         val solutionTextArea = TextArea {
+            id = "solution-text-area"
             readonly = true
         }
         val formPanelSendSolution = formPanel<SolutionFileList>(className = "answer") {
-            val addedFileViewer = Div("Файл не выбран", className = "file-viewer")
+            val addedFileViewer = Div("Файл не выбран", className = "file-viewer") { id = "task-no-file-div" }
             add(
-                Label("Выберите файл c решением", forId = "input-solution-file", className = "btn btn-secondary")
+                Label("Выберите файл c решением", forId = "input-solution-file", className = "btn btn-secondary") { id = "task-solution-file" }
             )
             add(
                 SolutionFileList::file,
@@ -119,7 +120,7 @@ class TaskViewer(
                 addedFileViewer
             )
         }
-        val buttonSend = button("Отправить ответ", disabled = true, style = ButtonStyle.PRIMARY)
+        val buttonSend = button("Отправить ответ", disabled = true, style = ButtonStyle.PRIMARY) { id = "task-send-button" }
         formPanelSendSolution.onInput {
             buttonSend.disabled = true
             if (formPanelSendSolution.validate()) {
@@ -158,7 +159,7 @@ class TaskViewer(
                 task.id
             )
             this.add(hiddenButton)
-            button("Удалить задачу", style = ButtonStyle.DANGER).onClick {
+            button("Удалить задачу", style = ButtonStyle.DANGER) { id = "task-delete-button" } .onClick {
                 deleteTask()
             }
         }
@@ -176,8 +177,9 @@ class TaskViewer(
             fileViewer.content = ""
             val file = Div().apply {
                 add(text)
-                add(Div(file.name))
+                add(Div(file.name) { id = "solution-file-name" })
                 add(Button("Удалить файл", style = ButtonStyle.DANGER) {
+                    id = "delete-solution-file-button"
                     onClick {
                         text.value = ""
                         remove(text)

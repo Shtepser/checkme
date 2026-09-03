@@ -1,5 +1,7 @@
 package checkme.domain.operations.tasks
 
+import checkme.domain.checks.Criterion
+import checkme.domain.models.AnswerType
 import checkme.domain.models.Task
 import dev.forkhandles.result4k.Failure
 import dev.forkhandles.result4k.Result
@@ -36,8 +38,8 @@ class ModifyTaskActuality(
     private val updateTaskActuality: (
         task: Task,
     ) -> Task?,
-) : (Task) -> Result<Task, ModifyTaskError> {
-    override operator fun invoke(task: Task): Result<Task, ModifyTaskError> =
+) : (Task) -> Result<Task, TaskModifyActualityError> {
+    override operator fun invoke(task: Task): Result<Task, TaskModifyActualityError> =
         when (
             val editedTask = updateTaskActuality(
                 task
@@ -45,9 +47,51 @@ class ModifyTaskActuality(
         ) {
             is Task -> Success(editedTask)
             else -> {
-                Failure(ModifyTaskError.UNKNOWN_DATABASE_ERROR)
+                Failure(TaskModifyActualityError.UNKNOWN_DATABASE_ERROR)
             }
         }
+}
+
+class ModifyTask(
+    private val selectTaskById: (taskId: UUID) -> Task?,
+    private val updateTask: (
+        taskId: UUID,
+        name: String,
+        criterions: Map<String, Criterion>,
+        answerFormat: Map<String, AnswerType>,
+        description: String,
+    ) -> Task?,
+) : (UUID, String, Map<String, Criterion>, Map<String, AnswerType>, String) -> Result<Task, TaskModifyError> {
+    override fun invoke(
+        taskId: UUID,
+        name: String,
+        criterions: Map<String, Criterion>,
+        answerFormat: Map<String, AnswerType>,
+        description: String,
+    ): Result<Task, TaskModifyError> {
+        return try {
+            when {
+                when (selectTaskById(taskId)) {
+                    is Task -> false
+                    else -> true
+                } -> Failure(TaskModifyError.TASK_NOT_EXISTS)
+                else -> when (
+                    val editedTask = updateTask(
+                        taskId,
+                        name,
+                        criterions,
+                        answerFormat,
+                        description
+                    )
+                ) {
+                    is Task -> Success(editedTask)
+                    else -> Failure(TaskModifyError.UNKNOWN_UPDATE_ERROR)
+                }
+            }
+        } catch (_: DataAccessException) {
+            Failure(TaskModifyError.UNKNOWN_DATABASE_ERROR)
+        }
+    }
 }
 
 enum class TaskRemovingError {
@@ -56,6 +100,12 @@ enum class TaskRemovingError {
     TASK_NOT_EXISTS,
 }
 
-enum class ModifyTaskError {
+enum class TaskModifyActualityError {
     UNKNOWN_DATABASE_ERROR,
+}
+
+enum class TaskModifyError {
+    UNKNOWN_DATABASE_ERROR,
+    UNKNOWN_UPDATE_ERROR,
+    TASK_NOT_EXISTS,
 }

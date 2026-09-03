@@ -14,8 +14,9 @@ class MySolutionListViewer(
     private val routing: Routing
 ) : VPanel() {
     init {
-        for (solution in solutionList) {
+        solutionList.forEachIndexed { index, solution ->
             vPanel(className = "solution-block ${getSolutionBlockColorName(solution.result)}") {
+                id = "solution-block-$index"
                 div(solution.status)
                 if ((solution.status == "Проверено")) {
                     val score = solution.totalScore

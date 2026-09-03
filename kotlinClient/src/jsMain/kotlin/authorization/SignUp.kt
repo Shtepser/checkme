@@ -32,31 +32,31 @@ class SignUp(
         val formPanelSignUp = formPanel<FormSignUp>(className = "authorization-card") {
             add(
                 FormSignUp::login,
-                Text(label = "Логин") { placeholder = "Введите логин" },
+                Text(label = "Логин") { this.input.id = "sign-up-username"; placeholder = "Введите логин" },
                 required = true,
                 requiredMessage = "Вы не ввели логин"
             )
             add(
                 FormSignUp::name,
-                Text(label = "Имя") { placeholder = "Введите ваше имя" },
+                Text(label = "Имя") { this.input.id = "sign-up-name"; placeholder = "Введите ваше имя" },
                 required = true,
                 requiredMessage = "Вы не ввели имя"
             )
             add(
                 FormSignUp::surname,
-                Text(label = "Фамилия") { placeholder = "Введите вашу фамилию" },
+                Text(label = "Фамилия") { this.input.id = "sign-up-surname"; placeholder = "Введите вашу фамилию" },
                 required = true,
                 requiredMessage = "Вы не ввели фамилию"
             )
             add(
                 FormSignUp::password,
-                Password(label = "Пароль") { placeholder = "Введите пароль" },
+                Password(label = "Пароль") { this.input.id = "sign-up-password"; placeholder = "Введите пароль" },
                 required = true,
                 requiredMessage = "Вы не ввели Пароль"
             )
             add(
                 FormSignUp::passwordRepeat,
-                Password(label = "Повторный пароль") { placeholder = "Повторите пароль" },
+                Password(label = "Повторный пароль") { this.input.id = "sign-up-password-repeat"; placeholder = "Повторите пароль" },
                 required = true,
                 requiredMessage = "Вы повторно не ввели пароль"
             )
@@ -68,8 +68,8 @@ class SignUp(
             }
         }
         formPanelSignUp.add(HPanel(className = "authorization-buttons-panel") {
-            val buttonSignUp = button("Зарегистрироваться", style = ButtonStyle.PRIMARY)
-            val buttonSignIn = button("Вход", style = ButtonStyle.LINK)
+            val buttonSignUp = button("Зарегистрироваться", style = ButtonStyle.PRIMARY) { id = "sign-up-button" }
+            val buttonSignIn = button("Вход", style = ButtonStyle.LINK) { id = "sign-up-switch-button" }
             buttonSignUp.onClick {
                 val validateForm = formPanelSignUp.validate()
                 if (validateForm) {

@@ -32,6 +32,7 @@ class SelectBundleTasks(
             "Далее",
             style = ButtonStyle.PRIMARY,
         ).apply {
+            id = "next-button"
             disabled = true
             onClick {
                 if (selectedTasks.isNotEmpty()) {
@@ -91,8 +92,8 @@ class SelectBundleTasks(
                         val tasksContainer = Div(className = "task-selection-container")
                         add(tasksContainer)
 
-                        taskListWithBundles.forEach { taskAndBundle ->
-                            createTaskElement(taskAndBundle.task, tasksContainer, saveButton)
+                        taskListWithBundles.forEachIndexed  { index, taskAndBundle ->
+                            createTaskElement(taskAndBundle.task, tasksContainer, saveButton, index + 1)
                         }
                     }
                 }
@@ -112,9 +113,11 @@ class SelectBundleTasks(
     private fun createTaskElement(
         task: TaskFormatForList,
         container: Container,
-        nextButton: Button
+        nextButton: Button,
+        index: Int
     ) {
         val taskDiv = Div(className = "task-item").apply {
+            id = "task-item-$index"
             val checkbox =
                 CheckBox(
                     value = false,

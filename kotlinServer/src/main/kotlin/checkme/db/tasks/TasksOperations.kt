@@ -133,6 +133,24 @@ class TasksOperations(
         return deleteTaskFlag
     }
 
+    override fun updateTask(
+        taskId: UUID,
+        name: String,
+        criterions: Map<String, Criterion>,
+        answerFormat: Map<String, AnswerType>,
+        description: String,
+    ): Task? {
+        return jooqContext.update(TASKS)
+            .set(TASKS.NAME, name)
+            .set(TASKS.CRITERIONS, jsonb(objectMapper.writeValueAsString(criterions)))
+            .set(TASKS.ANSWERFORMAT, jsonb(objectMapper.writeValueAsString(answerFormat)))
+            .set(TASKS.DESCRIPTION, description)
+            .where(TASKS.ID.eq(taskId))
+            .returningResult()
+            .fetchOne()
+            ?.toTask()
+    }
+
     override fun updateTaskActuality(task: Task): Task? {
         return jooqContext.update(TASKS)
             .set(TASKS.IS_ACTUAL, task.isActual)

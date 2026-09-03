@@ -1,0 +1,13 @@
+{
+  "Удалить все записи с книгами Харуки Мураками": {
+    "description": "Все книги Харуки Мураками были удалены из таблицы",
+    "score": 10,
+    "test": {
+      "type": "sql-check",
+      "dbScript" : "script.sql",
+      "referenceQuery": "DELETE FROM books \nWHERE author_id = (SELECT id FROM authors WHERE name = 'Харуки Мураками');"
+    },
+    "message": "Книги Харуки Мураками не были удалены",
+    "special_marker": "NULL"
+  }
+}

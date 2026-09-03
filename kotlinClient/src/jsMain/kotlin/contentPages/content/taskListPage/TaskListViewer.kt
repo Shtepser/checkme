@@ -16,10 +16,11 @@ class TaskListViewer(
     taskList: List<TaskWithBundlesForList>
 ) : VPanel() {
     init {
-        for (taskWithBundles in taskList) {
+        taskList.forEachIndexed { index, taskWithBundles ->
             if (taskWithBundles.task.isActual || UserInformationStorage.isAdmin()) {
                 hPanel(className = "task-in-list") {
                     val taskItem = VPanel(className = "task-item") {
+                        id = "task-item-${index + 1}"
                         div(className = "task-content") {
                             div(className = "task-text") {
                                 div(taskWithBundles.task.name, className = "name")

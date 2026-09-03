@@ -52,6 +52,6 @@ class ModifyTaskTest : FunSpec({
 
     test("Task actuality cant be changed if task doesnt exists") {
         updateTaskActuality(validTasks.first().copy(id = notExistingId, isActual = false))
-            .shouldBeFailure(ModifyTaskError.UNKNOWN_DATABASE_ERROR)
+            .shouldBeFailure(TaskModifyActualityError.UNKNOWN_DATABASE_ERROR)
     }
 })

@@ -62,12 +62,29 @@ class TaskOperationsHolder (
 
     val updateTaskActuality: (
         task: Task,
-    ) -> Result<Task, ModifyTaskError> =
+    ) -> Result<Task, TaskModifyActualityError> =
         ModifyTaskActuality {
                 task,
             ->
             tasksDatabase.updateTaskActuality(task)
         }
+
+    val updateTask: (
+        taskId: UUID,
+        name: String,
+        criterions: Map<String, Criterion>,
+        answerFormat: Map<String, AnswerType>,
+        description: String,
+    ) -> Result<Task, TaskModifyError> =
+        ModifyTask({ taskId -> tasksDatabase.selectTaskById(taskId) }, {
+                taskId,
+                name,
+                criterions,
+                answerFormat,
+                description,
+            ->
+            tasksDatabase.updateTask(taskId, name, criterions, answerFormat, description)
+        })
 
     val createTask: (
         name: String,

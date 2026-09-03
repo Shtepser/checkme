@@ -20,6 +20,7 @@ class TaskHiddenButton(
     private val hPanel: HPanel? = null
 ) : Button("", style = ButtonStyle.PRIMARY) {
     init {
+        id = "hidden-task-button"
         text = if (isActual) "Скрыть задачу" else "Показать задачу"
         this.onClick {
             val requestInit = createRequestHeaders(HttpMethod.POST)

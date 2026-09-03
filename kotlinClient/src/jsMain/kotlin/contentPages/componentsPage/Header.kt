@@ -48,70 +48,74 @@ class Header(
     init {
         installAutoClose()
         hPanel(className = "Header") {
-            div("CheckMe", className = "app-title")
+            this.id = "header"
+            div("CheckMe", className = "app-title") { id = "id-app-title" }
             div(className = "navigation") {
                 if (!UserInformationStorage.isAdmin()) {
                     button(
                         "Наборы заданий",
                         style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/") }
+                    ) { id = "bundle-list-navigation-student" } .onClick { routingMainPage.navigate("/") }
                 }
                 if (UserInformationStorage.isAdmin()) {
                     dropDown("Задания", style = ButtonStyle.SECONDARY) {
+                        id = "tasks-dropdown"
                         button(
                             "Наборы",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/") }
+                        ) { id = "bundle-list-navigation" } .onClick { routingMainPage.navigate("/") }
                         button(
                             "Скрытые наборы",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/hidden-bundle-list") }
+                        ) { id = "hidden-bundle-list-navigation" } .onClick { routingMainPage.navigate("/hidden-bundle-list") }
                         button(
                             "Задания",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/tasks/all") }
+                        ) { id = "tasks-navigation" } .onClick { routingMainPage.navigate("/tasks/all") }
                         button(
                             "Скрытые задания",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/hidden-task-list") }
+                        )  { id = "hidden-task-list-navigation" } .onClick { routingMainPage.navigate("/hidden-task-list") }
                     }
                 }
                 if (!UserInformationStorage.isAdmin()) {
                     button(
                         "Мои решения",
                         style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/my-result-list/1") }
+                    ) { id = "my-result-list-navigation-student" } .onClick { routingMainPage.navigate("/my-result-list/1") }
                 }
                 if (UserInformationStorage.isAdmin()) {
                     dropDown("Решения", style = ButtonStyle.SECONDARY) {
+                        id = "solutions-dropdown"
                         button(
                             "Мои",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/my-result-list/1") }
+                        ) { id = "my-result-list-navigation" } .onClick { routingMainPage.navigate("/my-result-list/1") }
                         button(
                             "Все",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/solution-list/1") }
+                        ) { id = "solution-list-navigation" } .onClick { routingMainPage.navigate("/solution-list/1") }
                         button(
                             "По задачам",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/task-solutions-list/1") }
+                        ) { id = "task-solutions-list-navigation" } .onClick { routingMainPage.navigate("/task-solutions-list/1") }
                     }
                 }
                 if (UserInformationStorage.isAdmin()) {
                     dropDown("Пользователи", style = ButtonStyle.SECONDARY) {
+                        id = "users-dropdown"
                         button(
                             "Список",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/user-list") }
+                        ) { id = "user-list-navigation" } .onClick { routingMainPage.navigate("/user-list") }
                         button(
                             "Управление",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/user-info") }
+                        ) { id = "user-info-navigation" } .onClick { routingMainPage.navigate("/user-info") }
                         button(
                             "Журнал действий",
                             style = ButtonStyle.LINK
-                        ).onClick { routingMainPage.navigate("/journal/1") }
+                        ) { id = "journal-navigation" } .onClick { routingMainPage.navigate("/journal/1") }
                     }
                 }
             }
@@ -121,15 +125,18 @@ class Header(
             } else {
                 div(className = "user-menu") {
                     dropDown(userName.username, style = ButtonStyle.SECONDARY) {
+                        id = "user-menu-dropdown"
                         if (!UserInformationStorage.isAdmin()) {
                             val windowChangeUserPassword = ChangeUserPassword(serverUrl)
                             button("Сменить пароль", style = ButtonStyle.PRIMARY) {
+                                id = "change-password-navigation"
                                 onClick {
                                     windowChangeUserPassword.show()
                                 }
                             }
                         }
                         button("Выйти", style = ButtonStyle.PRIMARY) {
+                            id = "sign-out-button"
                             onClick {
                                 UserInformationStorage.deleteUserInformation()
                                 routing.navigate("/authorization/sign_in")

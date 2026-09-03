@@ -22,15 +22,15 @@ class TaskList(
 ) : SimplePanel(className = "page-head") {
     init {
         if (listType.ordinal == 0) {
-            h2("Список задач")
+            h2("Список задач") { id = "task-list-h2"}
         } else {
-            h2("Список скрытых задач")
+            h2("Список скрытых задач") { id = "hidden-task-list-h2"}
         }
         if (UserInformationStorage.isAdmin()) {
             button(
                 "Cоздать задачу",
                 style = ButtonStyle.LINK,
-            ).onClick { routing.navigate("/add-task") }
+            ) { id = "create-task-button" } .onClick { routing.navigate("/add-task") }
         }
         val requestInit = createRequestHeaders(HttpMethod.GET)
         window.fetch(serverUrl + "task/${listType.keyWord}", requestInit).then { response ->
@@ -39,7 +39,7 @@ class TaskList(
                     val jsonString = JSON.stringify(it)
                     val taskList = Json.decodeFromString<List<TaskWithBundlesForList>>(jsonString)
                     if (taskList.isEmpty()){
-                        this.add(Div("Задачи не найдены", className = "not-found"))
+                        this.add(Div("Задачи не найдены", className = "not-found") { id = "no-task-div"})
                     } else {
                         this.add(TaskListViewer(serverUrl, routing, taskList))
                     }

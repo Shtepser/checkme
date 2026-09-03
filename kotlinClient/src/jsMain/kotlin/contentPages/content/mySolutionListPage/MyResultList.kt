@@ -21,7 +21,7 @@ class MyResultList(
     private val routing: Routing
 ) : SimplePanel(className = "paged-layout") {
     init {
-        h2("Мои решения")
+        h2("Мои решения") { id = "my-solution-h2" }
         if ((page == null) || (page < 1)) {
             routing.navigate("/my-result-list/1")
         } else {

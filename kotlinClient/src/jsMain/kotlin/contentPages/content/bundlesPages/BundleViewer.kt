@@ -35,19 +35,20 @@ class BundleViewer(
         h2(bundle.name)
         if (UserInformationStorage.isAdmin()) {
             dropDown("Действия", style = ButtonStyle.SECONDARY) {
+                id = "bundle-actions-dropdown"
                 val editBundle = ChangeBundleName(serverUrl, bundle.id.toString(), routing)
                 button("Переименовать", style = ButtonStyle.PRIMARY).onClick {
                     editBundle.show()
                 }
                 if (tasksAndOrders.isEmpty()) {
-                    button("Добавить задачи", style = ButtonStyle.PRIMARY).onClick {
+                    button("Добавить задачи", style = ButtonStyle.PRIMARY) { id = "add-tasks-bundle-button" } .onClick {
                         routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
                     }
                 } else {
-                    button("Изменить состав", style = ButtonStyle.PRIMARY).onClick {
+                    button("Изменить состав", style = ButtonStyle.PRIMARY) { id = "edit-tasks-bundle-button" } .onClick {
                         routing.navigate("/bundle/select-bundle-tasks/${bundle.id}")
                     }
-                    button("Изменить порядок", style = ButtonStyle.PRIMARY).onClick {
+                    button("Изменить порядок", style = ButtonStyle.PRIMARY) { id = "edit-order-tasks-bundle-button" } .onClick {
                         routing.navigate("/bundle/select-order/${bundle.id}")
                     }
                 }
@@ -57,7 +58,7 @@ class BundleViewer(
                     bundle.id,
                 )
                 this.add(hiddenButton)
-                button("Удалить набор", style = ButtonStyle.DANGER).onClick {
+                button("Удалить набор", style = ButtonStyle.DANGER) { id = "delete-bundle-button" } .onClick {
                     tryDeleteBundle()
                 }
             }
