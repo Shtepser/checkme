@@ -35,6 +35,7 @@ class BundleViewer(
         h2(bundle.name)
         if (UserInformationStorage.isAdmin()) {
             dropDown("Действия", style = ButtonStyle.SECONDARY) {
+                id = "bundle-actions-dropdown"
                 val editBundle = ChangeBundleName(serverUrl, bundle.id.toString(), routing)
                 button("Переименовать", style = ButtonStyle.PRIMARY).onClick {
                     editBundle.show()

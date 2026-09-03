@@ -49,16 +49,17 @@ class Header(
         installAutoClose()
         hPanel(className = "Header") {
             this.id = "header"
-            div("CheckMe", className = "app-title")
+            div("CheckMe", className = "app-title") { id = "id-app-title" }
             div(className = "navigation") {
                 if (!UserInformationStorage.isAdmin()) {
                     button(
                         "Наборы заданий",
                         style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/") }
+                    ) { id = "bundle-list-navigation-student" } .onClick { routingMainPage.navigate("/") }
                 }
                 if (UserInformationStorage.isAdmin()) {
                     dropDown("Задания", style = ButtonStyle.SECONDARY) {
+                        id = "tasks-dropdown"
                         button(
                             "Наборы",
                             style = ButtonStyle.LINK
@@ -81,10 +82,11 @@ class Header(
                     button(
                         "Мои решения",
                         style = ButtonStyle.LINK
-                    ).onClick { routingMainPage.navigate("/my-result-list/1") }
+                    ) { id = "my-result-list-navigation-student" } .onClick { routingMainPage.navigate("/my-result-list/1") }
                 }
                 if (UserInformationStorage.isAdmin()) {
                     dropDown("Решения", style = ButtonStyle.SECONDARY) {
+                        id = "solutions-dropdown"
                         button(
                             "Мои",
                             style = ButtonStyle.LINK
@@ -101,6 +103,7 @@ class Header(
                 }
                 if (UserInformationStorage.isAdmin()) {
                     dropDown("Пользователи", style = ButtonStyle.SECONDARY) {
+                        id = "users-dropdown"
                         button(
                             "Список",
                             style = ButtonStyle.LINK
@@ -122,6 +125,7 @@ class Header(
             } else {
                 div(className = "user-menu") {
                     dropDown(userName.username, style = ButtonStyle.SECONDARY) {
+                        id = "user-menu-dropdown"
                         if (!UserInformationStorage.isAdmin()) {
                             val windowChangeUserPassword = ChangeUserPassword(serverUrl)
                             button("Сменить пароль", style = ButtonStyle.PRIMARY) {

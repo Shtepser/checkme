@@ -7,7 +7,8 @@ import ru.yarsu.TestConfig.waitForElement
 
 class AddBundlePage(private val driver: WebDriver) {
     fun open() {
-        driver.get("$baseUrl/#/add-bundle")
+        driver.get("$baseUrl/#/")
+        waitForElement(driver, By.id("create-bundle-button")).click()
         Thread.sleep(1000)
     }
 
@@ -19,8 +20,7 @@ class AddBundlePage(private val driver: WebDriver) {
 
     fun isBundleCreated(): Boolean {
         return try {
-            driver.findElement(By.id("add-tasks-bundle-button")).isDisplayed ||
-                    driver.findElement(By.id("edit-tasks-bundle-button")).isDisplayed
+            driver.findElement(By.id("bundle-actions-dropdown")).isDisplayed
         } catch (_: Exception) {
             false
         }

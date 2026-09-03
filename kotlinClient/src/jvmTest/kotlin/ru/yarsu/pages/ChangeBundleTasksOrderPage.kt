@@ -12,6 +12,7 @@ class ChangeBundleTasksOrderPage(private val driver: WebDriver) {
 
     fun isOrderSaved(): Boolean {
         return try {
+            waitForElement(driver, By.id("bundle-actions-dropdown")).click()
             driver.findElement(By.id("edit-tasks-bundle-button")).isDisplayed
         } catch (_: Exception) {
             false

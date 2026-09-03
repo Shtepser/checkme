@@ -6,6 +6,7 @@ import ru.yarsu.TestConfig.waitForElement
 
 class BundlePage(private val driver: WebDriver) {
     fun navigateToAddTasks() {
+        waitForElement(driver, By.id("bundle-actions-dropdown")).click()
         val addTasksButton = driver.findElements(By.id("add-tasks-bundle-button")).firstOrNull()
             ?: driver.findElements(By.id("edit-tasks-bundle-button")).firstOrNull()
 
@@ -18,13 +19,14 @@ class BundlePage(private val driver: WebDriver) {
     }
 
     fun deleteBundle() {
+        waitForElement(driver, By.id("bundle-actions-dropdown")).click()
         waitForElement(driver, By.id("delete-bundle-button")).click()
         Thread.sleep(2000)
     }
 
     fun isBundlePageClosed(): Boolean {
         return try {
-            !driver.findElement(By.id("delete-bundle-button")).isDisplayed
+            !driver.findElement(By.id("bundle-actions-dropdown")).isDisplayed
         } catch (_: Exception) {
             true
         }

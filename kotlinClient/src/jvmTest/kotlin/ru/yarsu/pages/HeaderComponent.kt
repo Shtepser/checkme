@@ -6,23 +6,46 @@ import ru.yarsu.TestConfig.waitForElement
 
 class HeaderComponent(private val driver: WebDriver) {
     fun signOut() {
+        waitForElement(driver, By.id("user-menu-dropdown")).click()
         waitForElement(driver, By.id("sign-out-button")).click()
         Thread.sleep(1000)
     }
 
     fun navigateToTaskList() {
+        waitForElement(driver, By.id("tasks-dropdown")).click()
         waitForElement(driver, By.id("tasks-navigation")).click()
+        waitForElement(driver, By.id("id-app-title")).click()
         Thread.sleep(1000)
     }
 
     fun navigateToBundleList() {
-        waitForElement(driver, By.id("bundle-list-navigation")).click()
-        Thread.sleep(1000)
+        if (isAdmin()) {
+            waitForElement(driver, By.id("tasks-dropdown")).click()
+            waitForElement(driver, By.id("bundle-list-navigation")).click()
+            Thread.sleep(1000)
+        } else {
+            waitForElement(driver, By.id("bundle-list-navigation-student")).click()
+            Thread.sleep(1000)
+        }
     }
 
     fun navigateToMyResults() {
-        waitForElement(driver, By.id("my-result-list-navigation")).click()
-        Thread.sleep(1000)
+        if (isAdmin()) {
+            waitForElement(driver, By.id("solutions-dropdown")).click()
+            waitForElement(driver, By.id("my-result-list-navigation")).click()
+            Thread.sleep(1000)
+        } else {
+            waitForElement(driver, By.id("my-result-list-navigation-student")).click()
+            Thread.sleep(1000)
+        }
+    }
+
+    fun isAdmin(): Boolean {
+        return try {
+            driver.findElement(By.id("tasks-dropdown")).isDisplayed
+        } catch (_: Exception) {
+            false
+        }
     }
 
     fun isHeaderDisplayed() : Boolean {
