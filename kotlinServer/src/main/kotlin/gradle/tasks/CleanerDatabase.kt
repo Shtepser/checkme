@@ -1,4 +1,4 @@
-package gradleTasks
+package gradle.tasks
 
 import checkme.config.AppConfig
 import checkme.db.generated.enums.UserRole
@@ -6,6 +6,7 @@ import checkme.db.generated.tables.references.USERS
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
 import java.sql.DriverManager
+import java.sql.SQLException
 
 fun main() {
     val config = AppConfig.fromEnvironment()
@@ -18,7 +19,7 @@ fun main() {
                 .execute()
             println("Deleted users: $deletedRows")
         }
-    } catch (e: Exception) {
+    } catch (e: SQLException) {
         println("Error: ${e.message}")
     }
 }

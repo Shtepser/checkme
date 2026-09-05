@@ -18,6 +18,7 @@ import dev.forkhandles.result4k.Success
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormFile
 import java.io.File
+import java.io.IOException
 import java.util.UUID
 
 internal fun addTask(
@@ -190,27 +191,44 @@ fun Task.addOrReplaceTaskFilesToDirectory(
         )
         if (!tasksDir.exists()) {
             tasksDir.mkdirs()
-            for (file in files.values.flatten()) {
-                val filePath = File(tasksDir, file.filename)
-                val fileBytes = file.content.use { it.readAllBytes() }
-                filePath.writeBytes(fileBytes)
-            }
-            Success("Directory $directoryName successful created and files added")
+            writeFileToDirectory(tasksDir, files.values.flatten())
+            Success("Directory $directoryName successful created and files added.")
         } else {
-            val oldFiles = tasksDir.listFiles()
-            if (oldFiles != null) {
-                for (file in oldFiles) {
-                    file.delete()
-                }
-            }
-            for (file in files.values.flatten()) {
-                val filePath = File(tasksDir, file.filename)
-                val fileBytes = file.content.use { it.readAllBytes() }
-                filePath.writeBytes(fileBytes)
-            }
+            tasksDir.listFiles()?.forEach { it.deleteRecursively() }
+            writeFileToDirectory(tasksDir, files.values.flatten())
             Success("Files successfully replaced in directory $directoryName.")
         }
-    } catch (e: Exception) {
+    } catch (e: SecurityException) {
+        Failure(e.message ?: "Something happened while replacement files in task directory: $directoryName.")
+    } catch (e: IOException) {
+        Failure(e.message ?: "Something happened while replacement files in task directory: $directoryName.")
+    }
+}
+
+fun writeFileToDirectory(
+    tasksDir: File,
+    files: List<MultipartFormFile>,
+) {
+    for (file in files) {
+        val filePath = File(tasksDir, file.filename)
+        val fileBytes = file.content.use { it.readAllBytes() }
+        filePath.writeBytes(fileBytes)
+    }
+}
+
+fun Task.deleteTaskDirectory(directoryName: String): Result<String, String> {
+    return try {
+        val tasksDir = File(
+            "..$TASKS_DIR" +
+                "/$directoryName"
+        )
+        if (tasksDir.exists()) {
+            tasksDir.deleteRecursively()
+            Success("Directory $directoryName successful deleted.")
+        } else {
+            Failure("Directory $directoryName does not exist.")
+        }
+    } catch (e: SecurityException) {
         Failure(e.message ?: "Something happened while replacement files in task directory: $directoryName.")
     }
 }

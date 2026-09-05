@@ -47,9 +47,16 @@ private fun tryFetchTaskScripts(
         return objectMapper.sendStatusNotFound("Task directory not found")
     }
     val files = taskDir.listFiles()?.filter { it.isFile } ?: emptyList()
-    if (files.isEmpty()) {
-        return objectMapper.sendStatusNotFound("Files not found")
+    return if (files.isEmpty()) {
+        objectMapper.sendStatusNotFound("Files not found")
+    } else {
+        val zip = createZip(files)
+        Response(Status.OK)
+            .body(ByteArrayInputStream(zip), zip.size.toLong())
     }
+}
+
+fun createZip(files: List<File>): ByteArray {
     val outputStream = ByteArrayOutputStream()
     ZipOutputStream(outputStream).use { zip ->
         files.forEach { file ->
@@ -60,8 +67,5 @@ private fun tryFetchTaskScripts(
             zip.closeEntry()
         }
     }
-    val bytes = outputStream.toByteArray()
-    return Response(Status.OK)
-        .header("Content-Disposition", "filename=\"task_$nameDirectory.zip\"")
-        .body(ByteArrayInputStream(bytes), bytes.size.toLong())
+    return outputStream.toByteArray()
 }

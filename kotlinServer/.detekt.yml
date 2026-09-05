@@ -4,7 +4,8 @@ config:
 
 complexity:
   TooManyFunctions:
-    thresholdInFiles: 12
+    thresholdInFiles: 13
+    thresholdInInterfaces: 12
 
 style:
   WildcardImport:

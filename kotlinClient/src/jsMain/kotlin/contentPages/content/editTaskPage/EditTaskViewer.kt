@@ -3,14 +3,11 @@ package ru.yarsu.contentPages.content.editTaskPage
 import io.kvision.core.Display
 import io.kvision.core.onChangeLaunch
 import io.kvision.core.onClickLaunch
-import io.kvision.form.FormPanel
 import io.kvision.form.check.RadioGroup
 import io.kvision.form.formPanel
 import io.kvision.form.text.RichText
 import io.kvision.form.text.Text
 import io.kvision.form.text.TextArea
-import io.kvision.form.upload.Upload
-import io.kvision.form.upload.getFileWithContent
 import io.kvision.html.Button
 import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
@@ -24,40 +21,35 @@ import io.kvision.toast.Toast
 import io.kvision.toast.ToastOptions
 import io.kvision.toast.ToastPosition
 import io.kvision.types.KFile
-import io.kvision.types.base64Encoded
-import io.kvision.types.contentType
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import org.w3c.dom.HTMLAnchorElement
-import org.w3c.dom.events.InputEvent
 import org.w3c.dom.events.KeyboardEvent
 import org.w3c.dom.url.URL
-import org.w3c.files.File
-import org.w3c.files.FilePropertyBag
 import org.w3c.xhr.FormData
-import ru.yarsu.contentPages.content.addTaskPage.updateFilesViewer
+import ru.yarsu.contentPages.content.addTaskPage.criterionsUpload
+import ru.yarsu.contentPages.content.addTaskPage.fileToSend
+import ru.yarsu.contentPages.content.addTaskPage.scriptFilesUpload
+import ru.yarsu.contentPages.content.addTaskPage.sendTask
+import ru.yarsu.contentPages.content.addTaskPage.validateForm
 import ru.yarsu.contentPages.content.createRequestHeaders
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.task.AnswerFormat
-import ru.yarsu.serializableClasses.task.Criterion
 import ru.yarsu.serializableClasses.task.FormAddTask
 import ru.yarsu.serializableClasses.task.TaskFormat
-import ru.yarsu.serializableClasses.task.TaskId
-import kotlin.io.encoding.Base64
-import kotlin.uuid.Uuid
 
 class EditTaskViewer(
     private val task: TaskFormat,
     private val serverUrl: String,
     private val routing: Routing
 ) : VPanel(className = "TaskAdd") {
-    private val scriptFile = mutableListOf<KFile>()
+    private val scriptFiles = mutableListOf<KFile>()
     private var editScripts = false
     init {
         val taskType = task.answerFormat.first().type
         h2("Редактирование задачи")
-        val formPanelAddTask = formPanel<FormAddTask>(className = "base-form") {
+        val formPanelEditTask = formPanel<FormAddTask>(className = "base-form") {
             add(Label("Название", className = "separate-form-label"))
             add(
                 FormAddTask::name,
@@ -71,25 +63,10 @@ class EditTaskViewer(
             add(Label("JSON с критериями задачи", className = "separate-form-label"))
             val textArea = TextArea(value = Json.encodeToString(task.criterions))
             add(
-                Label("Выберите JSON файл", forId = "input-file-0", className = "file-upload")
+                Label("Выберите JSON файл", forId = "input-file-0", className = "btn btn-secondary")
             )
             add(
-                Upload(accept = listOf(".json")) {
-                    this.input.id = "input-file-0"
-                    onChangeLaunch {
-                        val file = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) }
-                        if (file != null) {
-                            val encodedContent = file[0].base64Encoded
-                            textArea.value = if (encodedContent != null) {
-                                Base64.Default.decode(encodedContent).decodeToString()
-                            } else {
-                                ""
-                            }
-                            this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
-                            this@Upload.clearInput()
-                        }
-                    }
-                }
+                criterionsUpload(this@formPanel, textArea)
             )
             add(
                 FormAddTask::criterion,
@@ -103,7 +80,7 @@ class EditTaskViewer(
             val scriptLabel = Label("Скрипт", className = "separate-form-label") {
                 display = Display.NONE
             }
-            val inputFileLabel = Label("Выберите файлы", forId = "input-file-1", className = "file-upload") {
+            val inputFileLabel = Label("Выберите файлы", forId = "input-file-1", className = "btn btn-secondary") {
                 display = Display.NONE
             }
             val addedScriptsFileViewer = Div("Файлы не выбраны", className = "files-viewer") {
@@ -131,18 +108,7 @@ class EditTaskViewer(
             buttonDownloadFiles.onClick {
                 getScriptFiles()
             }
-            val uploadScriptFiles = Upload(accept = listOf(".sql"), multiple = true) {
-                this.input.id = "input-file-1"
-                onChangeLaunch {
-                    val scriptListFile =
-                        this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
-                    scriptFile.addAll(scriptListFile)
-                    updateFilesViewer(addedScriptsFileViewer, scriptFile, this@formPanel)
-                    this@Upload.clearInput()
-                    this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
-                    this@formPanel.validate()
-                }
-            }
+            val uploadScriptFiles = scriptFilesUpload(this@formPanel, scriptFiles, addedScriptsFileViewer)
             add(Label("Тип задания", className = "separate-form-label"))
             add(
                 FormAddTask::format,
@@ -162,7 +128,7 @@ class EditTaskViewer(
                                 addedScriptsFileViewer.display = Display.INLINEBLOCK
                             }
                             if (taskType == "file") {
-                                buttonDownloadFiles.display = Display.INLINEBLOCK
+                                buttonDownloadFiles.display = Display.BLOCK
                             }
                         } else {
                             buttonEditScripts.display = Display.NONE
@@ -190,47 +156,36 @@ class EditTaskViewer(
         }
         val buttonSend = button("Изменить", className = "usually-button")
         buttonSend.onClickLaunch {
-            val isValid = validateForm(formPanelAddTask)
+            val isValid = validateForm(formPanelEditTask, scriptFiles, editScripts)
             buttonSend.disabled = isValid
             if (isValid) {
-                val taskType = formPanelAddTask.getData().format
+                val taskType = formPanelEditTask.getData().format
                 val answerFormat = listOf(
                     AnswerFormat(
                         "",
                         taskType
                     )
                 )
-                val scriptFilesWithContent = if (scriptFile.isEmpty()) null else scriptFile
+                val scriptFilesWithContent = if (scriptFiles.isEmpty()) null else scriptFiles
                 val formData = FormData().apply {
-                    append("name", formPanelAddTask.getData().name ?: "")
-                    append("description", formPanelAddTask.getData().description ?: "")
-                    append("criterions", formPanelAddTask.getData().criterion ?: "")
+                    append("name", formPanelEditTask.getData().name ?: "")
+                    append("description", formPanelEditTask.getData().description ?: "")
+                    append("criterions", formPanelEditTask.getData().criterion ?: "")
                     append("answerFormat", Json.Default.encodeToString(answerFormat))
-                    append("editScripts", if (taskType == "file") editScripts.toString() else true.toString())
-
+                    append(
+                        "editScripts",
+                        if (taskType == "file") editScripts.toString() else true.toString()
+                    )
                     if ((scriptFilesWithContent != null) && (taskType == "file") && editScripts) {
                         scriptFilesWithContent.forEach { script ->
-                            val scriptEncodedContent = script.base64Encoded
-                            val scriptDecodedContent = if (scriptEncodedContent != null) {
-                                Base64.Default.decode(scriptEncodedContent).decodeToString()
-                            } else {
-                                ""
-                            }
-                            val scriptName = script.name
-                            val scriptExpansion = scriptName.split(".").last()
-                            val scriptContentType = if (scriptExpansion == "sql") "application/sql" else script.contentType
                             append(
                                 name = "script",
-                                value = File(
-                                    arrayOf(scriptDecodedContent),
-                                    scriptName,
-                                    FilePropertyBag(type = scriptContentType)
-                                )
+                                value = fileToSend(script)
                             )
                         }
                     }
                 }
-                editTask(task.id, formData)
+                sendTask(formData, serverUrl + "task/change/${task.id}", routing)
             }
         }
         document.addEventListener("keydown", { event ->
@@ -240,92 +195,6 @@ class EditTaskViewer(
                 }
             }
         })
-    }
-
-
-    fun validateForm(formData:  FormPanel<FormAddTask>) : Boolean {
-        val data = formData.getData()
-        if (data.name == null) {
-            Toast.danger(
-                "Вы не ввели имя задачи",
-                ToastOptions(
-                    duration = 3000,
-                    position = ToastPosition.TOPRIGHT,
-                )
-            )
-            return false
-        }
-        if (data.description == null) {
-            Toast.danger(
-                "Вы не ввели описание задачи",
-                ToastOptions(
-                    duration = 3000,
-                    position = ToastPosition.TOPRIGHT,
-                )
-            )
-            return false
-        }
-        if (data.criterion == null) {
-            Toast.danger(
-                "Вы не добавили критерии задачи",
-                ToastOptions(
-                    duration = 3000,
-                    position = ToastPosition.TOPRIGHT,
-                )
-            )
-            return false
-        } else {
-            try {
-                val jsonString = data.criterion
-                Json.Default.decodeFromString<Map<String, Criterion>>(jsonString)
-            } catch (_: Exception) {
-                Toast.danger(
-                    "Неверный формат JSON критериев задачи",
-                    ToastOptions(
-                        duration = 3000,
-                        position = ToastPosition.TOPRIGHT,
-                    )
-                )
-                return false
-            }
-        }
-        return true
-    }
-
-    private fun editTask(
-        taskId: Uuid,
-        formData: FormData
-    ) {
-        val requestInit = createRequestHeaders(HttpMethod.POST)
-        requestInit.body = formData
-        window.fetch(serverUrl + "task/change/$taskId", requestInit).then { response ->
-            when (response.status.toInt()) {
-                200 -> response.json().then {
-                    val jsonString = JSON.stringify(it)
-                    val taskId = Json.Default.decodeFromString<TaskId>(jsonString)
-                    routing.navigate("/task/${taskId.taskId}")
-                }
-                400 -> response.json().then {
-                    val jsonString = JSON.stringify(it)
-                    val responseError =
-                        Json.Default.decodeFromString<ResponseError>(jsonString)
-                    Toast.danger(
-                        responseError.error,
-                        ToastOptions(
-                            duration = 3000,
-                            position = ToastPosition.TOPRIGHT,
-                        )
-                    )
-                }
-                else -> Toast.danger(
-                    "Код ошибки ${response.status}: ${response.statusText}",
-                    ToastOptions(
-                        duration = 5000,
-                        position = ToastPosition.TOPRIGHT,
-                    )
-                )
-            }
-        }
     }
 
     private fun getScriptFiles() {

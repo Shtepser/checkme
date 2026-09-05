@@ -9,6 +9,7 @@ class TaskPage(private val driver: WebDriver) {
     fun getTaskName(): String = driver.findElement(By.id("task-name-h2")).text
 
     fun deleteTask() {
+        waitForElement(driver, By.id("task-action-dropdown")).click()
         waitForElement(driver, By.id("task-delete-button")).click()
         Thread.sleep(2000)
     }

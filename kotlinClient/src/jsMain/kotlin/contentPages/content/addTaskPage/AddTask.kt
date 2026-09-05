@@ -46,7 +46,7 @@ class AddTask(
     private val serverUrl: String,
     private val routing: Routing
 ) : VPanel(className = "TaskAdd") {
-    private val scriptFile = mutableListOf<KFile>()
+    private val scriptFiles = mutableListOf<KFile>()
     init {
         h2("Создание задачи") { id = "add-task-h2" }
         val formPanelAddTask = formPanel<FormAddTask>(className = "base-form") {
@@ -66,22 +66,7 @@ class AddTask(
                 Label("Выберите JSON файл", forId = "input-file-0", className = "btn btn-secondary") { id = "add-task-criterions" }
             )
             add(
-                Upload(accept = listOf(".json")) {
-                    this.input.id = "input-file-0"
-                    onChangeLaunch {
-                        val file = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) }
-                        if (file != null) {
-                            val encodedContent = file[0].base64Encoded
-                            textArea.value = if (encodedContent != null) {
-                                Base64.Default.decode(encodedContent).decodeToString()
-                            } else {
-                                ""
-                            }
-                            this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
-                            this@Upload.clearInput()
-                        }
-                    }
-                }
+                criterionsUpload(this@formPanel, textArea)
             )
             add(
                 FormAddTask::criterion,
@@ -98,18 +83,7 @@ class AddTask(
                 id = "add-task-script-no-file-div"
                 display = Display.NONE
             }
-            val uploadScriptFiles = Upload(accept = listOf(".sql"), multiple = true) {
-                this.input.id = "input-file-1"
-                onChangeLaunch {
-                    val scriptListFile =
-                        this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
-                    scriptFile.addAll(scriptListFile)
-                    updateFilesViewer(addedScriptsFileViewer, scriptFile, this@formPanel)
-                    this@Upload.clearInput()
-                    this@formPanel.getElement()?.dispatchEvent(InputEvent("input"))
-                    this@formPanel.validate()
-                }
-            }
+            val uploadScriptFiles = scriptFilesUpload(this@formPanel, scriptFiles, addedScriptsFileViewer)
             add(Label("Тип задания", className = "separate-form-label"))
             add(
                 FormAddTask::format,
@@ -145,7 +119,7 @@ class AddTask(
         }
         val buttonSend = button("Отправить", style = ButtonStyle.PRIMARY) { id = "add-task-send" }
         buttonSend.onClickLaunch {
-            val isValid = validateForm(formPanelAddTask)
+            val isValid = validateForm(formPanelAddTask, scriptFiles)
             buttonSend.disabled = isValid
             if (isValid) {
                 val answerFormat = listOf(
@@ -154,37 +128,20 @@ class AddTask(
                         formPanelAddTask.getData().format
                     )
                 )
-                val scriptFilesWithContent = if (scriptFile.isEmpty()) null else scriptFile
+                val scriptFilesWithContent = if (scriptFiles.isEmpty()) null else scriptFiles
                 val formData = FormData().apply {
                     append("name", formPanelAddTask.getData().name ?: "None")
                     append("description", formPanelAddTask.getData().description ?: "None")
                     append("criterions", formPanelAddTask.getData().criterion ?: "None")
                     append("answerFormat", Json.Default.encodeToString(answerFormat))
-
-                    if (scriptFilesWithContent != null) {
-                        scriptFilesWithContent.forEach { script ->
-                            val scriptEncodedContent = script.base64Encoded
-                            val scriptDecodedContent = if (scriptEncodedContent != null) {
-                                Base64.Default.decode(scriptEncodedContent).decodeToString()
-                            } else {
-                                ""
-                            }
-                            val scriptName = script.name
-                            val scriptExpansion = scriptName.split(".").last()
-                            val scriptContentType =
-                                if (scriptExpansion == "sql") "application/sql" else script.contentType
-                            append(
-                                name = "script",
-                                value = File(
-                                    arrayOf(scriptDecodedContent),
-                                    scriptName,
-                                    FilePropertyBag(type = scriptContentType)
-                                )
-                            )
-                        }
+                    scriptFilesWithContent?.forEach { script ->
+                        append(
+                            name = "script",
+                            value = fileToSend(script)
+                        )
                     }
                 }
-                addTask(formData)
+                sendTask(formData, serverUrl + "task/new", routing)
             }
         }
         document.addEventListener("keydown", { event ->
@@ -195,101 +152,43 @@ class AddTask(
             }
         })
     }
+}
 
-    fun validateForm(formData:  FormPanel<FormAddTask>) : Boolean {
-        val data = formData.getData()
-        if (data.name == null) {
-            Toast.danger(
-                "Вы не ввели имя задачи",
-                ToastOptions(
-                    duration = 3000,
-                    position = ToastPosition.TOPRIGHT,
-                )
-            )
-            return false
-        }
-        if (data.description == null) {
-            Toast.danger(
-                "Вы не ввели описание задачи",
-                ToastOptions(
-                    duration = 3000,
-                    position = ToastPosition.TOPRIGHT,
-                )
-            )
-            return false
-        }
-        if (data.criterion == null) {
-            Toast.danger(
-                "Вы не добавили критерии задачи",
-                ToastOptions(
-                    duration = 3000,
-                    position = ToastPosition.TOPRIGHT,
-                )
-            )
-            return false
-        } else {
-            try {
-                val jsonString = data.criterion
-                Json.Default.decodeFromString<Map<String, Criterion>>(jsonString)
-            } catch (_: Exception) {
-                Toast.danger(
-                    "Неверный формат JSON критериев задачи",
-                    ToastOptions(
-                        duration = 3000,
-                        position = ToastPosition.TOPRIGHT,
-                    )
-                )
-                return false
+fun criterionsUpload(
+    form: FormPanel<FormAddTask>,
+    textArea: TextArea
+) : Upload = Upload(accept = listOf(".json")) {
+    this.input.id = "input-file-0"
+    onChangeLaunch {
+        val file = this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) }
+        if (file != null) {
+            val encodedContent = file[0].base64Encoded
+            textArea.value = if (encodedContent != null) {
+                Base64.Default.decode(encodedContent).decodeToString()
+            } else {
+                ""
             }
+            form.getElement()?.dispatchEvent(InputEvent("input"))
+            this@Upload.clearInput()
         }
-        if ((data.format == "file") && (scriptFile.isEmpty())) {
-            Toast.danger(
-                "Вы не добавили скрипты задачи",
-                ToastOptions(
-                    duration = 3000,
-                    position = ToastPosition.TOPRIGHT,
-                )
-            )
-            return false
-        }
-        return true
     }
+}
 
-    private fun addTask(
-        formData: FormData
-    ) {
-        val requestInit = createRequestHeaders(HttpMethod.POST)
-        requestInit.body = formData
-        window.fetch(serverUrl + "task/new", requestInit).then { response ->
-            when (response.status.toInt()) {
-                200 -> response.json().then {
-                    val jsonString = JSON.stringify(it)
-                    val taskId = Json.Default.decodeFromString<TaskId>(jsonString)
-                    routing.navigate("/task/${taskId.taskId}")
-                }
 
-                400 -> response.json().then {
-                    val jsonString = JSON.stringify(it)
-                    val responseError =
-                        Json.Default.decodeFromString<ResponseError>(jsonString)
-                    Toast.danger(
-                        responseError.error,
-                        ToastOptions(
-                            duration = 3000,
-                            position = ToastPosition.TOPRIGHT,
-                        )
-                    )
-                }
-
-                else -> Toast.danger(
-                    "Код ошибки ${response.status}: ${response.statusText}",
-                    ToastOptions(
-                        duration = 5000,
-                        position = ToastPosition.TOPRIGHT,
-                    )
-                )
-            }
-        }
+fun scriptFilesUpload(
+    form: FormPanel<FormAddTask>,
+    scriptFiles: MutableList<KFile>,
+    addedScriptsFileViewer: Div
+) : Upload = Upload(accept = listOf(".sql"), multiple = true) {
+    this.input.id = "input-file-1"
+    onChangeLaunch {
+        val scriptListFile =
+            this@Upload.getValue()?.map { file -> this@Upload.getFileWithContent(file) } ?: emptyList()
+        scriptFiles.addAll(scriptListFile)
+        updateFilesViewer(addedScriptsFileViewer, scriptFiles, form)
+        this@Upload.clearInput()
+        form.getElement()?.dispatchEvent(InputEvent("input"))
+        form.validate()
     }
 }
 
@@ -302,7 +201,7 @@ fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPan
         files.forEach { kFile ->
             val fileViewer = Div().apply {
                 add(Div(kFile.name))
-                add(Button("Удалить файл", className = "delete-file-button") {
+                add(Button("Удалить файл", style = ButtonStyle.DANGER) {
                     onClick {
                         files.remove(kFile)
                         updateFilesViewer(filesViewer, files, form)
@@ -312,6 +211,122 @@ fun updateFilesViewer(filesViewer: Div, files: MutableList<KFile>, form: FormPan
                 })
             }
             filesViewer.add(fileViewer)
+        }
+    }
+}
+
+fun validateForm(formData:  FormPanel<FormAddTask>, scriptFiles: MutableList<KFile>, editScripts: Boolean = true) : Boolean {
+    val data = formData.getData()
+    if (data.name == null) {
+        Toast.danger(
+            "Вы не ввели имя задачи",
+            ToastOptions(
+                duration = 3000,
+                position = ToastPosition.TOPRIGHT,
+            )
+        )
+        return false
+    }
+    if (data.description == null) {
+        Toast.danger(
+            "Вы не ввели описание задачи",
+            ToastOptions(
+                duration = 3000,
+                position = ToastPosition.TOPRIGHT,
+            )
+        )
+        return false
+    }
+    if (data.criterion == null) {
+        Toast.danger(
+            "Вы не добавили критерии задачи",
+            ToastOptions(
+                duration = 3000,
+                position = ToastPosition.TOPRIGHT,
+            )
+        )
+        return false
+    } else {
+        try {
+            val jsonString = data.criterion
+            Json.Default.decodeFromString<Map<String, Criterion>>(jsonString)
+        } catch (_: Exception) {
+            Toast.danger(
+                "Неверный формат JSON критериев задачи",
+                ToastOptions(
+                    duration = 3000,
+                    position = ToastPosition.TOPRIGHT,
+                )
+            )
+            return false
+        }
+    }
+    if ((data.format == "file") && (scriptFiles.isEmpty()) && editScripts) {
+        Toast.danger(
+            "Вы не добавили скрипты задачи",
+            ToastOptions(
+                duration = 3000,
+                position = ToastPosition.TOPRIGHT,
+            )
+        )
+        return false
+    }
+    return true
+}
+
+fun fileToSend(script: KFile) : File {
+    val scriptEncodedContent = script.base64Encoded
+    val scriptDecodedContent = if (scriptEncodedContent != null) {
+        Base64.Default.decode(scriptEncodedContent).decodeToString()
+    } else {
+        ""
+    }
+    val scriptName = script.name
+    val scriptExpansion = scriptName.split(".").last()
+    val scriptContentType =
+        if (scriptExpansion == "sql") "application/sql" else script.contentType
+    return File(
+        arrayOf(scriptDecodedContent),
+        scriptName,
+        FilePropertyBag(type = scriptContentType)
+    )
+}
+
+fun sendTask(
+    formData: FormData,
+    requestPath: String,
+    routing: Routing
+) {
+    val requestInit = createRequestHeaders(HttpMethod.POST)
+    requestInit.body = formData
+    window.fetch(requestPath, requestInit).then { response ->
+        when (response.status.toInt()) {
+            200 -> response.json().then {
+                val jsonString = JSON.stringify(it)
+                val taskId = Json.Default.decodeFromString<TaskId>(jsonString)
+                routing.navigate("/task/${taskId.taskId}")
+            }
+
+            400 -> response.json().then {
+                val jsonString = JSON.stringify(it)
+                val responseError =
+                    Json.Default.decodeFromString<ResponseError>(jsonString)
+                Toast.danger(
+                    responseError.error,
+                    ToastOptions(
+                        duration = 3000,
+                        position = ToastPosition.TOPRIGHT,
+                    )
+                )
+            }
+
+            else -> Toast.danger(
+                "Код ошибки ${response.status}: ${response.statusText}",
+                ToastOptions(
+                    duration = 5000,
+                    position = ToastPosition.TOPRIGHT,
+                )
+            )
         }
     }
 }

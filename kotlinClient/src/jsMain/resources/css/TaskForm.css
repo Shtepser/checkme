@@ -132,3 +132,14 @@
 .main-page .TaskAdd .base-form .separate-form-label:first-child {
     margin-top: 0;
 }
+
+.main-page .TaskAdd .base-form > button.btn {
+    display: block;
+    width: fit-content;
+    margin-top: 0.75rem;
+}
+
+.main-page .TaskAdd .base-form > .files-viewer {
+    display: block;
+    margin: 0.5rem 0 0;
+}
