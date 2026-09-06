@@ -18,6 +18,7 @@ import dev.forkhandles.result4k.Success
 import org.http4k.lens.MultipartForm
 import org.http4k.lens.MultipartFormFile
 import java.io.File
+import java.io.IOException
 import java.util.UUID
 
 internal fun addTask(
@@ -41,12 +42,13 @@ internal fun addTask(
 }
 
 internal fun changeTask(
+    taskId: UUID,
     task: Task,
     taskOperations: TaskOperationsHolder,
 ): Result<Task, ChangingTaskError> {
     return when (
         val editedTask = taskOperations.updateTask(
-            task.id,
+            taskId,
             task.name,
             task.criterions,
             task.answerFormat,
@@ -178,23 +180,57 @@ fun MultipartForm.validateForm(): Result<Task, ValidateTaskError> {
 
 // первоначально функция добавляет все файлы с проверками, относящиеся к заданию, в соответствующую директорию,
 // затем вызывается функция tryRenameFileAndUpdateCriterions для обновления имен файлов-проверок с особыми критериями
-fun Task.addTaskFilesToDirectory(
+fun Task.addOrReplaceTaskFilesToDirectory(
+    directoryName: String,
     files: Map<String, List<MultipartFormFile>>,
-    criterions: Map<String, Criterion>,
-): Map<String, Criterion> {
-    val tasksDir = File(
-        "..$TASKS_DIR" +
-            "/${this.name.trim()}"
-    )
-    if (!tasksDir.exists()) {
-        tasksDir.mkdirs()
+): Result<String, String> {
+    return try {
+        val tasksDir = File(
+            "..$TASKS_DIR" +
+                "/$directoryName"
+        )
+        if (!tasksDir.exists()) {
+            tasksDir.mkdirs()
+            writeFileToDirectory(tasksDir, files.values.flatten())
+            Success("Directory $directoryName successful created and files added.")
+        } else {
+            tasksDir.listFiles()?.forEach { it.deleteRecursively() }
+            writeFileToDirectory(tasksDir, files.values.flatten())
+            Success("Files successfully replaced in directory $directoryName.")
+        }
+    } catch (e: SecurityException) {
+        Failure(e.message ?: "Something happened while replacement files in task directory: $directoryName.")
+    } catch (e: IOException) {
+        Failure(e.message ?: "Something happened while replacement files in task directory: $directoryName.")
     }
-    for (file in files.values.flatten()) {
+}
+
+fun writeFileToDirectory(
+    tasksDir: File,
+    files: List<MultipartFormFile>,
+) {
+    for (file in files) {
         val filePath = File(tasksDir, file.filename)
         val fileBytes = file.content.use { it.readAllBytes() }
         filePath.writeBytes(fileBytes)
     }
-    return criterions
+}
+
+fun Task.deleteTaskDirectory(directoryName: String): Result<String, String> {
+    return try {
+        val tasksDir = File(
+            "..$TASKS_DIR" +
+                "/$directoryName"
+        )
+        if (tasksDir.exists()) {
+            tasksDir.deleteRecursively()
+            Success("Directory $directoryName successful deleted.")
+        } else {
+            Failure("Directory $directoryName does not exist.")
+        }
+    } catch (e: SecurityException) {
+        Failure(e.message ?: "Something happened while replacement files in task directory: $directoryName.")
+    }
 }
 
 enum class CreationTaskError(val errorText: String) {

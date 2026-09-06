@@ -67,25 +67,38 @@ private fun tryAddTaskAndFiles(
     objectMapper: ObjectMapper,
     form: MultipartForm,
 ): Response {
-    val criterions = validatedNewTask.addTaskFilesToDirectory(
-        files = form.files,
-        criterions = validatedNewTask.criterions,
-    )
     return when (
         val newTask =
             addTask(
-                task = validatedNewTask.copy(criterions = criterions),
+                task = validatedNewTask.copy(criterions = validatedNewTask.criterions),
                 taskOperations = taskOperations
             )
     ) {
         is Success -> {
-            ServerLogger.log(
-                user = user,
-                action = "New task addition",
-                message = "User is created new task ${newTask.value.id}-${newTask.value.name}",
-                type = LoggerType.INFO
+            val isAdded = validatedNewTask.addOrReplaceTaskFilesToDirectory(
+                newTask.value.id.toString(),
+                files = form.files,
             )
-            objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
+            when (isAdded) {
+                is Success -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "New task addition",
+                        message = "User is created new task ${newTask.value.id}-${newTask.value.name}",
+                        type = LoggerType.INFO
+                    )
+                    objectMapper.sendOKResponse(mapOf("taskId" to newTask.value.id))
+                }
+                is Failure -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "New task addition warnings",
+                        message = "Something wrong when try add task. Error: ${isAdded.reason}",
+                        type = LoggerType.WARN
+                    )
+                    objectMapper.sendBadRequestError(isAdded.reason)
+                }
+            }
         }
 
         is Failure -> {

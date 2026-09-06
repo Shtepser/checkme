@@ -197,3 +197,10 @@ detekt {
     config.setFrom(file(".detekt.yml"))
     buildUponDefaultConfig = true
 }
+
+tasks.register<JavaExec>("cleanDatabase") {
+    group = "database"
+    description = "Удаление пользователей с ролью STUDENT и их решения"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("gradle.tasks.CleanerDatabaseKt")
+}

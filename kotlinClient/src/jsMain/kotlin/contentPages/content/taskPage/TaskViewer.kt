@@ -4,6 +4,7 @@ import io.kvision.core.onChangeLaunch
 import io.kvision.core.onClick
 import io.kvision.core.onClickLaunch
 import io.kvision.core.onInput
+import io.kvision.dropdown.dropDown
 import io.kvision.form.FormPanel
 import io.kvision.form.formPanel
 import io.kvision.form.text.TextArea
@@ -60,6 +61,21 @@ class TaskViewer(
         if (UserInformationStorage.isAdmin()) {
             button("Решения задачи", style = ButtonStyle.LINK) { id = "task-solutions-navigation" } .onClick {
                 routing.navigate("solution-list/task/${task.id}")
+            }
+            dropDown("Действия", style = ButtonStyle.SECONDARY) {
+                id = "task-action-dropdown"
+                val hiddenButton = TaskHiddenButton(
+                    serverUrl,
+                    task.isActual,
+                    task.id
+                )
+                this.add(hiddenButton)
+                button("Изменить задачу", style = ButtonStyle.LINK).onClick {
+                    routing.navigate("/change-task/${task.id}")
+                }
+                button("Удалить задачу", style = ButtonStyle.DANGER) { id = "task-delete-button" } .onClick {
+                    deleteTask()
+                }
             }
         }
         val bestResult = if (task.bestScore == -1) {
@@ -151,17 +167,6 @@ class TaskViewer(
             this@TaskViewer.removeAll()
             this@TaskViewer.add(Loading("Решение отправлено. Идёт проверка..."))
             createSolution(formData)
-        }
-        if (UserInformationStorage.isAdmin()) {
-            val hiddenButton = TaskHiddenButton(
-                serverUrl,
-                task.isActual,
-                task.id
-            )
-            this.add(hiddenButton)
-            button("Удалить задачу", style = ButtonStyle.DANGER) { id = "task-delete-button" } .onClick {
-                deleteTask()
-            }
         }
     }
 

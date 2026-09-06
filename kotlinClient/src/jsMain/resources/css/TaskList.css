@@ -8,6 +8,7 @@
 .task-in-list .task-item {
     flex: 1 1 auto;
     min-width: 0;
+    margin: 0;
     justify-content: center;
     box-sizing: border-box;
     padding: 1rem 1.5rem;
