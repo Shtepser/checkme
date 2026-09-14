@@ -204,3 +204,10 @@ tasks.register<JavaExec>("cleanDatabase") {
     classpath = sourceSets["main"].runtimeClasspath
     mainClass.set("gradle.tasks.CleanerDatabaseKt")
 }
+
+tasks.register<JavaExec>("updateTasks") {
+    group = "database"
+    description = "Актуализация формата хранения задач"
+    classpath = sourceSets["main"].runtimeClasspath
+    mainClass.set("gradle.tasks.UpdatingDatabaseKt")
+}
