@@ -52,22 +52,26 @@ private fun tryDeleteTask(
     objectMapper: ObjectMapper,
     tasksOperations: TaskOperationsHolder,
 ): Response {
-    return when (
-        val deleteFlag = deleteTask(
-            task = taskToDelete,
-            taskOperations = tasksOperations
-        )
-    ) {
-        is Failure -> objectMapper.sendBadRequestError(deleteFlag.reason.errorText)
+    return when (val deleteDirectoryFlag = taskToDelete.deleteTaskDirectory(taskToDelete.id.toString())) {
+        is Failure -> objectMapper.sendBadRequestError(deleteDirectoryFlag.reason)
 
-        is Success -> {
-            ServerLogger.log(
-                user = user,
-                action = "Task deletion",
-                message = "User delete task ${taskToDelete.id}-${taskToDelete.name}",
-                type = LoggerType.INFO
+        is Success -> when (
+            val deleteFlag = deleteTask(
+                task = taskToDelete,
+                taskOperations = tasksOperations
             )
-            objectMapper.sendOKResponse(mapOf("status" to "complete"))
+        ) {
+            is Failure -> objectMapper.sendBadRequestError(deleteFlag.reason.errorText)
+
+            is Success -> {
+                ServerLogger.log(
+                    user = user,
+                    action = "Task deletion",
+                    message = "User delete task ${taskToDelete.id}-${taskToDelete.name}",
+                    type = LoggerType.INFO
+                )
+                objectMapper.sendOKResponse(mapOf("status" to "complete"))
+            }
         }
     }
 }

@@ -25,4 +25,16 @@ object TaskLenses {
             answerFormatField,
             filesField
         ).toLens()
+
+    val editScriptsField = MultipartFormField.required("editScripts")
+    val multipartFormFieldsAllWithFlag = Body.Companion
+        .multipartForm(
+            Validator.Feedback,
+            nameField,
+            descriptionField,
+            criterionsField,
+            answerFormatField,
+            filesField,
+            editScriptsField
+        ).toLens()
 }

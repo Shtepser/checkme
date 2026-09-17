@@ -231,3 +231,13 @@ data class TaskWithoutId(
 data class TaskName(
     val name: String,
 )
+
+fun selectUserId(
+    id: UUID,
+    usersId: List<UUID>,
+): UUID =
+    when (id.toString()) {
+        validUserId[0].toString() -> usersId[0]
+        validUserId[1].toString() -> usersId[1]
+        else -> usersId[2]
+    }

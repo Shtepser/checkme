@@ -13,6 +13,7 @@ import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.contentPages.content.addTaskPage.AddTask
 import ru.yarsu.contentPages.content.bundlesPages.Bundle
 import ru.yarsu.contentPages.content.bundlesPages.BundlesList
+import ru.yarsu.contentPages.content.editTaskPage.EditTask
 import ru.yarsu.contentPages.content.journalPage.Journal
 import ru.yarsu.contentPages.content.journalPage.LogFile
 import ru.yarsu.contentPages.content.solutionsPages.AllSolutions
@@ -82,6 +83,15 @@ class MainPage(
                 null
             }
             content.add(Task(id, serverUrl, routingMainPage))
+        }).on("/change-task/:id", { match ->
+            content.removeAll()
+            val id = try {
+                Uuid.parse(match.data.id.toString())
+            } catch (_: IllegalArgumentException) {
+                null
+            }
+            content.add(EditTask(id, serverUrl, routingMainPage))
+
         }).on("/user-list",{
             if (UserInformationStorage.isAdmin()) {
                 content.removeAll()

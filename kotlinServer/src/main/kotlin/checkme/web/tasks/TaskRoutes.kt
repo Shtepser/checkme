@@ -7,6 +7,7 @@ import checkme.web.tasks.handlers.ChangeTaskActualityHandler
 import checkme.web.tasks.handlers.ChangeTaskHandler
 import checkme.web.tasks.handlers.DeleteTaskHandler
 import checkme.web.tasks.handlers.TaskHandler
+import checkme.web.tasks.handlers.TaskScriptsHandler
 import checkme.web.tasks.handlers.TasksHiddenListHandler
 import checkme.web.tasks.handlers.TasksListHandler
 import org.http4k.core.*
@@ -46,6 +47,9 @@ fun taskRouter(
         "/{id}" bind Method.GET to TaskHandler(
             userLens = contextTools.userLens,
             taskOperations = operations.taskOperations
+        ),
+        "/scripts/{id}" bind Method.GET to TaskScriptsHandler(
+            userLens = contextTools.userLens,
         )
     )
 

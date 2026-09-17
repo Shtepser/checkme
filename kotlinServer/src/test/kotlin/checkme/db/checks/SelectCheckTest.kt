@@ -1,8 +1,17 @@
 package checkme.db.checks
 
 import checkme.db.TestcontainerSpec
+import checkme.db.appConfiguredPasswordHasher
+import checkme.db.selectUserId
+import checkme.db.users.UserOperations
+import checkme.db.validAdminLogin
 import checkme.db.validChecks
 import checkme.db.validChecksMany
+import checkme.db.validLogin
+import checkme.db.validName
+import checkme.db.validPass
+import checkme.db.validSurname
+import checkme.domain.accounts.Role
 import checkme.domain.models.Check
 import io.kotest.matchers.collections.shouldBeEmpty
 import io.kotest.matchers.collections.shouldContainExactlyInAnyOrder
@@ -13,14 +22,75 @@ import java.util.UUID
 
 class SelectCheckTest : TestcontainerSpec({ context ->
     val checkOperations = CheckOperations(context)
+    val userOperations = UserOperations(context)
+
+    val validChecksNew = mutableListOf<Check>()
+    val validChecksManyNew = mutableListOf<Check>()
 
     val notExistingId = UUID.fromString("00000000-0000-7736-80a2-b2024d9485db")
 
     lateinit var insertedChecks: List<Check>
 
     beforeEach {
+        userOperations
+            .insertUser(
+                validLogin,
+                validName,
+                validSurname,
+                appConfiguredPasswordHasher.hash(validPass),
+                Role.STUDENT,
+            ).shouldNotBeNull()
+
+        userOperations
+            .insertUser(
+                validAdminLogin,
+                validName,
+                validSurname,
+                appConfiguredPasswordHasher.hash(validPass),
+                Role.ADMIN,
+            ).shouldNotBeNull()
+
+        userOperations
+            .insertUser(
+                validLogin + "1",
+                validName,
+                validSurname,
+                appConfiguredPasswordHasher.hash(validPass + "2"),
+                Role.STUDENT,
+            ).shouldNotBeNull()
+
+        val users = userOperations.selectAllUsers().map { it.id }
+
+        validChecks.forEach { check ->
+            validChecksNew.add(
+                Check(
+                    check.id,
+                    check.taskId,
+                    selectUserId(check.userId, users),
+                    check.date,
+                    check.result,
+                    check.status,
+                    check.totalScore
+                )
+            )
+        }
+        validChecksMany.forEach {
+                check ->
+            validChecksManyNew.add(
+                Check(
+                    check.id,
+                    check.taskId,
+                    selectUserId(check.userId, users),
+                    check.date,
+                    check.result,
+                    check.status,
+                    check.totalScore
+                )
+            )
+        }
+
         insertedChecks =
-            validChecks.map {
+            validChecksNew.map {
                 checkOperations.insertCheck(
                     it.taskId,
                     it.userId,
@@ -29,6 +99,11 @@ class SelectCheckTest : TestcontainerSpec({ context ->
                     it.status
                 ).shouldNotBeNull()
             }
+    }
+
+    afterEach {
+        validChecksNew.clear()
+        validChecksManyNew.clear()
     }
 
     test("Select check by id should return this check") {
@@ -87,7 +162,7 @@ class SelectCheckTest : TestcontainerSpec({ context ->
     }
 
     test("Select all checks pagination should return a list with the size 10 if this count exists") {
-        validChecksMany.map {
+        validChecksManyNew.map {
             checkOperations.insertCheck(
                 it.taskId,
                 it.userId,

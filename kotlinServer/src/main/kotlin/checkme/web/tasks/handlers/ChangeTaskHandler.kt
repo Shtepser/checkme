@@ -28,7 +28,7 @@ class ChangeTaskHandler(
         val user = userLens(request)
         val taskId = request.idOrNull()
             ?: return objectMapper.sendBadRequestError(ChangeTaskError.NO_ID_TO_CHANGE_TASK.errorText)
-        val form: MultipartForm = TaskLenses.multipartFormFieldsAll(request)
+        val form: MultipartForm = TaskLenses.multipartFormFieldsAllWithFlag(request)
         return when {
             user?.isAdmin() != true ->
                 objectMapper.sendBadRequestError(ChangeTaskError.USER_HAS_NOT_RIGHTS.errorText)
@@ -69,6 +69,7 @@ class ChangeTaskHandler(
     }
 }
 
+@Suppress("LongParameterList")
 private fun tryChangeTask(
     user: User,
     taskToChange: Task,
@@ -77,21 +78,38 @@ private fun tryChangeTask(
     tasksOperations: TaskOperationsHolder,
     form: MultipartForm,
 ): Response {
-    val criterions = validatedTask.addTaskFilesToDirectory(
-        files = form.files,
-        criterions = validatedTask.criterions,
-    )
     return when (
-        val editedTask = changeTask(taskToChange, tasksOperations)
+        val editedTask = changeTask(taskToChange.id, validatedTask, tasksOperations)
     ) {
         is Success -> {
-            ServerLogger.log(
-                user = user,
-                action = "Task edited",
-                message = "User is changed task ${editedTask.value.id}-${editedTask.value.name}",
-                type = LoggerType.INFO
-            )
-            objectMapper.sendOKResponse(mapOf("taskId" to editedTask.value.id))
+            val isReplaced = if (TaskLenses.editScriptsField(form).value.toBoolean()) {
+                validatedTask.addOrReplaceTaskFilesToDirectory(
+                    directoryName = taskToChange.id.toString(),
+                    files = form.files,
+                )
+            } else {
+                Success("The files do not need to be replaced.")
+            }
+            when (isReplaced) {
+                is Success -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "Task edited",
+                        message = "User is changed task ${editedTask.value.id}-${editedTask.value.name}",
+                        type = LoggerType.INFO
+                    )
+                    objectMapper.sendOKResponse(mapOf("taskId" to editedTask.value.id))
+                }
+                is Failure -> {
+                    ServerLogger.log(
+                        user = user,
+                        action = "Task edited warnings",
+                        message = "Something wrong when try edit Task. Error: ${isReplaced.reason}",
+                        type = LoggerType.WARN
+                    )
+                    objectMapper.sendBadRequestError(isReplaced.reason)
+                }
+            }
         }
 
         is Failure -> {

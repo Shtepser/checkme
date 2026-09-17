@@ -1,0 +1,13 @@
+{
+  "Вывод списка регионов (упорядоченных по алфавиту) с указанием числа городов в них": {
+    "description": "Список регионов выведен корректно",
+    "score": 10,
+    "test": {
+      "type": "sql-check",
+      "dbScript": "world.sql",
+      "referenceQuery": "SELECT c.District, COUNT(c.ID) \nFROM City AS c \nGROUP BY c.District \nORDER BY c.District;"
+    },
+    "message": "Список регионов выведен некорректно",
+    "special_marker": "NULL"
+  }
+}

@@ -8,8 +8,10 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestMethodOrder
 import ru.yarsu.TestConfig.driver
 import ru.yarsu.pages.AddTaskPage
+import ru.yarsu.pages.EditTaskPage
 import ru.yarsu.pages.HeaderComponent
 import ru.yarsu.pages.SignInPage
+import ru.yarsu.pages.SolutionPage
 import ru.yarsu.pages.TaskListPage
 import ru.yarsu.pages.TaskPage
 import java.util.concurrent.TimeUnit
@@ -21,6 +23,7 @@ class TaskTest : BaseTest() {
     private val taskListPage by lazy { TaskListPage(driver) }
     private val addTaskPage by lazy { AddTaskPage(driver) }
     private val taskPage by lazy { TaskPage(driver) }
+    private val editTaskPage by lazy { EditTaskPage(driver) }
 
     private val adminUsername = "admin"
     private val adminPassword = "pass"
@@ -31,6 +34,15 @@ class TaskTest : BaseTest() {
     private val jsonConsoleCriterionFilePath = "src/jvmTest/resources/test-console-criterion.json"
     private val jsonSqlCriterionFilePath = "src/jvmTest/resources/test-sql-criterion.json"
     private val sqlScriptFilePath = "src/jvmTest/resources/test-script.sql"
+
+    private val updatedTaskName = "Updated Edit Task ${System.currentTimeMillis()}"
+    private val updatedDescription = "Updated description for edit task"
+    private val minRequiredScore = 10
+    private val jsonSqlWorldCriterionFilePath = "src/jvmTest/resources/test-sql-world-criterion.json"
+    private val sqlScriptWorldFilePath = "src/jvmTest/resources/test-script-world.sql"
+
+    private val sqlSolutionFilePath = "src/jvmTest/resources/sql-solution.sql"
+    private val sqlSolutionWorldFilePath = "src/jvmTest/resources/sql-solution-world.sql"
 
     @Test
     @Order(1)
@@ -144,5 +156,55 @@ class TaskTest : BaseTest() {
             !taskListPage.isTaskInList(sqlTaskName)
         }
         assertTrue(!taskListPage.isTaskInList(sqlTaskName), "После удаления SQL задача должна пропасть из списка")
+    }
+
+    @Test
+    @Order(6)
+    fun `create task, upload solution, edit task and verify new solution`() {
+        headerComponent.navigateToTaskList()
+        taskListPage.navigateToCreateTask()
+        addTaskPage.createSqlTask(
+            sqlTaskName,
+            "Initial description for edit task",
+            jsonSqlCriterionFilePath,
+            sqlScriptFilePath
+        )
+        await().atMost(5, TimeUnit.SECONDS).until { addTaskPage.isTaskCreated() }
+
+        val solutionPage = SolutionPage(driver)
+        taskPage.uploadSolution(sqlSolutionFilePath)
+        await().atMost(10, TimeUnit.SECONDS).until { solutionPage.isResultDisplayed() }
+
+        val firstScore = solutionPage.getScore()
+        assertTrue(firstScore >= minRequiredScore, "Первое решение должно набрать достаточные баллы. Получено: $firstScore")
+
+        headerComponent.navigateToTaskList()
+        taskListPage.openTask(sqlTaskName)
+        await().atMost(5, TimeUnit.SECONDS).until { taskPage.getTaskName().contains(sqlTaskName) }
+
+        taskPage.navigateToEditPage()
+        val editTaskPage = EditTaskPage(driver)
+        await().atMost(5, TimeUnit.SECONDS).until { editTaskPage.isEditPageLoaded() }
+
+        editTaskPage.updateTaskName(updatedTaskName)
+        editTaskPage.updateTaskDescription(updatedDescription)
+        editTaskPage.updateCriterions(jsonSqlWorldCriterionFilePath)
+        editTaskPage.updateSqlScript(sqlScriptWorldFilePath)
+        editTaskPage.saveTask()
+
+        await().atMost(5, TimeUnit.SECONDS).until { addTaskPage.isTaskCreated() }
+
+        assertTrue(taskPage.getTaskName().contains(updatedTaskName), "Имя задачи должно измениться")
+        assertTrue(taskPage.getTaskDescription().contains(updatedDescription), "Описание задачи должно измениться")
+
+        taskPage.uploadSolution(sqlSolutionWorldFilePath)
+        await().atMost(10, TimeUnit.SECONDS).until { solutionPage.isResultDisplayed() }
+
+        val secondScore = solutionPage.getScore()
+        assertTrue(secondScore >= minRequiredScore, "Второе решение должно набрать достаточные баллы. Получено: $secondScore")
+
+        assertTrue(solutionPage.returnToTask(), "Мы должны вернуться на страницу задачи")
+
+        taskPage.deleteTask()
     }
 }

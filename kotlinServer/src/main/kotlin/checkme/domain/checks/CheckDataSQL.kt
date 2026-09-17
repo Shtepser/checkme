@@ -66,9 +66,9 @@ data class CheckDataSQL(
 
         private fun findCScriptFile(
             scriptNames: List<String>,
-            taskName: String,
+            taskId: String,
         ): List<File>? {
-            val dir = File("../tasks/$taskName")
+            val dir = File("../tasks/$taskId")
             if (!dir.isDirectory) return null
             return dir.listFiles()?.filter { scriptNames.contains(it.name) }
         }
@@ -86,7 +86,7 @@ data class CheckDataSQL(
             val answerSQl = answerFile.readText()
             val sqlScripts = findCScriptFile(
                 scriptNames = checkDataSQL.dbScript,
-                taskName = task.name
+                taskId = task.id.toString()
             )
             return when {
                 sqlScripts == null || !sqlScripts.all { it.exists() } -> {
