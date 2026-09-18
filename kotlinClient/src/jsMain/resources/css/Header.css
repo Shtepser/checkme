@@ -37,12 +37,11 @@ hr {
     .Header { padding: 1rem 4% 0.75rem; }
     hr { margin: 0 3%; }
 }
-/* Контейнер dropdown */
+
 .dropdown {
     position: relative;
 }
 
-/* Dropdown menu - белый контейнер */
 .dropdown-menu {
     position: absolute !important;
     top: calc(100% + 0.25rem) !important;
@@ -56,12 +55,13 @@ hr {
     flex-direction: column;
     gap: 0.5rem;
     min-width: 14rem;
-    max-width: 90vw;
+    max-width: calc(100vw - 1rem);
     padding: 0.5rem;
     background-color: var(--color-surface);
     border: var(--border);
     border-radius: var(--radius);
     box-shadow: var(--shadow-float);
+    box-sizing: border-box;
 }
 
 .dropdown-menu.show {
@@ -72,26 +72,10 @@ hr {
     width: 100%;
     text-align: center;
     margin: 0;
-}
-
-.dropdown-menu .btn-link {
     padding: 0.625rem 1.75rem;
+    box-sizing: border-box;
 }
 
-/* Меню пользователя (admin) - выравнивание по правому краю */
-.user-menu .dropdown-menu {
-    left: auto !important;
-    right: 0 !important;
-    transform: none !important;
-}
-
-/* Кнопка "Выйти" - уменьшенный размер */
-.user-menu .dropdown-menu .btn-primary {
-    padding: 0.5rem 1.5rem;
-    font-size: 1rem;
-}
-
-/* Адаптив: предотвращение вылезания за края */
 @media (max-width: 64rem) {
     .dropdown-menu {
         min-width: 12rem;
