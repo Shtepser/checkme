@@ -1,6 +1,13 @@
 package ru.yarsu.contentPages.content
 
+import io.kvision.core.onChange
+import io.kvision.form.text.text
+import io.kvision.html.ButtonStyle
+import io.kvision.html.InputType
+import io.kvision.html.button
+import io.kvision.panel.HPanel
 import io.kvision.rest.HttpMethod
+import io.kvision.routing.Routing
 import org.w3c.fetch.RequestInit
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.solution.ResultScoreMessage
@@ -48,4 +55,21 @@ enum class Result(val message: String, val cssName: String) {
     INCORRECT("Нажмите, чтобы посмотреть все отправленные решения", "incorrect"),
     PARTIAL("Нажмите, чтобы посмотреть все отправленные решения", "partial"),
     CORRECT("Нажмите, чтобы посмотреть все отправленные решения", "correct"),
+}
+
+fun paginationBlock(routing: Routing, path: String, page: Int, positionTop: Boolean = true) : HPanel {
+    return HPanel(className = if (positionTop) "pagination-top" else "pagination-bottom") {
+        button("Назад", style = ButtonStyle.LINK).onClick {
+            routing.navigate("$path${page - 1}")
+        }
+        text(InputType.NUMBER,"$page") {
+            input.addCssClass("page-input")
+            addCssClass("page")
+        }.onChange {
+            routing.navigate("$path${this.value}")
+        }
+        button("Вперёд", style = ButtonStyle.LINK).onClick {
+            routing.navigate("$path${page + 1}")
+        }
+    }
 }
