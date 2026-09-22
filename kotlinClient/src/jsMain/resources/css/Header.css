@@ -20,50 +20,9 @@
     gap: 1.5rem;
 }
 
-.Header .user-menu {
-    justify-self: end;
-}
-
 .Header .btn {
     font-size: 1.125rem;
     padding: 0.5rem 2rem;
-}
-
-.dropdown {
-    position: relative;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: calc(100% + 0.25rem);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    display: none;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.5rem;
-    min-width: 100%;
-    width: max-content;
-    padding: 0.5rem;
-    background-color: var(--color-surface);
-    border: var(--border);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow-float);
-}
-
-.Header .dropdown-menu {
-    top: calc(100% + 0.25rem) !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-}
-
-.dropdown-menu.show,
-.dropdown.show .dropdown-menu,
-.dropdown-toggle.show + .dropdown-menu,
-.dropdown-toggle[aria-expanded="true"] + .dropdown-menu,
-.dropdown:focus-within .dropdown-menu {
-    display: flex;
 }
 
 hr {
@@ -77,23 +36,54 @@ hr {
 @media (max-width: 64rem) {
     .Header { padding: 1rem 4% 0.75rem; }
     hr { margin: 0 3%; }
-    .Header .user-menu .dropdown-menu {
-        left: auto !important;
-        right: 0 !important;
-        transform: none !important;
-    }
 }
 
-@media (max-width: 48rem) {
-    .Header {
-        grid-template-columns: 1fr;
-        justify-items: center;
-        padding: 1rem 4% 0.75rem;
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute !important;
+    top: calc(100% + 0.25rem) !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 14rem;
+    max-width: calc(100vw - 1rem);
+    padding: 0.5rem;
+    background-color: var(--color-surface);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-float);
+    box-sizing: border-box;
+}
+
+.dropdown-menu.show {
+    display: flex;
+}
+
+.dropdown-menu .btn {
+    width: 100%;
+    text-align: center;
+    margin: 0;
+    padding: 0.625rem 1.75rem;
+    box-sizing: border-box;
+}
+
+@media (max-width: 64rem) {
+    .dropdown-menu {
+        min-width: 12rem;
+        max-width: calc(100vw - 2rem);
     }
-    .Header .user-menu { justify-self: center; }
-    .Header .user-menu .dropdown-menu {
-        left: 50% !important;
-        right: auto !important;
-        transform: translateX(-50%) !important;
+
+    .dropdown-menu .btn {
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
     }
 }

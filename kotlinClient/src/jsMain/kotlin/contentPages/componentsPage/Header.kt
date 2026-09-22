@@ -19,34 +19,7 @@ class Header(
     private val routing: Routing,
     private val routingMainPage: Routing,
 ) : VPanel() {
-    companion object {
-        private var autoCloseInstalled = false
-
-        fun installAutoClose() {
-            if (autoCloseInstalled) return
-            autoCloseInstalled = true
-
-            document.addEventListener("click", { event ->
-                val target = event.target as? HTMLElement ?: return@addEventListener
-                val current = target.closest(".dropdown") as? HTMLElement
-                val dropdowns = document.querySelectorAll(".dropdown")
-                for (i in 0 until dropdowns.length) {
-                    val element = dropdowns.item(i) as? HTMLElement ?: continue
-                    if (element == current) continue
-                    (element.querySelector(".dropdown-menu") as? HTMLElement)
-                        ?.classList?.remove("show")
-                    (element.querySelector(".dropdown-toggle") as? HTMLElement)?.let { element ->
-                        element.classList.remove("show")
-                        element.setAttribute("aria-expanded", "false")
-                    }
-                    element.classList.remove("show")
-                }
-            }, true)
-        }
-    }
-
     init {
-        installAutoClose()
         hPanel(className = "Header") {
             this.id = "header"
             div("CheckMe", className = "app-title") { id = "id-app-title" }
