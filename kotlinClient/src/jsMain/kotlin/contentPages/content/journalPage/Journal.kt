@@ -2,17 +2,17 @@ package ru.yarsu.contentPages.content.journalPage
 
 import io.kvision.html.*
 import io.kvision.panel.SimplePanel
-import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import ru.yarsu.contentPages.content.createRequestHeaders
+import ru.yarsu.contentPages.content.paginationBlock
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.logger.LogFileInfo
 
 class Journal(
-    private val page: Int?,
+    page: Int?,
     private val serverUrl: String,
     private val routing: Routing
 ) : SimplePanel(className = "paged-layout") {
@@ -21,24 +21,8 @@ class Journal(
         if ((page == null) || (page < 1)) {
             routing.navigate("/journal/1")
         } else {
-            hPanel(className = "pagination-top") {
-                button("Назад", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/journal/${page - 1}")
-                }
-                div("$page", className = "page")
-                button("Вперёд", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/journal/${page + 1}")
-                }
-            }
-            hPanel(className = "pagination-bottom") {
-                button("Назад", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/journal/${page - 1}")
-                }
-                div("$page", className = "page")
-                button("Вперёд", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/journal/${page + 1}")
-                }
-            }
+            add(paginationBlock(routing, "/journal/", page))
+            add(paginationBlock(routing, "/journal/", page, false))
             loadLogsFilesList(page)
         }
     }

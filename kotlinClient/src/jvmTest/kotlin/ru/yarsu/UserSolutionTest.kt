@@ -91,7 +91,7 @@ class UserSolutionTest : BaseTest() {
         selectBundleTasksPage.selectTask(sqlTaskName)
         selectBundleTasksPage.saveSelection()
         changeBundleTasksOrderPage.saveOrder()
-        await().atMost(5, TimeUnit.SECONDS).until { changeBundleTasksOrderPage.isOrderSaved() }
+
         assertTrue(changeBundleTasksOrderPage.isOrderSaved(), "Порядок задач должен быть сохранен")
 
         await().atMost(5, TimeUnit.SECONDS).until { bundlePage.isTaskInBundle(consoleTaskName) }

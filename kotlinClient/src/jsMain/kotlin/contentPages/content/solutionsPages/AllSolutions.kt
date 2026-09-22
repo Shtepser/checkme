@@ -3,21 +3,20 @@ package ru.yarsu.contentPages.content.solutionsPages
 import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
 import io.kvision.html.button
-import io.kvision.html.div
 import io.kvision.html.h2
 import io.kvision.panel.SimplePanel
-import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import ru.yarsu.contentPages.content.createRequestHeaders
+import ru.yarsu.contentPages.content.paginationBlock
 import ru.yarsu.localStorage.UserInformationStorage
 import ru.yarsu.serializableClasses.solution.SolutionInAdminListsFormat
 import ru.yarsu.serializableClasses.ResponseError
 
 class AllSolutions(
-    private val page: Int?,
+    page: Int?,
     serverUrl: String,
     private val routing: Routing
 ) : SimplePanel(className = "paged-layout") {
@@ -29,15 +28,8 @@ class AllSolutions(
         if ((page == null) || (page < 1)) {
             routing.navigate("/solution-list/1")
         } else {
-            hPanel(className = "pagination-top") {
-                button("Назад", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/solution-list/${page - 1}")
-                }
-                div("$page", className = "page")
-                button("Вперёд", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/solution-list/${page + 1}")
-                }
-            }
+            add(paginationBlock(routing, "/solution-list/", page))
+            add(paginationBlock(routing, "/solution-list/", page, false))
             val requestInit = createRequestHeaders(HttpMethod.GET)
             window.fetch(serverUrl + "solution/all/$page", requestInit).then { response ->
                 when (response.status.toInt()) {
@@ -66,15 +58,6 @@ class AllSolutions(
                             className = "error-message"
                         )
                     )
-                }
-            }
-            hPanel(className = "pagination-bottom") {
-                button("Назад", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/solution-list/${page - 1}")
-                }
-                div("$page")
-                button("Вперёд", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/solution-list/${page + 1}")
                 }
             }
         }
