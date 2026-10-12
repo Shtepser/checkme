@@ -121,10 +121,6 @@ class BundleTest : BaseTest() {
 
         changeBundleTasksOrderPage.saveOrder()
 
-        await().atMost(5, TimeUnit.SECONDS).until {
-            changeBundleTasksOrderPage.isOrderSaved()
-        }
-
         assertTrue(changeBundleTasksOrderPage.isOrderSaved(), "Порядок должен быть сохранен")
     }
 

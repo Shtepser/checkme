@@ -1,22 +1,19 @@
 package ru.yarsu.contentPages.content.mySolutionListPage
 
-import io.kvision.html.ButtonStyle
 import io.kvision.html.Div
-import io.kvision.html.button
-import io.kvision.html.div
 import io.kvision.html.h2
 import io.kvision.panel.SimplePanel
-import io.kvision.panel.hPanel
 import io.kvision.rest.HttpMethod
 import io.kvision.routing.Routing
 import kotlinx.browser.window
 import kotlinx.serialization.json.Json
 import ru.yarsu.contentPages.content.createRequestHeaders
+import ru.yarsu.contentPages.content.paginationBlock
 import ru.yarsu.serializableClasses.ResponseError
 import ru.yarsu.serializableClasses.solution.SolutionInMyListFormat
 
 class MyResultList(
-    private val page: Int?,
+    page: Int?,
     serverUrl: String,
     private val routing: Routing
 ) : SimplePanel(className = "paged-layout") {
@@ -25,24 +22,8 @@ class MyResultList(
         if ((page == null) || (page < 1)) {
             routing.navigate("/my-result-list/1")
         } else {
-            hPanel(className = "pagination-top") {
-                button("Назад", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/my-result-list/${page - 1}")
-                }
-                div("$page", className = "page")
-                button("Вперёд", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/my-result-list/${page + 1}")
-                }
-            }
-            hPanel(className = "pagination-bottom") {
-                button("Назад", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/my-result-list/${page - 1}")
-                }
-                div("$page", className = "page")
-                button("Вперёд", style = ButtonStyle.LINK).onClick {
-                    routing.navigate("/my-result-list/${page + 1}")
-                }
-            }
+            add(paginationBlock(routing, "/my-result-list/", page))
+            add(paginationBlock(routing, "/my-result-list/", page, false))
             val requestInit = createRequestHeaders(HttpMethod.GET)
             window.fetch(serverUrl + "solution/me/$page", requestInit).then { response ->
                 when (response.status.toInt()) {

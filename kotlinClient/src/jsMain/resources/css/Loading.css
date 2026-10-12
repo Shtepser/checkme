@@ -5,7 +5,8 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    padding: 20px 0px;
+    padding: 20px 0;
+    grid-column: 1 / -1;
 }
 
 .loading-circle {
@@ -20,7 +21,7 @@
     height: 48px;
     margin: 8px;
     border-radius: 50%;
-    border: 6px solid black;
+    border: 6px solid;
     border-color: black transparent;
     animation: circle-spin 1.2s linear infinite;
 }
